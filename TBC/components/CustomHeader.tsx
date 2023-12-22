@@ -1,8 +1,10 @@
-import { View, Text, Platform, SafeAreaView, TouchableOpacity, StyleSheet, Image } from 'react-native'
 import React from 'react';
+import { View, Text, Platform, SafeAreaView, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { DarkTheme, DefaultTheme, ThemeProvider, useTheme } from '@react-navigation/native';
+import { useColorScheme } from 'react-native';
 import { Poppins_500Medium, Poppins_700Bold, useFonts as usePoppinsFonts } from '@expo-google-fonts/poppins';
 import { NotoSerif_400Regular, NotoSerif_700Bold, useFonts as useNotoFonts } from '@expo-google-fonts/noto-serif';
-
+import { Ionicons } from '@expo/vector-icons';
 
 
 type titleProps = {
@@ -13,25 +15,38 @@ const CustomHeader = (props: titleProps) => {
     const [poppinsFontsLoaded] = usePoppinsFonts({
         Poppins_500Medium,
         Poppins_700Bold
-    })
+    });
     const [notoFontsLoaded] = useNotoFonts({
         NotoSerif_400Regular,
         NotoSerif_700Bold
-    })
-  return (
-    <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-            <TouchableOpacity style={styles.logoContainer}>
-                <Image style={styles.logo} source={require('@/assets/images/logo.png')} />
-            </TouchableOpacity>
-            <View style={styles.titleContainer}>
-            <Text style={styles.title}>TBC</Text>
-            </View>
-            
-            <TouchableOpacity></TouchableOpacity>
-        </View>
-    </SafeAreaView>
-  )
+    });
+    const colorScheme = useColorScheme();
+    const theme = useTheme();
+    const isDarkMode = colorScheme === 'dark';
+    const logoSource = isDarkMode ? require('@/assets/images/light-logo.png') : require('@/assets/images/dark-logo.png');
+
+    return (
+        <ThemeProvider value={isDarkMode ? DarkTheme : DefaultTheme}>
+            <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.background }]}>
+                <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+                    <TouchableOpacity style={[styles.logoContainer, { shadowColor: isDarkMode ? '#fff' : '#000' }, { backgroundColor: theme.colors.background }]}>
+                        <Image style={styles.logo} source={logoSource} />
+                    </TouchableOpacity>
+                    <View style={styles.titleContainer}>
+                        <Text style={[styles.title, { color: isDarkMode ? '#fff' : '#000' }]}>{ props.name }</Text>
+                    </View>
+                    <View>
+                        <TouchableOpacity style={styles.profileButton}>
+                            <Ionicons name="person-outline" size={25} color={theme.colors.text} />
+                        </TouchableOpacity>
+                    </View>
+                    <TouchableOpacity style={styles.settingsButton}>
+                    <Ionicons name="options-outline" size={25} color={theme.colors.text} />
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
+        </ThemeProvider>
+    );
 }
 
 const styles = StyleSheet.create({
@@ -40,7 +55,6 @@ const styles = StyleSheet.create({
     },
     container: {
         height: 60,
-        backgroundColor: '#fff',
         gap: 10,
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -53,11 +67,9 @@ const styles = StyleSheet.create({
         })
     },
     logoContainer: {
-        backgroundColor: '#fff',
-        padding: 5,
+        padding: 3,
         borderRadius: 50,
-        shadowColor: '#000',
-        shadowOffset: {width: -2, height: 4},
+        shadowOffset: { width: -2, height: 4 },
         shadowOpacity: 0.3,
     },
     logo: {
@@ -68,16 +80,18 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     title: {
-        fontSize: 40,
-        color: '#000',
+        fontSize: 35,
         fontWeight: 'bold',
-        fontFamily: 'Poppins_500Medium'
+        fontFamily: 'Poppins_500Medium',
     },
+    profileButton: {
+        padding: 10,
+        borderRadius: 50,
+      },
     settingsButton: {
-        backgroundColor: '#d3d3d3',
         padding: 10,
         borderRadius: 50,
     },
-})
+});
 
-export default CustomHeader
+export default CustomHeader;
