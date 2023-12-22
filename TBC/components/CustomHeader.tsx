@@ -36,7 +36,7 @@ const CustomHeader = (props: titleProps) => {
                         <Text style={[styles.title, { color: isDarkMode ? '#fff' : '#000' }]}>{ props.name }</Text>
                     </View>
                     <View>
-                        <TouchableOpacity style={styles.profileButton}>
+                        <TouchableOpacity style={[styles.profileButton, {backgroundColor: theme.colors.background}]}>
                             <Ionicons name="person-outline" size={25} color={theme.colors.text} />
                         </TouchableOpacity>
                     </View>
@@ -85,9 +85,9 @@ const styles = StyleSheet.create({
         fontFamily: 'Poppins_500Medium',
     },
     profileButton: {
-        padding: 10,
+        padding: 5,
         borderRadius: 50,
-      },
+    },
     settingsButton: {
         padding: 10,
         borderRadius: 50,
