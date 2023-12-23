@@ -5,6 +5,7 @@ import { SplashScreen, Stack } from 'expo-router';
 import { useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 import CustomHeader from '@/components/CustomHeader';
+import Navbar from '@/components/Navbar';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -13,7 +14,7 @@ export {
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)/index.tsx',
+  initialRouteName: 'index.tsx',
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -49,7 +50,7 @@ function RootLayoutNav() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
-        <Stack.Screen name="index" options={{ header: () =>  <CustomHeader name={'TBC'}/>, }} />
+        <Stack.Screen name="index" options={{ header: () =>  <CustomHeader name='TBC'/>}} />
       </Stack>
     </ThemeProvider>
   );

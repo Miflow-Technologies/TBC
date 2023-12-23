@@ -1,12 +1,14 @@
-import { View, Text } from 'react-native'
+import { View, Text, SafeAreaView } from 'react-native'
 import React from 'react'
-import CustomHeader from '@/components/CustomHeader'
+import { NavigationContainer } from '@react-navigation/native'
+import Navbar from '@/components/Navbar'
+import RootLayout from './_layout'
 
-const index = () => {
+const HomeScreen = () => {
   return (
-    <View>
-    </View>
+    <><RootLayout /><Navbar /></>
+
   )
 }
 
-export default index
+export default HomeScreen

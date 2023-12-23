@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const route = () => {
+const LiveScreen = () => {
   return (
     <View>
-      <Text>route</Text>
+      <Text>LiveScreen</Text>
     </View>
   )
 }
 
-export default route
+export default LiveScreen

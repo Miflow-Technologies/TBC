@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const article = () => {
+const ArticleScreen = () => {
   return (
     <View>
-      <Text>article</Text>
+      <Text>ArticleScreen</Text>
     </View>
   )
 }
 
-export default article
+export default ArticleScreen
