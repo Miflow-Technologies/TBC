@@ -25,6 +25,13 @@ const CustomHeader = (props: titleProps) => {
     const isDarkMode = colorScheme === 'dark';
     const logoSource = isDarkMode ? require('@/assets/images/light-logo.png') : require('@/assets/images/dark-logo.png');
 
+    if (!notoFontsLoaded) {
+        return null
+    }
+    if (!poppinsFontsLoaded) {
+        return null
+    }
+
     return (
         <ThemeProvider value={isDarkMode ? DarkTheme : DefaultTheme}>
             <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.background }]}>
