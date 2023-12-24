@@ -1,10 +1,11 @@
 import { View, Text } from 'react-native'
 import React from 'react'
+import CustomHeader from '@/components/CustomHeader'
 
 const ListenScreen = () => {
   return (
     <View>
-      <Text>ListenScreen</Text>
+      <CustomHeader name='Listen'/>
     </View>
   )
 }

@@ -14,11 +14,11 @@ import {
 } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Colors from "@/constants/Colors";
-import ArticleScreen from "@/app/ArticleScreen";
-import ListenScreen from "@/app/ListenScreen";
-import AboutScreen from "@/app/AboutScreen";
-import LiveScreen from "@/app/LiveScreen";
-import HomeScreen from "@/app/index";
+import ArticleScreen from "@/app/(tabs)/article";
+import ListenScreen from "@/app/(tabs)/listen";
+import AboutScreen from "@/app/(tabs)/about";
+import LiveScreen from "@/app/(tabs)/live";
+import HomeScreen from "@/app/(tabs)/index";
 
 const Tab = createBottomTabNavigator();
 

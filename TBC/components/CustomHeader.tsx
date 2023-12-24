@@ -5,6 +5,7 @@ import { useColorScheme } from 'react-native';
 import { Poppins_500Medium, Poppins_700Bold, useFonts as usePoppinsFonts } from '@expo-google-fonts/poppins';
 import { NotoSerif_400Regular, NotoSerif_700Bold, useFonts as useNotoFonts } from '@expo-google-fonts/noto-serif';
 import { Ionicons } from '@expo/vector-icons';
+import { Link } from 'expo-router';
 
 
 type titleProps = {
@@ -47,9 +48,11 @@ const CustomHeader = (props: titleProps) => {
                             <Ionicons name="person-outline" size={25} color={theme.colors.text} />
                         </TouchableOpacity>
                     </View>
-                    <TouchableOpacity style={styles.settingsButton}>
-                    <Ionicons name="options-outline" size={25} color={theme.colors.text} />
-                    </TouchableOpacity>
+                    <Link href={'/settings'} asChild>
+                        <TouchableOpacity style={styles.settingsButton}>
+                        <Ionicons name="options-outline" size={25} color={theme.colors.text} />
+                        </TouchableOpacity>
+                    </Link>
                 </View>
             </SafeAreaView>
         </ThemeProvider>
