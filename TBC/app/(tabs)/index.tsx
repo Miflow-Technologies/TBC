@@ -2,11 +2,12 @@ import { View, Text, SafeAreaView , StyleSheet, Platform , TouchableWithoutFeedb
 import React from 'react'
 import CustomHeader from '@/components/CustomHeader'
 import { useColorScheme } from 'react-native';
-import { Poppins_500Medium, Poppins_700Bold, useFonts as usePoppinsFonts } from '@expo-google-fonts/poppins';
-import { NotoSerif_400Regular, NotoSerif_700Bold, useFonts as useNotoFonts } from '@expo-google-fonts/noto-serif';
 import { useTheme } from '@react-navigation/native';
 import Colors from '@/constants/Colors';
+import { Poppins_500Medium, Poppins_700Bold, useFonts as usePoppinsFonts } from '@expo-google-fonts/poppins';
+import { NotoSerif_400Regular, NotoSerif_700Bold, useFonts as useNotoFonts } from '@expo-google-fonts/noto-serif';
 import { ScrollView } from 'react-native-gesture-handler';
+import CollapsibleContainer from '@/components/CollapsibleContainer';
 
 
 const Tbc = () => {
@@ -38,11 +39,8 @@ const Tbc = () => {
           <Text style={[styles.subtitle, {fontFamily: 'NotoSerif_400Regular',  color: isDarkMode ? '#fff' : Colors.textGrey }]}>WELCOME,</Text>
           <Text style={[styles.title, {fontFamily: 'Poppins_700Bold',  color: isDarkMode ? Colors.primary : '#000' }]}>Shining Lights</Text>
         </View>
-        <View style={styles.cardContainer}>
-          <View style ={[styles.cardExpanded, {backgroundColor: theme.colors.background, shadowColor: isDarkMode ? '#fff' : '#000'}]}>
-            <View></View>
-            <View></View>
-          </View>
+        <View style={styles.cardContainer}> 
+        <CollapsibleContainer title='Daily Quotes' subtitle="Today's Quote from:" author='TBC' buttonText='READ' />  
         </View>
         </ScrollView>
     </SafeAreaView>
@@ -63,8 +61,10 @@ const styles = StyleSheet.create ({
   cardContainer: {
     flexDirection: "column",
     alignItems: "center",
-    justifyContent: "space-between",
-    padding: Platform.OS === 'ios' ? 20 : 10
+    justifyContent: "center",
+    gap: 10,
+    margin: Platform.OS === 'ios' ? 20 : 10,
+
   },
   cards: {
     height: 75,
