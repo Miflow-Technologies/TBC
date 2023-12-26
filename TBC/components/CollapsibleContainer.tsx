@@ -40,6 +40,7 @@ const CollapsibleContainer = ({
   const collapsableStyle = useAnimatedStyle(() => {
     animatedHeight.value = expanded ? withTiming(250) : withTiming(75
       );
+      
 
     return {
       height: animatedHeight.value,
@@ -50,24 +51,19 @@ const CollapsibleContainer = ({
     setExpanded(!expanded);
   };
 
-  const handleOutsidePress = (event: { nativeEvent: { target: any; }; }) => {
-    if (!containerRef.current.contains(event.nativeEvent.target)) {
-      setExpanded(false);
-    }
-  };
 
   return (
     <TouchableOpacity
       onPress={handlePress}
       activeOpacity={0.8}
-      style={styles.wrap}
+      style={[styles.wrap, {backgroundColor: theme.colors.background}]}
       ref={containerRef}
-      onPressOut={handleOutsidePress}
     >
       <Animated.View
-        style={[collapsabletyle, {overflow: 'hidden'}]}
+        style={[collapsableStyle, {overflow: 'hidden'}]}
       >
         {fontsLoaded ? (
+  
           <Text style={[styles.title, {
             color: expanded ? '#fff' : isDarkMode ? '#fff' : '#000',
           },]}>{title}</Text>
@@ -78,7 +74,7 @@ const CollapsibleContainer = ({
           <View>
             <Text style={styles.subtitle}>{subtitle}</Text>
             <Text style={styles.author}>{author}</Text>
-            <View style={styles.buttonCard}>
+            <View style={[styles.buttonCard, {backgroundColor: theme.colors.background}]}>
               <Text style={styles.buttonText}>{buttonText}</Text>
             </View>
           </View>
@@ -101,7 +97,7 @@ const styles = StyleSheet.create({
   },
   buttonCard: {
     height: 65,
-    width: 300,
+    width: Platform.OS === 'ios' ? '98%' : '99%',
     color: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
