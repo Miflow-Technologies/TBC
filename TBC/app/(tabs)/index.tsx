@@ -34,13 +34,47 @@ const Tbc = () => {
     <SafeAreaView>
       <CustomHeader name='TBC'/>
   
-      <ScrollView style={{marginTop: 70,}}>
+      <ScrollView style={{marginTop: Platform.OS === 'ios' ? 70: 100, marginBottom: Platform.OS === 'ios' ? 70 : 100}}>
         <View style={styles.container}>
           <Text style={[styles.subtitle, {fontFamily: 'NotoSerif_400Regular',  color: isDarkMode ? '#fff' : Colors.textGrey }]}>WELCOME,</Text>
           <Text style={[styles.title, {fontFamily: 'Poppins_700Bold',  color: isDarkMode ? Colors.primary : '#000' }]}>Shining Lights</Text>
         </View>
         <View style={styles.cardContainer}> 
-        <CollapsibleContainer title='Daily Quotes' subtitle="Today's Quote from:" author='TBC' buttonText='READ' />  
+          <CollapsibleContainer
+            title="Daily Quotes"
+            subtitle="Today's Quote from:"
+            author="TBC"
+            buttonText="READ"
+            backgroundColor="#41BBAC"
+          />
+          <CollapsibleContainer
+            title="Devotional"
+            subtitle="Luke 4:12 "
+            author="Walking with God"
+            buttonText="READ"
+            backgroundColor="#1CB4EE"
+          />
+          <CollapsibleContainer
+            title="Announcements"
+            subtitle="Weekly Announcements from:"
+            author=""
+            buttonText="READ"
+            backgroundColor="#CB3CA0"
+          />
+          <CollapsibleContainer
+            title="Calender"
+            subtitle="View our Calender for the Month"
+            author=""
+            buttonText="VIEW"
+            backgroundColor='#F2B059'
+          />
+          <CollapsibleContainer
+            title="Events"
+            subtitle="Upcoming Events"
+            author=""
+            buttonText="VIEW"
+            backgroundColor="#258180"
+          />
         </View>
         </ScrollView>
     </SafeAreaView>
@@ -62,7 +96,7 @@ const styles = StyleSheet.create ({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    gap: 10,
+    gap: 20,
     margin: Platform.OS === 'ios' ? 20 : 10,
 
   },

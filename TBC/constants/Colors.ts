@@ -6,7 +6,7 @@ export default {
   },
   dark: {
     text: '#fff',
-    background: '#000',
+    background: '#2E2E2E',
   },
   primary: '#41BBAC',
   secondary: '#258180',

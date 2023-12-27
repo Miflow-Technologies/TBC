@@ -77,9 +77,10 @@ const styles = StyleSheet.create({
     cardContainer: {
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "space-between",
-        padding: Platform.OS === 'ios' ? 20 : 10
-    },
+        justifyContent: "center",
+        gap: 20,
+        margin: Platform.OS === 'ios' ? 20 : 10,
+      },
     cards: {
         height: 75,
         gap: 10,
