@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     container: {
-        height: 60,
+        height: Platform.OS === 'ios' ? 60 : 70,
         gap: 10,
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -77,10 +77,11 @@ const styles = StyleSheet.create({
         })
     },
     logoContainer: {
-        padding: 3,
+        padding:Platform.OS === 'ios' ? 3 : 2,
         borderRadius: 50,
         shadowOffset: { width: -2, height: 4 },
         shadowOpacity: 0.3,
+        elevation: 3
     },
     logo: {
         width: 30,

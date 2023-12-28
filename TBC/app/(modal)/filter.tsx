@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const Inspirational = () => {
+const filter = () => {
   return (
     <View>
-      <Text>Inspirational</Text>
+      <Text>filter</Text>
     </View>
   )
 }
 
-export default Inspirational
+export default filter

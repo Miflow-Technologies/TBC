@@ -1,10 +1,8 @@
 import * as React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import Sermon from '../Sermon';
-import Excerpt from '../Excerpt';
-import Goaks from '../Goaks';
-
+import Sermon from '../(listen)/Sermon';
+import Goaks from '../(listen)/Goaks';
 import { Platform, View, StyleSheet } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { useColorScheme } from 'react-native';
@@ -43,12 +41,11 @@ const TopTabs = () => {
   }
   return (
     <TopTab.Navigator screenOptions={{tabBarStyle: styles.containerStyle,
-      tabBarIndicatorStyle: [styles.indicator, {backgroundColor: isDarkMode ? '#fff' : '#000'}],
+      tabBarIndicatorStyle: [styles.indicator, {backgroundColor: isDarkMode ? '#000' : '#fff'}],
       tabBarLabelStyle: styles.label,
       tabBarActiveTintColor: Colors.primary,
       tabBarInactiveTintColor: Colors.textGrey,}}>
       <TopTab.Screen name="Sermon" component={Sermon} />
-      <TopTab.Screen name="Excerpt" component={Excerpt} />
       <TopTab.Screen name="Goaks" component={Goaks} />
     </TopTab.Navigator>
   );
@@ -63,17 +60,17 @@ const styles = StyleSheet.create({
   indicator: {
     position: 'absolute',
     zIndex: -1,
-    width: Platform.OS === 'ios' ? 100 : 83.33,
-    height: 44,
+    width: Platform.OS === 'ios' ? 100 : 100,
+    height: Platform.OS === 'ios' ? 44 : 45,
     alignItems: 'center',
     borderRadius: 8,
     shadowOffset:{width: 3, height: 2},
     shadowOpacity: 0.6
   },
   containerStyle: {
-    top: Platform.OS === 'ios' ? 100 : 100,
+    top: Platform.OS === 'ios' ? 50 : 50,
     height: Platform.OS === 'ios' ? 45 : 45, 
-    width: Platform.OS === 'ios' ? 300 : 250,
+    width: Platform.OS === 'ios' ? 200 : 200,
     backgroundColor: '#D1E1E0',
     alignSelf: 'flex-start',
     justifyContent: 'center',

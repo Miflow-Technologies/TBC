@@ -1,10 +1,10 @@
 import React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Platform, StyleSheet } from 'react-native';
-import Sermon from '@/app/Sermon';
+import Sermon from '@/app/(listen)/Sermon';
 import Excerpts from '@/app/Excerpt';
 import Inspirational from '@/app/Inspirational';
-import Goaks from '@/app/Goaks';
+import Goaks from '@/app/(listen)/Goaks';
 import {
     Poppins_500Medium,
     Poppins_700Bold,
