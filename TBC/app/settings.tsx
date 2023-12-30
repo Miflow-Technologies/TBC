@@ -1,117 +1,158 @@
-import { View, Text, StyleSheet, ScrollView, useColorScheme, Platform } from 'react-native'
+import { View, Text, StyleSheet, Platform, ScrollView, TouchableWithoutFeedback, TouchableOpacity } from 'react-native'
 import React from 'react'
-import { Poppins_500Medium, Poppins_700Bold, useFonts as usePoppinsFonts } from '@expo-google-fonts/poppins';
-import { NotoSerif_400Regular, NotoSerif_700Bold, useFonts as useNotoFonts } from '@expo-google-fonts/noto-serif';
-import { DarkTheme, DefaultTheme, ThemeProvider, useTheme } from '@react-navigation/native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { Ionicons } from '@expo/vector-icons'
 import Colors from '@/constants/Colors';
-import * as Haptics from 'expo-haptics';
-import { Ionicons } from '@expo/vector-icons';
+import { Poppins_500Medium, Poppins_700Bold } from '@expo-google-fonts/poppins';
+import { NotoSerif_400Regular, NotoSerif_700Bold } from '@expo-google-fonts/noto-serif';
+import { useFonts } from 'expo-font';
+import { useColorScheme } from 'react-native';
+import { useTheme } from '@react-navigation/native';
+import { Link } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
+import filter from './(modal)/filter';
 
+const settings = () => {
+    const navigation = useNavigation();
 
-
-
-
-const Settings = () => {
-
-    const colorScheme = useColorScheme();
-    const theme = useTheme();
-    const isDarkMode = colorScheme === 'dark';
-
-
-    const [poppinsFontsLoaded] = usePoppinsFonts({
+    const [fontsLoaded] = useFonts({
         Poppins_500Medium,
-        Poppins_700Bold
-    });
-    const [notoFontsLoaded] = useNotoFonts({
+        Poppins_700Bold,
         NotoSerif_400Regular,
-        NotoSerif_700Bold
-    });
+        NotoSerif_700Bold,
+      });
 
-    if (!notoFontsLoaded) {
-        return null
-    }
-    if (!poppinsFontsLoaded) {
-        return null
-    }
+      const colorScheme = useColorScheme();
+      const theme = useTheme();
+      const isDarkMode = colorScheme === 'dark';
 
-    const Card = ({
-        title,
-        icon,
-        screen,
-    }) => {
+
+    const Header = () => {
         return (
-        <View style={styles.cardContainer}>
-            <View style={[styles.cards, {shadowColor: isDarkMode ? '#fff' : '#000'}]}>
-                <Ionicons 
-                    name={icon}
-                    size={20}
-                    color={isDarkMode  ? '#fff': '#000'}/>
-                <Text style={styles.cardText}>{title}</Text>
+            <View style={styles.header}>
+
+                <Link href={'/(tabs)'}>
+                    <Ionicons name="arrow-back-outline" size={25} color={isDarkMode ? '#fff' : '#000'} style={styles.icon} />
+                </Link>
+                <Text style={styles.headerText}>SETTINGS</Text>
             </View>
-        </View>
-        )
+            )
     }
-  
+    const Card =({
+        icon,
+        title,
+
+    })=> {
+        return(
+                <View style={styles.card}>
+                    <Ionicons name={icon} size={24} color={isDarkMode ? "#fff" : "#000"} style={styles.cardIcon}/>
+                    <Text style={styles.cardText}>{title}</Text>
+                </View>
+            )
+            };
+
+            const styles = StyleSheet.create({
+                container:{
+                    flex:1,
+                    backgroundColor: theme.colors.background,
+                    justifyContent:"flex-start"
+                },
+                containerText: {
+                    fontFamily: 'NotoSerif_400Regular',
+                    fontSize: 15,
+                    padding: 10,
+                    color: isDarkMode ? "#fff" : Colors.textGrey
+                },
+                header : {
+                    top: 10,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'flex-start',
+                    padding: 10,
+                    backgroundColor: theme.colors.background,
+                },
+                icon: {
+                    marginRight: 10,
+                },
+                headerText: {
+                    alignSelf: 'center',
+                    fontSize: 15,
+                    fontFamily: 'NotoSerif_400Regular',
+                    color: isDarkMode ? "#fff" : Colors.textGrey,
+                    bottom: 22
+                },
+                card: {
+                    height: Platform.OS === 'ios' ? 70 : 70,
+                    width:'90%',
+                    backgroundColor: theme.colors.background,
+                    borderRadius:20,
+                    flexDirection:'row',
+                    justifyContent: 'flex-start',
+                    alignItems:'center',
+                    marginTop:10,
+                    alignSelf: 'center',
+                    shadowOffset:{width:0,height:3},
+                    shadowOpacity:0.3,
+                    shadowColor: isDarkMode ? '#fff' : '#000',
+                    elevation:3,
+                },
+                cardIcon: {
+                    marginLeft: 20
+                },
+                cardText: {
+                    marginLeft: 20,
+                    color: isDarkMode ? "#fff" : '#000',
+                    fontFamily: 'Poppins_500Medium',
+                    fontSize: 17
+                },
+            })
   return (
-    <ThemeProvider value={isDarkMode ? DarkTheme : DefaultTheme}>
+    <SafeAreaView>
+        <Header />
+        <ScrollView style={{top: 10, marginBottom: 50}}>
+            <View style={styles.container}>
 
-                <ScrollView style={[{marginTop: 15, } , styles.container]}>
-             
+                <Text style={styles.containerText}>Personal Settings</Text>
 
-                        <Text style={styles.subtitle}>Personal Settings</Text>
-                        <Card title='Dark mode' icon='moon-outline' screen='(modal)/filter'/>
+                <TouchableOpacity onPress={() => navigation.navigate('(modal)/filter')}>
+                    <Card title='Dark Mode' icon='moon-outline'/>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('(modal)/filter')}>
+                    <Card title='Invite Friends and Family' icon='people-outline'/>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('(modal)/filter')}>
+                    <Card title='Notifications' icon='ios-notifications-outline'/>
+                </TouchableOpacity>
 
-                        <Text style={styles.subtitle}>About</Text>
+                <Text style={styles.containerText}>About</Text>
 
-                        <Text style={styles.subtitle}>Get in Touch</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('(modal)/filter')}>
+                    <Card title='About The Developers' icon='code-outline'/>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('(modal)/filter')}>
+                    <Card title='Privacy and Policy' icon='shield-checkmark-outline'/>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('(modal)/filter')}>
+                    <Card title='Terms and Conditions' icon='newspaper-outline'/>
+                </TouchableOpacity>
 
-                    <View style={{alignItems: 'center', justifyContent: 'center'}}>
-                        <Text style={[styles.subtitle , { color: isDarkMode ? '#fff' : Colors.textGrey}]}>VERSION 1.0.0</Text>
-                    </View>
-                    
-                </ScrollView>
-    </ThemeProvider>
+                <Text style={styles.containerText}>Get in Touch</Text>
+
+                <TouchableOpacity onPress={() => navigation.navigate('(modal)/filter')}>
+                    <Card title='Give Feedback' icon='chatbox-ellipses-outline'/>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('(modal)/filter')}>
+                    <Card title='Get Support' icon='send-outline'/>
+                </TouchableOpacity>
+            </View>
+            <Text style={[styles.containerText, {alignSelf: 'center', marginTop: 10}]}>VERSION 1.0.0</Text>
+        </ScrollView>
+  
+    </SafeAreaView>
   )
-
-
 }
-const styles = StyleSheet.create({
-    container: {
-        margin: Platform.OS === 'ios' ? 20 : 10
-    },
-    cardContainer: {
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 10,
-        margin: Platform.OS === 'ios' ? 20 : 10,
-      },
-    cards: {
-        height: 75,
-        width: Platform.OS === 'ios' ? '98%' : '98%',
-        borderRadius: 12,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        shadowOffset: {width: 0 ,height: 3},
-        shadowOpacity: .4,
-        elevation: 3,
 
-    },
-    cardText: {
-        fontSize: 17,
-        fontFamily: 'Poppins_500Medium'
-    },
-    title: {
-        fontFamily: 'NotoSerif_400Regular',
-        fontSize: 15
-    },
-    subtitle: {
-        fontFamily: 'NotoSerif_400Regular',
-        fontSize: 12
-    }, 
-})
 
-export default Settings
 
+
+export default settings
