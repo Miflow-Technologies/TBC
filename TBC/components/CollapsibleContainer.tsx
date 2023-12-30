@@ -7,6 +7,7 @@ import {
   Pressable,
   TouchableWithoutFeedback,
 } from 'react-native';
+import { Link } from 'expo-router';
 import {
   Poppins_500Medium,
   Poppins_700Bold,
@@ -26,6 +27,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const CollapsibleContainer = ({
   title,
@@ -33,7 +35,8 @@ const CollapsibleContainer = ({
   author,
   buttonText,
   initialExpanded = false,
-  backgroundColor = Colors.primary, // Default background color
+  backgroundColor = Colors.primary,
+  screen, // Default background color
 }) => {
   const [expanded, setExpanded] = useState(initialExpanded);
   const animatedHeight = useSharedValue(0);
@@ -70,6 +73,7 @@ const CollapsibleContainer = ({
     }
   };
 
+
   return (
     <TouchableWithoutFeedback onPress={() => setExpanded(!expanded)}>
       <Animated.View style={[collapsableStyle]}>
@@ -89,11 +93,18 @@ const CollapsibleContainer = ({
           <View>
             <Text style={styles.subtitle}>{subtitle}</Text>
             <Text style={styles.author}>{author}</Text>
+            
+            <Link href={screen} asChild>
             <Pressable>
+              
               <View style={[styles.buttonCard, { backgroundColor: '#fff' }]}>
+                
                 <Text style={styles.buttonText}>{buttonText}</Text>
+                
               </View>
-            </Pressable>
+              
+              </Pressable>
+            </Link>
           </View>
         )}
       </Animated.View>

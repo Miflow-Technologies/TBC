@@ -77,7 +77,7 @@ const ArticleScreen = () => {
       width: Platform.OS === 'ios' ? '90%' : '90%',
       padding: 12,
       marginHorizontal: 20,
-      marginBottom: 10,
+      marginBottom: 20,
       shadowColor: isDarkMode ? '#fff' : '#000',
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.3,

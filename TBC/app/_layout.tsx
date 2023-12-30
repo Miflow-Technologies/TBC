@@ -52,6 +52,8 @@ function RootLayoutNav() {
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false}} />
         <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="(details)/dailyQuote" options={{ headerShown: false}} />
+        <Stack.Screen name="(details)/devotional" options={{ headerShown: false}} />
       </Stack>
     </ThemeProvider>
   );

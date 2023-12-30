@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     zIndex: -1,
     width: Platform.OS === 'ios' ? 100 : 100,
-    height: Platform.OS === 'ios' ? 44 : 45,
+    height: Platform.OS === 'ios' ? 45 : 45,
     alignItems: 'center',
     borderRadius: 8,
     shadowOffset:{width: 3, height: 2},

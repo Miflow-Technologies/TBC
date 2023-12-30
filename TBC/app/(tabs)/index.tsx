@@ -46,6 +46,7 @@ const Tbc = () => {
             author="TBC"
             buttonText="READ"
             backgroundColor="#41BBAC"
+            screen="(details)/dailyQuote"
           />
           <CollapsibleContainer
             title="Devotional"
@@ -53,6 +54,7 @@ const Tbc = () => {
             author="Walking with God"
             buttonText="READ"
             backgroundColor="#1CB4EE"
+            screen="(details)/devotional"
           />
           <CollapsibleContainer
             title="Announcements"
@@ -60,6 +62,7 @@ const Tbc = () => {
             author=""
             buttonText="READ"
             backgroundColor="#CB3CA0"
+            screen='(details)/dailyQuote'
           />
           <CollapsibleContainer
             title="Calender"
@@ -67,6 +70,7 @@ const Tbc = () => {
             author=""
             buttonText="VIEW"
             backgroundColor='#F2B059'
+            screen='(details)/dailyQuote'
           />
           <CollapsibleContainer
             title="Events"
@@ -74,6 +78,7 @@ const Tbc = () => {
             author=""
             buttonText="VIEW"
             backgroundColor="#258180"
+            screen='(details)/dailyQuote'
           />
         </View>
         </ScrollView>

@@ -6,6 +6,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider, useTheme } from '@react-navigat
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '@/constants/Colors';
 import * as Haptics from 'expo-haptics';
+import { Ionicons } from '@expo/vector-icons';
 
 
 
@@ -33,35 +34,38 @@ const Settings = () => {
     if (!poppinsFontsLoaded) {
         return null
     }
+
+    const Card = ({
+        title,
+        icon,
+        screen,
+    }) => {
+        return (
+        <View style={styles.cardContainer}>
+            <View style={[styles.cards, {shadowColor: isDarkMode ? '#fff' : '#000'}]}>
+                <Ionicons 
+                    name={icon}
+                    size={20}
+                    color={isDarkMode  ? '#fff': '#000'}/>
+                <Text style={styles.cardText}>{title}</Text>
+            </View>
+        </View>
+        )
+    }
   
   return (
     <ThemeProvider value={isDarkMode ? DarkTheme : DefaultTheme}>
 
-                <ScrollView style={{marginTop: 10,}}>
-                    <View style={styles.container}>
+                <ScrollView style={[{marginTop: 15, } , styles.container]}>
+             
 
                         <Text style={styles.subtitle}>Personal Settings</Text>
-                        <View style={styles.cardContainer}>
-                            <View style={styles.cards}></View>
-                            <View style={styles.cards}></View>
-                            <View style={styles.cards}></View>
-                        </View>
+                        <Card title='Dark mode' icon='moon-outline' screen='(modal)/filter'/>
 
                         <Text style={styles.subtitle}>About</Text>
 
-                        <View style={styles.cardContainer}>
-                            <View style={styles.cards}></View>
-                            <View style={styles.cards}></View>
-                            <View style={styles.cards}></View>
-                            <View style={styles.cards}></View>
-                        </View>
-
                         <Text style={styles.subtitle}>Get in Touch</Text>
-                        <View style={styles.cardContainer}>
-                            <View style={styles.cards}></View>
-                            <View style={styles.cards}></View>
-                        </View>
-                    </View>
+
                     <View style={{alignItems: 'center', justifyContent: 'center'}}>
                         <Text style={[styles.subtitle , { color: isDarkMode ? '#fff' : Colors.textGrey}]}>VERSION 1.0.0</Text>
                     </View>
@@ -69,29 +73,31 @@ const Settings = () => {
                 </ScrollView>
     </ThemeProvider>
   )
+
+
 }
 const styles = StyleSheet.create({
     container: {
-        padding: Platform.OS === 'ios' ? 20 : 10
+        margin: Platform.OS === 'ios' ? 20 : 10
     },
     cardContainer: {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        gap: 20,
+        gap: 10,
         margin: Platform.OS === 'ios' ? 20 : 10,
       },
     cards: {
         height: 75,
-        gap: 10,
         width: Platform.OS === 'ios' ? '98%' : '98%',
-        borderRadius: 25,
+        borderRadius: 12,
         flexDirection: 'row',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
         alignItems: 'center',
-        shadowOffset: { width: -2, height: 4 },
-        shadowOpacity: 0.3,
-        elevation: 5,
+        shadowOffset: {width: 0 ,height: 3},
+        shadowOpacity: .4,
+        elevation: 3,
+
     },
     cardText: {
         fontSize: 17,
