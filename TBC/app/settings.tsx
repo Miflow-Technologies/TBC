@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Platform, ScrollView, TouchableWithoutFeedback, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, Platform, ScrollView, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
@@ -10,7 +10,6 @@ import { useColorScheme } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { Link } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
-import filter from './(modal)/filter';
 
 const settings = () => {
     const navigation = useNavigation();

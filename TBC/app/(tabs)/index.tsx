@@ -62,7 +62,7 @@ const Tbc = () => {
             author=""
             buttonText="READ"
             backgroundColor="#CB3CA0"
-            screen='(details)/dailyQuote'
+            screen='(details)/announcements'
           />
           <CollapsibleContainer
             title="Calender"
