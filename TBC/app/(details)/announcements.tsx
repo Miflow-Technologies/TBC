@@ -203,7 +203,7 @@ const announcements = () => {
 
     />
     
-    <Heading>Latest News</Heading>
+    <Heading>Latest News</Heading>`21`  
 
     <FlatList
     style={{}}
