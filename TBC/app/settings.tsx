@@ -30,9 +30,9 @@ const settings = () => {
         return (
             <View style={styles.header}>
 
-                <Link href={'/(tabs)'}>
-                    <Ionicons name="arrow-back-outline" size={25} color={isDarkMode ? '#fff' : '#000'} style={styles.icon} />
-                </Link>
+                <TouchableOpacity onPress={()=>navigation.goBack()}>
+                  <Ionicons name="arrow-back-outline" size={25} color={isDarkMode ? '#fff' : '#000'} style={styles.icon} />
+                </TouchableOpacity>
                 <Text style={styles.headerText}>SETTINGS</Text>
             </View>
             )

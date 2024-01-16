@@ -1,23 +1,33 @@
 import { Text, TouchableOpacity, StyleSheet } from 'react-native'
 import React from 'react'
 import Colors from '../constants/Colors'
+import { useColorScheme } from 'react-native';
+import { useTheme } from '@react-navigation/native';
+
 
 const Button = (props) => {
+
+
+    const colorScheme = useColorScheme();
+    const theme = useTheme();
+     const isDarkMode = colorScheme === 'dark';
+
+
     const filledBgColor = props.color || Colors.primary;
-    const outlinedColor = Colors.white;
+    const outlinedColor = '#fff';
     const bgColor = props.filled ? filledBgColor : outlinedColor;
-    const textColor = props.filled ? Colors.white : Colors.primary;
+    const textColor = props.filled ? '#fff' : Colors.primary;
 
     return (
         <TouchableOpacity
             style={{
                 ...styles.button,
-                ...{ backgroundColor: bgColor },
+                ...{ backgroundColor: bgColor,  },
                 ...props.style
             }}
             onPress={props.onPress}
         >
-            <Text style={{ fontSize: 18, ... { color: textColor } }}>{props.title}</Text>
+            <Text style={{ fontSize: 18, ... { color: textColor,} }}>{props.title}</Text>
         </TouchableOpacity>
     )
 }

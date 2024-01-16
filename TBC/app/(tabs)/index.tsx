@@ -1,34 +1,47 @@
-import { View, Text, SafeAreaView , StyleSheet, Platform , TouchableWithoutFeedback, LayoutChangeEvent } from 'react-native'
-import React from 'react'
-import CustomHeader from '@/components/CustomHeader'
-import { useColorScheme } from 'react-native';
-import { useTheme } from '@react-navigation/native';
+import React, { useEffect } from 'react';
+import { View, Text, SafeAreaView, StyleSheet, Platform, ScrollView, useColorScheme } from 'react-native';
+import { CommonActions, useNavigation, useTheme } from '@react-navigation/native';
 import Colors from '@/constants/Colors';
 import { Poppins_500Medium, Poppins_700Bold, useFonts as usePoppinsFonts } from '@expo-google-fonts/poppins';
 import { NotoSerif_400Regular, NotoSerif_700Bold, useFonts as useNotoFonts } from '@expo-google-fonts/noto-serif';
-import { ScrollView } from 'react-native-gesture-handler';
 import CollapsibleContainer from '@/components/CollapsibleContainer';
-
+import CustomHeader from '@/components/CustomHeader';
 
 const Tbc = () => {
   const [poppinsFontsLoaded] = usePoppinsFonts({
     Poppins_500Medium,
-    Poppins_700Bold
+    Poppins_700Bold,
   });
   const [notoFontsLoaded] = useNotoFonts({
-      NotoSerif_400Regular,
-      NotoSerif_700Bold
+    NotoSerif_400Regular,
+    NotoSerif_700Bold,
   });
+
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    if (notoFontsLoaded && poppinsFontsLoaded) {
+      return ;
+    }
+
+    // Reset the navigation stack when the component is mounted
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: 'Tbc' }],
+      })
+    );
+  }, [notoFontsLoaded, poppinsFontsLoaded, navigation]);
+
+  const handleRead = (screen) => {
+    // Navigate to the specified screen
+    navigation.navigate(screen);
+  };
+
+  
   const colorScheme = useColorScheme();
   const theme = useTheme();
   const isDarkMode = colorScheme === 'dark';
-
-  if (!notoFontsLoaded) {
-    return null
-  }
-  if (!poppinsFontsLoaded) {
-    return null
-  }
 
   return (
     <SafeAreaView>
@@ -63,22 +76,6 @@ const Tbc = () => {
             buttonText="READ"
             backgroundColor="#CB3CA0"
             screen='(details)/announcements'
-          />
-          <CollapsibleContainer
-            title="Calender"
-            subtitle="View our Calender for the Month"
-            author=""
-            buttonText="VIEW"
-            backgroundColor='#F2B059'
-            screen='(details)/dailyQuote'
-          />
-          <CollapsibleContainer
-            title="Events"
-            subtitle="Upcoming Events"
-            author=""
-            buttonText="VIEW"
-            backgroundColor="#258180"
-            screen='(details)/dailyQuote'
           />
         </View>
         </ScrollView>

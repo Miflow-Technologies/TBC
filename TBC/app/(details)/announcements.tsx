@@ -196,14 +196,8 @@ const announcements = () => {
   return (
     <SafeAreaView style={styles.container}>
       <Header/>
-      <FlatList horizontal style={{paddingHorizontal: 24}}
-      data={data.cards}
-      renderItem={({item}) => <AnnouncementCard name={item.name} thumbnail={item.thumbnail} /> }
-      keyExtractor={item => item.id.toString()}
-
-    />
     
-    <Heading>Latest News</Heading>`21`  
+    <Heading>Latest News</Heading> 
 
     <FlatList
     style={{}}

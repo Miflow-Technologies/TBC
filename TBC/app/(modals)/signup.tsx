@@ -1,51 +1,119 @@
-import { View, Text, Image, Pressable, TextInput, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
-import Checkbox from "expo-checkbox"
-import Button from '../components/Button';
-import Colors from '@/constants/Colors';
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    Image,
+    Pressable,
+    Alert,
+  } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import Checkbox from 'expo-checkbox';
 import { useColorScheme } from 'react-native';
-import { useTheme } from '@react-navigation/native';
+import { CommonActions, useTheme } from '@react-navigation/native';
+import {  browserLocalPersistence, browserSessionPersistence, createUserWithEmailAndPassword, initializeAuth } from 'firebase/auth';
+import { app, auth, db } from '@/config/firebaseConfig';  
+import {  doc, setDoc } from 'firebase/firestore'; // Add this line for Firestore
+import { useContext, useState } from 'react';
+import Colors from '@/constants/Colors';
+import Button from '@/components/Button';
+import { useNavigation } from '@react-navigation/native';
+import { Link } from 'expo-router';
+import { AuthContext } from '../auth/Auth';
+  
+  
+  const Signup = () => {
+    const navigation = useNavigation();
+    const { isAuthenticated, setAuthenticated } = useContext(AuthContext);
 
-const Signup: React.FC<{ navigation: any }> = ({ navigation }) => {
+  
     const [isPasswordShown, setIsPasswordShown] = useState(false);
     const [isChecked, setIsChecked] = useState(false);
-
+  
     const colorScheme = useColorScheme();
     const theme = useTheme();
     const isDarkMode = colorScheme === 'dark';
+  
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [valid, setValid] = useState(true);
+    const { currentUser } = useContext(AuthContext);
+  
+    const handleRegister = async () => {
+        if (valid && isChecked && password === confirmPassword) {
+          try {
+            const { user } = await createUserWithEmailAndPassword(auth, email, password);
+    
+            const userInfo = {
+              UserEmail: email,
+              isUser: '1',
+            };
+    
+            await setDoc(doc(db, 'Users', user.uid), userInfo);
+    
+            setAuthenticated(true);
+            Alert.alert('Account Created');
+    
+            navigation.navigate('(tabs)');
+            navigation.dispatch((state) => {
+              const routes = state.routes.filter(
+                (r) => r.name !== '(modals)/login' && r.name !== '(modals)/signup'
+              );
+    
+              return CommonActions.reset({
+                ...state,
+                routes,
+                index: routes.length - 1,
+              });
+            });
+          } catch (error) {
+            console.error(error);
+            Alert.alert('Failed to create account');
+          }
+        } else {
+          Alert.alert('Passwords do not match');
+        }
+      };
+  
+    const checkField = (value: string) => {
+      setValid(value.trim() !== '');
+    };
+
+    
     
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: isDarkMode ? '#000' : '#fff' }}>
             <View style={{ flex: 1, marginHorizontal: 22 }}>
                 <View style={{ marginVertical: 22 }}>
                     <Text style={{
                         fontSize: 22,
                         fontWeight: 'bold',
                         marginVertical: 12,
-                        color: Colors.black
+                        color: isDarkMode ? '#fff' : '#000'
                     }}>
                         Create Account
                     </Text>
 
                     <Text style={{
                         fontSize: 16,
-                        color: Colors.black
-                    }}>Connect with your friend today!</Text>
+                        color: isDarkMode ? '#fff' : '#000'
+                    }}>Worship with Us</Text>
                 </View>
 
                 <View style={{ marginBottom: 12 }}>
                     <Text style={{
                         fontSize: 16,
                         fontWeight: 400,
-                        marginVertical: 8
+                        marginVertical: 8,
+                        color: isDarkMode ? '#fff' : '#000'
                     }}>Email address</Text>
 
                     <View style={{
                         width: "100%",
                         height: 48,
-                        borderColor: Colors.black,
+                        borderColor: valid  ? (isDarkMode ? '#fff' :'#000') : 'red',
                         borderWidth: 1,
                         borderRadius: 8,
                         alignItems: "center",
@@ -54,10 +122,13 @@ const Signup: React.FC<{ navigation: any }> = ({ navigation }) => {
                     }}>
                         <TextInput
                             placeholder='Enter your email address'
-                            placeholderTextColor={Colors.black}
+                            onBlur={() => checkField(email)}
+                            onChangeText = {text => setEmail(text)}
+                            placeholderTextColor={isDarkMode ? '#fff' : Colors.textGrey}
                             keyboardType='email-address'
                             style={{
-                                width: "100%"
+                                width: "100%",
+                                color: isDarkMode ? '#fff' : '#000'
                             }}
                         />
                     </View>
@@ -67,54 +138,14 @@ const Signup: React.FC<{ navigation: any }> = ({ navigation }) => {
                     <Text style={{
                         fontSize: 16,
                         fontWeight: 400,
-                        marginVertical: 8
-                    }}>Mobile Number</Text>
-
-                    <View style={{
-                        width: "100%",
-                        height: 48,
-                        borderColor: Colors.black,
-                        borderWidth: 1,
-                        borderRadius: 8,
-                        alignItems: "center",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        paddingLeft: 22
-                    }}>
-                        <TextInput
-                            placeholder='+91'
-                            placeholderTextColor={Colors.black}
-                            keyboardType='numeric'
-                            style={{
-                                width: "12%",
-                                borderRightWidth: 1,
-                                borderLeftColor: Colors.grey,
-                                height: "100%"
-                            }}
-                        />
-
-                        <TextInput
-                            placeholder='Enter your phone number'
-                            placeholderTextColor={Colors.black}
-                            keyboardType='numeric'
-                            style={{
-                                width: "80%"
-                            }}
-                        />
-                    </View>
-                </View>
-
-                <View style={{ marginBottom: 12 }}>
-                    <Text style={{
-                        fontSize: 16,
-                        fontWeight: 400,
-                        marginVertical: 8
+                        marginVertical: 8,
+                        color: isDarkMode ? '#fff' : '#000'
                     }}>Password</Text>
 
                     <View style={{
                         width: "100%",
                         height: 48,
-                        borderColor: Colors.black,
+                        borderColor: valid  ? (isDarkMode ? '#fff' :'#000') : 'red',
                         borderWidth: 1,
                         borderRadius: 8,
                         alignItems: "center",
@@ -123,7 +154,59 @@ const Signup: React.FC<{ navigation: any }> = ({ navigation }) => {
                     }}>
                         <TextInput
                             placeholder='Enter your password'
-                            placeholderTextColor={Colors.black}
+                            onBlur={() => checkField(password)}
+                            onChangeText = {text => setPassword(text)}
+                            placeholderTextColor={isDarkMode ? '#fff' : Colors.textGrey}
+                            secureTextEntry={isPasswordShown}
+                            style={{
+                                width: "100%",
+                                color: isDarkMode ? '#fff' : '#000'
+                            }}
+                        />
+
+                        <TouchableOpacity
+                            onPress={() => setIsPasswordShown(!isPasswordShown)}
+                            style={{
+                                position: "absolute",
+                                right: 12
+                            }}
+                        >
+                            {
+                                isPasswordShown == true ? (
+                                    <Ionicons name="eye-off" size={24} color={isDarkMode ? '#fff' : '#000'} />
+                                ) : (
+                                    <Ionicons name="eye" size={24} color={isDarkMode ? '#fff' : '#000'} />
+                                )
+                            }
+
+                        </TouchableOpacity>
+                    </View>
+                </View>
+                
+
+                <View style={{ marginBottom: 12 }}>
+                    <Text style={{
+                        fontSize: 16,
+                        fontWeight: 400,
+                        marginVertical: 8,
+                        color: isDarkMode ? '#fff' : '#000'
+                    }}>Confirm Password</Text>
+
+                    <View style={{
+                        width: "100%",
+                        height: 48,
+                        borderColor: valid && password == confirmPassword ? (isDarkMode ? '#fff' :'#000') : 'red',
+                        borderWidth: 1,
+                        borderRadius: 8,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        paddingLeft: 22
+                    }}>
+                        <TextInput
+                            placeholder='Confirm your password'
+                            onBlur={() => checkField(confirmPassword)}
+                            onChangeText = {text => setConfirmPassword(text)}
+                            placeholderTextColor={isDarkMode ? '#fff' : Colors.textGrey}
                             secureTextEntry={isPasswordShown}
                             style={{
                                 width: "100%"
@@ -139,9 +222,9 @@ const Signup: React.FC<{ navigation: any }> = ({ navigation }) => {
                         >
                             {
                                 isPasswordShown == true ? (
-                                    <Ionicons name="eye-off" size={24} color={Colors.black} />
+                                    <Ionicons name="eye-off" size={24} color={isDarkMode ? '#fff' : '#000'} />
                                 ) : (
-                                    <Ionicons name="eye" size={24} color={Colors.black} />
+                                    <Ionicons name="eye" size={24} color={isDarkMode ? '#fff' : '#000'} />
                                 )
                             }
 
@@ -159,8 +242,7 @@ const Signup: React.FC<{ navigation: any }> = ({ navigation }) => {
                         onValueChange={setIsChecked}
                         color={isChecked ? Colors.primary : undefined}
                     />
-
-                    <Text>I aggree to the terms and conditions</Text>
+                    <Text style={{color: isDarkMode ? '#fff' : '#000'}}>I agree to the <Link href=''>terms and conditions</Link></Text>
                 </View>
 
                 <Button
@@ -170,6 +252,7 @@ const Signup: React.FC<{ navigation: any }> = ({ navigation }) => {
                         marginTop: 18,
                         marginBottom: 4,
                     }}
+                    onPress = {() => handleRegister()}
                 />
 
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 20 }}>
@@ -177,7 +260,7 @@ const Signup: React.FC<{ navigation: any }> = ({ navigation }) => {
                         style={{
                             flex: 1,
                             height: 1,
-                            backgroundColor: Colors.grey,
+                            backgroundColor: isDarkMode ? '#fff' : Colors.textGrey,
                             marginHorizontal: 10
                         }}
                     />
@@ -186,7 +269,7 @@ const Signup: React.FC<{ navigation: any }> = ({ navigation }) => {
                         style={{
                             flex: 1,
                             height: 1,
-                            backgroundColor: Colors.grey,
+                            backgroundColor: isDarkMode ? '#fff' : Colors.textGrey,
                             marginHorizontal: 10
                         }}
                     />
@@ -205,13 +288,13 @@ const Signup: React.FC<{ navigation: any }> = ({ navigation }) => {
                             flexDirection: 'row',
                             height: 52,
                             borderWidth: 1,
-                            borderColor: Colors.grey,
+                            borderColor: isDarkMode ? '#fff' : Colors.textGrey,
                             marginRight: 4,
                             borderRadius: 10
                         }}
                     >
                         <Image
-                            source={require("../assets/images/facebook.png")}
+                            source={require("@/assets/images/facebook.png")}
                             style={{
                                 height: 36,
                                 width: 36,
@@ -220,7 +303,7 @@ const Signup: React.FC<{ navigation: any }> = ({ navigation }) => {
                             resizeMode='contain'
                         />
 
-                        <Text>Facebook</Text>
+                        <Text style={{color: isDarkMode ? '#fff' : '#000'}}>Facebook</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
@@ -232,13 +315,13 @@ const Signup: React.FC<{ navigation: any }> = ({ navigation }) => {
                             flexDirection: 'row',
                             height: 52,
                             borderWidth: 1,
-                            borderColor: Colors.grey,
+                            borderColor: isDarkMode ? '#fff' : Colors.textGrey,
                             marginRight: 4,
                             borderRadius: 10
                         }}
                     >
                         <Image
-                            source={require("../assets/images/google.png")}
+                            source={require("@/assets/images/google.png")}
                             style={{
                                 height: 36,
                                 width: 36,
@@ -247,7 +330,7 @@ const Signup: React.FC<{ navigation: any }> = ({ navigation }) => {
                             resizeMode='contain'
                         />
 
-                        <Text>Google</Text>
+                        <Text style={{color: isDarkMode ? '#fff' : '#000'}}>Google</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -256,9 +339,9 @@ const Signup: React.FC<{ navigation: any }> = ({ navigation }) => {
                     justifyContent: "center",
                     marginVertical: 22
                 }}>
-                    <Text style={{ fontSize: 16, color: Colors.black }}>Already have an account</Text>
+                    <Text style={{ fontSize: 16, color: isDarkMode ? '#fff' : '#000' }}>Already have an account</Text>
                     <Pressable
-                        onPress={() => navigation.navigate("Login")}
+                        onPress={() => navigation.navigate("(modals)/login")}
                     >
                         <Text style={{
                             fontSize: 16,
