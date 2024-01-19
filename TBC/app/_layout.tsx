@@ -60,6 +60,9 @@ function RootLayoutNav() {
           <Stack.Screen name="(details)/devotional" options={{ headerShown: false }} />
           <Stack.Screen name="(details)/announcements" options={{ headerShown: false }} />
           <Stack.Screen name="admin/adminPanel" options={{ headerShown: false }} />
+          <Stack.Screen name="admin/manage/sermon" options={{ headerShown: false }} />
+          <Stack.Screen name="admin/upload" options={{ headerShown: false }} />
+          <Stack.Screen name="admin/sermon" options={{ headerShown: false }} />
           <Stack.Screen 
           name="(modals)/login" 
           options={{  

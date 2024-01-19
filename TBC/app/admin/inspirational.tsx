@@ -86,6 +86,7 @@ const inspirational = () => {
         preacher,
         series,
         createdAt,
+        isFeatured: '0'
       });
       console.log("file saved", docRef.id);
     } catch (e) {

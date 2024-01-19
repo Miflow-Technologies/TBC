@@ -15,8 +15,7 @@ import Header from "@/components/Header";
 import Button from "@/components/Button";
 import { useTheme } from "@react-navigation/native";
 import Colors from "@/constants/Colors";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { getVideoDuration } from "react-native-video-duration";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const sermon = () => {
   const colorScheme = useColorScheme();
@@ -86,6 +85,7 @@ const sermon = () => {
         preacher,
         series,
         createdAt,
+        isFeatured: '0'
       });
       console.log("file saved", docRef.id);
     } catch (e) {
@@ -143,7 +143,7 @@ const sermon = () => {
               color: isDarkMode ? "#fff" : "#000",
             }}
           >
-            Preacher
+            Minister
           </Text>
 
           <View
@@ -159,7 +159,7 @@ const sermon = () => {
             }}
           >
             <TextInput
-              placeholder="Enter preachers name"
+              placeholder="Enter minister's name"
               onChangeText={(text) => setPreacher(text)}
               placeholderTextColor={isDarkMode ? "#fff" : Colors.textGrey}
               style={{

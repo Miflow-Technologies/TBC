@@ -85,6 +85,7 @@ const excerpt = () => {
         preacher,
         series,
         createdAt,
+        isFeatured: '0'
       });
       console.log("file saved", docRef.id);
     } catch (e) {
@@ -95,7 +96,7 @@ const excerpt = () => {
     <SafeAreaView
       style={{ flex: 1, backgroundColor: isDarkMode ? "#000" : "#fff" }}
     >
-      <Header heading="excerpt" />
+      <Header heading="Upload Excerpt" />
       <View style={{ flex: 1, marginHorizontal: 22 }}>
         <View style={{ marginBottom: 12 }}>
           <Text

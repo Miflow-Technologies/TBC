@@ -46,34 +46,13 @@ const Login = () => {
         if (userDocSnap.exists()) {
           const userData = userDocSnap.data();
 
-          if (userData.isUser === '0') {
+          if (userData.isUser == '0') {
             setAuthenticated(true);
             navigation.navigate('admin/adminPanel');
-            navigation.dispatch((state) => {
-              const routes = state.routes.filter(
-                (r) => r.name !== '(modals)/login' && r.name !== '(modals)/signup'
-              );
-
-              return CommonActions.reset({
-                ...state,
-                routes,
-                index: routes.length - 1,
-              });
-            });
+           
           } else {
             setAuthenticated(true);
             navigation.navigate('(tabs)');
-            navigation.dispatch((state) => {
-              const routes = state.routes.filter(
-                (r) => r.name !== '(modals)/login' && r.name !== '(modals)/signup'
-              );
-
-              return CommonActions.reset({
-                ...state,
-                routes,
-                index: routes.length - 1,
-              });
-            });
           }
         } else {
           console.error('User document does not exist');

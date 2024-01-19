@@ -57,17 +57,7 @@ import { AuthContext } from '../auth/Auth';
             Alert.alert('Account Created');
     
             navigation.navigate('(tabs)');
-            navigation.dispatch((state) => {
-              const routes = state.routes.filter(
-                (r) => r.name !== '(modals)/login' && r.name !== '(modals)/signup'
-              );
-    
-              return CommonActions.reset({
-                ...state,
-                routes,
-                index: routes.length - 1,
-              });
-            });
+        
           } catch (error) {
             console.error(error);
             Alert.alert('Failed to create account');

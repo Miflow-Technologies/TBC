@@ -5,6 +5,7 @@ import { Poppins_500Medium, Poppins_700Bold, useFonts } from '@expo-google-fonts
 import { NotoSerif_400Regular, NotoSerif_700Bold } from '@expo-google-fonts/noto-serif';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
+import Header from '@/components/Header';
 
 const adminPanel = () => {
   const navigation = useNavigation();
@@ -21,17 +22,6 @@ const adminPanel = () => {
     const isDarkMode = colorScheme === 'dark';
 
 
-  const Header = () => {
-      return (
-          <View style={styles.header}>
-
-              <TouchableOpacity onPress={()=>navigation.goBack()}>
-                  <Ionicons name="arrow-back-outline" size={25} color={isDarkMode ? '#fff' : '#000'} style={styles.icon} />
-                </TouchableOpacity>
-              <Text style={styles.headerText}>UPLOAD</Text>
-          </View>
-          )
-  }
   const Card =({
     title,
 
@@ -99,7 +89,7 @@ const adminPanel = () => {
         })
   return (
     <SafeAreaView>
-        <Header />
+        <Header heading='UPLOAD' />
           <View style={[styles.container, {top: 10, marginBottom: 50}]}>
             <TouchableOpacity onPress={() => navigation.navigate('admin/sermon')}>
                 <Card title='Sermon'/>

@@ -24,19 +24,8 @@ const Tbc = () => {
       return ;
     }
 
-    // Reset the navigation stack when the component is mounted
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{ name: 'Tbc' }],
-      })
-    );
-  }, [notoFontsLoaded, poppinsFontsLoaded, navigation]);
-
-  const handleRead = (screen) => {
-    // Navigate to the specified screen
-    navigation.navigate(screen);
-  };
+    // Reset the navigation stack when the component is mounte
+  }, [notoFontsLoaded, poppinsFontsLoaded]);
 
   
   const colorScheme = useColorScheme();

@@ -4,6 +4,7 @@ import { Link, useNavigation, useTheme } from '@react-navigation/native';
 import { Poppins_500Medium, Poppins_700Bold, useFonts } from '@expo-google-fonts/poppins';
 import { NotoSerif_400Regular, NotoSerif_700Bold } from '@expo-google-fonts/noto-serif';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
+import Header from '@/components/Header';
 
 const adminPanel = () => {
   const navigation = useNavigation();
@@ -19,14 +20,6 @@ const adminPanel = () => {
     const theme = useTheme();
     const isDarkMode = colorScheme === 'dark';
 
-
-  const Header = () => {
-      return (
-          <View style={styles.header}>
-              <Text style={styles.headerText}>ADMIN PANEL</Text>
-          </View>
-          )
-  }
   const Card =({
     title,
 
@@ -88,13 +81,13 @@ const adminPanel = () => {
         })
   return (
     <SafeAreaView>
-        <Header />
+        <Header heading='ADMIN PANEL' />
           <View style={[styles.container,]}>
             <TouchableOpacity onPress={() => navigation.navigate('admin/upload')}>
                 <Card title='Upload'/>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => navigation.navigate('admin/manage')}>
+            <TouchableOpacity onPress={() => navigation.navigate('admin/manage/sermon')}>
                 <Card title='Manage'/>
             </TouchableOpacity>
 

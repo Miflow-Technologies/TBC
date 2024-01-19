@@ -13,12 +13,14 @@ import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { addDoc, collection } from "firebase/firestore";
 import Header from "@/components/Header";
 import Button from "@/components/Button";
-import { useTheme } from "@react-navigation/native";
+import { useNavigation, useTheme } from "@react-navigation/native";
 import Colors from "@/constants/Colors";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { getVideoDuration } from "react-native-video-duration";
 
 const sermon = () => {
+
+  const navigation = useNavigation();
+
   const colorScheme = useColorScheme();
   const theme = useTheme();
   const isDarkMode = colorScheme === "dark";
@@ -34,6 +36,7 @@ const sermon = () => {
       mediaTypes: ImagePicker.MediaTypeOptions.Videos,
       allowsEditing: true,
       quality: 1,
+      aspect: [3, 4]
     });
 
     if (!result.canceled) {
@@ -55,43 +58,70 @@ const sermon = () => {
       alert("Please select a video first.");
     }
   }
-
+  
   async function upload(uri) {
     const response = await fetch(uri);
     const blob = await response.blob();
-
+  
     const storageRef = ref(storage, "Sermon/" + new Date().getTime());
     const uploadTask = uploadBytesResumable(storageRef, blob);
-
-    uploadTask.on("state_changed", () => {
-      getDownloadURL(uploadTask.snapshot.ref).then(async (downloadUrl) => {
-        await saveRecord(
-          downloadUrl,
-          title,
-          preacher,
-          series,
-          new Date().getTime()
-        );
-        setVideoFile("");
-      });
-    });
+  
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        // Handle upload progress if needed
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log(`Upload progress: ${progress}%`);
+  
+        if (snapshot.state === "paused") {
+          console.log("Upload paused");
+        } else if (snapshot.state === "running") {
+          console.log("Upload running");
+        }
+      },
+      (error) => {
+        // Handle unsuccessful uploads
+        console.error("Error during upload:", error);
+      },
+      async () => {
+        // Handle successful uploads on complete
+        try {
+          const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
+          await saveRecord(
+            downloadUrl,
+            title,
+            preacher,
+            series,
+            new Date().getTime()
+          );
+          setVideoFile("");
+          console.log("Upload completed");
+          navigation.navigate('admin/manage/sermon')
+        } catch (error) {
+          console.error("Error getting download URL or saving record:", error);
+        }
+      }
+    );
   }
-
-  async function saveRecord(url, title, preacher,  series, createdAt) {
+  
+  async function saveRecord(url, title, preacher, series, createdAt) {
     try {
       const docRef = await addDoc(collection(db, "sermon"), {
         url,
         title,
         preacher,
-       
         series,
         createdAt,
+        isFeatured: "0",
       });
-      console.log("file saved", docRef.id);
+      console.log("File saved with document ID:", docRef.id);
     } catch (e) {
-      console.log(e);
+      console.error("Error saving record:", e);
     }
   }
+  
+
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: isDarkMode ? "#000" : "#fff" }}
