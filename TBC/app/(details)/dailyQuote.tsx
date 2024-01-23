@@ -7,8 +7,11 @@ import Colors from '@/constants/Colors';
 import { Poppins_500Medium, Poppins_700Bold } from '@expo-google-fonts/poppins';
 import { NotoSerif_400Regular, NotoSerif_700Bold } from '@expo-google-fonts/noto-serif';
 import { useFonts } from 'expo-font';
+import { useNavigation } from '@react-navigation/native';
 
 const DailyQuote = () => {
+
+  const navigation = useNavigation()
   const imagePath =
     'https://images.unsplash.com/photo-1662329219657-ad19333b0c7b?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
 
@@ -48,7 +51,8 @@ const DailyQuote = () => {
       alignItems: 'center',
       justifyContent: 'center',
       marginTop: Platform.OS === 'ios' ? 240: 250,
-      marginBottom: Platform.OS === 'ios' ? 20 : 20
+      marginBottom: Platform.OS === 'ios' ? 20 : 20,
+      alignSelf: 'center'
     },
     textContainer: {
         width: 300,
@@ -98,9 +102,10 @@ const DailyQuote = () => {
     }
 
     try {
+      setIsSharing(true);
       const screenshotURI = await captureRef(captureViewRef, {
         format: 'jpg',
-        quality: 0.8,
+        quality: 1,
       });
 
       try {
@@ -131,16 +136,18 @@ const DailyQuote = () => {
           <Text style={styles.quoteAuthor}>Anonymous</Text>
         </View>
 
-      {!isSharing && (
+   
+
+    {!isSharing && (
         <TouchableOpacity activeOpacity={0.9} style={styles.card} onPress={handleShare}>
-          <Text style={{color: '#fff', fontFamily: 'Poppins_700Bold', fontSize: 15}}>SHARE QUOTE</Text>
+          <Text style={{color: '#fff', fontFamily: 'Poppins_700Bold', fontSize: 15,}}>SHARE QUOTE</Text>
         </TouchableOpacity>
       )}
 
       {!isSharing && (
-        <Link href='/(tabs)'>
+        <TouchableOpacity activeOpacity={0.9} style={{alignSelf: 'center', marginBottom: 40}} onPress={() => navigation.goBack()}>
         <Text style={{ color:Colors.textGrey, fontFamily: 'Poppins_500Medium', fontSize: 15}}>TAP HERE TO GO BACK</Text>
-        </Link>
+        </TouchableOpacity>
       )}
 
     </View>

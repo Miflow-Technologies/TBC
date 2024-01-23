@@ -12,7 +12,7 @@ import { CommonActions, useNavigation } from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AuthContext } from '../auth/Auth';
+import { AuthContext } from './Auth';
 
 const Login = () => {
   const navigation = useNavigation();
@@ -275,7 +275,7 @@ const Login = () => {
                 }}>
                     <Text style={{ fontSize: 16, color: isDarkMode ? '#fff' : '#000' }}>Don't have an account ? </Text>
                     <Pressable
-                        onPress={() => navigation.navigate("(modals)/signup")}
+                        onPress={() => navigation.navigate("auth/signup")}
                     >
                         <Text style={{
                             fontSize: 16,

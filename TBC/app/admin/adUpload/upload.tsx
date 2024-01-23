@@ -1,12 +1,13 @@
 import { View, Text, useColorScheme, Platform, TouchableOpacity, SafeAreaView, StyleSheet } from 'react-native'
 import React from 'react'
-import {  useNavigation, useTheme } from '@react-navigation/native';
+import { Link, useNavigation, useTheme } from '@react-navigation/native';
 import { Poppins_500Medium, Poppins_700Bold, useFonts } from '@expo-google-fonts/poppins';
 import { NotoSerif_400Regular, NotoSerif_700Bold } from '@expo-google-fonts/noto-serif';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-import CustomHeader from '@/components/CustomHeader';
+import Header from '@/components/Header';
 
-const adminPanel = () => {
+const upload = () => {
   const navigation = useNavigation();
 
   const [fontsLoaded] = useFonts({
@@ -19,6 +20,7 @@ const adminPanel = () => {
     const colorScheme = useColorScheme();
     const theme = useTheme();
     const isDarkMode = colorScheme === 'dark';
+
 
   const Card =({
     title,
@@ -34,7 +36,7 @@ const adminPanel = () => {
         const styles = StyleSheet.create({
             container:{
                 backgroundColor: theme.colors.background,
-                flexDirection: 'column'
+                justifyContent:"flex-start"
             },
             containerText: {
                 fontFamily: 'NotoSerif_400Regular',
@@ -43,12 +45,15 @@ const adminPanel = () => {
                 color: isDarkMode ? "#fff" : Colors.textGrey
             },
             header : {
-                top: 20,
+                top: 10,
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'flex-start',
                 padding: 10,
                 backgroundColor: theme.colors.background,
+            },
+            icon: {
+                marginRight: 10,
             },
             headerText: {
                 alignSelf: 'center',
@@ -65,12 +70,15 @@ const adminPanel = () => {
                 flexDirection:'row',
                 justifyContent: 'flex-start',
                 alignItems:'center',
-                marginVertical:10,
+                marginTop:10,
                 alignSelf: 'center',
                 shadowOffset:{width:0,height:3},
                 shadowOpacity:0.3,
                 shadowColor: isDarkMode ? '#fff' : '#000',
                 elevation:3,
+            },
+            cardIcon: {
+                marginLeft: 20
             },
             cardText: {
                 marginLeft: 20,
@@ -81,18 +89,23 @@ const adminPanel = () => {
         })
   return (
     <SafeAreaView>
-        <CustomHeader name={'ADMIN PANEL'}/>
-          <View style={[styles.container,]}>
-            <TouchableOpacity onPress={() => navigation.navigate('admin/adUpload/upload')}>
-                <Card title='Upload'/>
+        <Header heading='UPLOAD' />
+          <View style={[styles.container, {top: 10, marginBottom: 50}]}>
+            <TouchableOpacity onPress={() => navigation.navigate('admin/sermon')}>
+                <Card title='Sermon'/>
             </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate('admin/adManage/manage')}>
-                <Card title='Manage'/>
+            <TouchableOpacity onPress={() => navigation.navigate('admin/excerpt')}>
+                <Card title='Excerpts'/>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('')}>
+                <Card title='Inspirational'/>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('')}>
+                <Card title='GOAKS'/>
             </TouchableOpacity>
           </View>
     </SafeAreaView>
   )
 }
 
-export default adminPanel
+export default upload

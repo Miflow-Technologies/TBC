@@ -1,26 +1,25 @@
 import CustomHeader from '@/components/CustomHeader'
 import * as Haptics from 'expo-haptics';
-import { Image, SafeAreaView, ScrollView, StyleSheet, Text, View, FlatList, Platform, TouchableOpacity, TextInput } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, Text, View, FlatList, Platform, TouchableOpacity, TextInput } from 'react-native';
 import React from 'react'
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from 'react-native';
-import { Link, useTheme } from '@react-navigation/native';
-import { Poppins_500Medium, Poppins_700Bold, useFonts as usePoppinsFonts } from '@expo-google-fonts/poppins';
+import {  useNavigation, useTheme } from '@react-navigation/native';
+import { Poppins_700Bold } from '@expo-google-fonts/poppins';
+import { useFonts } from 'expo-font';
 
 const ArticleScreen = () => {
-  
-  const [poppinsFontsLoaded] = usePoppinsFonts({
-    Poppins_500Medium,
-    Poppins_700Bold
-  });
+
+  const navigation = useNavigation();
   const colorScheme = useColorScheme();
   const theme = useTheme();
   const isDarkMode = colorScheme === 'dark';
-  if (!poppinsFontsLoaded) {
-    return null
-  }
 
+  const [fontsLoaded] = useFonts({
+    Poppins_700Bold,
+  });
+  
   const Title = (props) => (
     <Text style={styles.title}>
       {props.children}
@@ -112,8 +111,8 @@ const ArticleScreen = () => {
       <View style={{marginTop: Platform.OS === 'ios' ? 10 : 10,  }}>
           <FlatList 
               data={data.articles}
+              keyExtractor={item => item.id}
               renderItem={({item}) => <Card name={item.title} /> }
-              keyExtractor={item => item.id.toString()}
             />
       </View>
       </View>

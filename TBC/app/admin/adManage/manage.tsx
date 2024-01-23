@@ -1,13 +1,12 @@
 import { View, Text, useColorScheme, Platform, TouchableOpacity, SafeAreaView, StyleSheet } from 'react-native'
 import React from 'react'
-import { Link, useNavigation, useTheme } from '@react-navigation/native';
+import { useNavigation, useTheme } from '@react-navigation/native';
 import { Poppins_500Medium, Poppins_700Bold, useFonts } from '@expo-google-fonts/poppins';
 import { NotoSerif_400Regular, NotoSerif_700Bold } from '@expo-google-fonts/noto-serif';
-import { Ionicons } from '@expo/vector-icons';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import Header from '@/components/Header';
 
-const adminPanel = () => {
+const manage = () => {
   const navigation = useNavigation();
 
   const [fontsLoaded] = useFonts({
@@ -89,23 +88,17 @@ const adminPanel = () => {
         })
   return (
     <SafeAreaView>
-        <Header heading='UPLOAD' />
+        <Header heading='MANAGE' />
           <View style={[styles.container, {top: 10, marginBottom: 50}]}>
-            <TouchableOpacity onPress={() => navigation.navigate('admin/sermon')}>
+            <TouchableOpacity onPress={() => navigation.navigate('')}>
                 <Card title='Sermon'/>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('admin/excerpt')}>
+            <TouchableOpacity onPress={() => navigation.navigate('')}>
                 <Card title='Excerpts'/>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('')}>
-                <Card title='Inspirational'/>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('')}>
-                <Card title='GOAKS'/>
             </TouchableOpacity>
           </View>
     </SafeAreaView>
   )
 }
 
-export default adminPanel
+export default manage

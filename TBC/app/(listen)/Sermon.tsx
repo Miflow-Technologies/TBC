@@ -1,49 +1,127 @@
-import { Image, SafeAreaView, ScrollView, StyleSheet, Text, View, FlatList, Platform, TouchableOpacity } from 'react-native';
-import React from 'react'
-import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView, ScrollView, StyleSheet, Text, View, FlatList, Platform, TouchableOpacity, Dimensions } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from 'react-native';
 import { useTheme } from '@react-navigation/native';
-import { Poppins_500Medium, Poppins_700Bold, useFonts as usePoppinsFonts } from '@expo-google-fonts/poppins';
-import { NotoSerif_400Regular, NotoSerif_700Bold, useFonts as useNotoFonts } from '@expo-google-fonts/noto-serif';
-
-
-
+import { Poppins_500Medium, Poppins_700Bold, } from '@expo-google-fonts/poppins';
+import { NotoSerif_400Regular, NotoSerif_700Bold, } from '@expo-google-fonts/noto-serif';
+import { useFonts } from 'expo-font';
+import { Video } from 'expo-av';
+import { Ionicons } from '@expo/vector-icons';
+import { query, collection, getDocs, where, orderBy, limit } from 'firebase/firestore'; // Import query, where, orderBy, and limit
+import { getDownloadURL, ref } from 'firebase/storage';
+import { db, storage } from '@/config/firebaseConfig';
 
 const Sermon = () => {
+    const [featuredSermons, setFeaturedSermons] = useState([]);
+    const [sermons, setSermons] = useState([]);
+    const [excerpts, setExcerpts] = useState([]);
+    const [inspirationals, setInspirationals] = useState([]);
 
-  const [poppinsFontsLoaded] = usePoppinsFonts({
-    Poppins_500Medium,
-    Poppins_700Bold
-  });
-  const [notoFontsLoaded] = useNotoFonts({
+    const colorScheme = useColorScheme();
+    const theme = useTheme();
+    const isDarkMode = colorScheme === 'dark';
+
+    const [fontsLoaded] = useFonts({
+      Poppins_500Medium,
+      Poppins_700Bold,
       NotoSerif_400Regular,
-      NotoSerif_700Bold
-  });
-  const colorScheme = useColorScheme();
-  const theme = useTheme();
-  const isDarkMode = colorScheme === 'dark';
-
-  if (!notoFontsLoaded) {
-    return null
-  }
-  if (!poppinsFontsLoaded) {
-    return null
-  }
+      NotoSerif_700Bold,
+    });
   
-const Thumbnail = (props) => (
-  <Image
-    style={styles.thumbnail}
-    source={{ uri: props.url }}
-  />
-);
+    useEffect(() => {
+      const fetchFeaturedVideos = async (collectionName, setStateFunction) => {
+        try {
+          const featuredVideosQuery = query(collection(db, collectionName), where('isFeatured', '==', true));
+          const featuredVideosSnapshot = await getDocs(featuredVideosQuery);
+    
+          const fetchedFeaturedVideos = await Promise.all(
+            featuredVideosSnapshot.docs.map(async (doc) => ({
+              id: doc.id,
+              title: doc.data().title,
+              preacher: doc.data().preacher,
+              series: doc.data().series,
+              videoUrl: await getDownloadURL(ref(storage, doc.data().url)),
+              isFeatured: doc.data().isFeatured
+            }))
+          );
+    
+          setStateFunction(fetchedFeaturedVideos);
+          console.log(`Fetched Featured Videos for ${collectionName}:`, fetchedFeaturedVideos);
+        } catch (error) {
+          console.error(`Error fetching featured ${collectionName}:`, error);
+        }
+      };
+    
+      const fetchLatestVideos = async (collectionName, setStateFunction) => {
+        try {
+          const videosRef = query(collection(db, collectionName), limit(5));
+          const querySnapshot = await getDocs(videosRef);
 
-const Ithumbnail = (props) => (
-  <Image
-    style={styles.image}
-    source={{ uri: props.url }}
-  />
-);
+        const fetchedLatestVideos = await Promise.all(
+          querySnapshot.docs.map(async (doc) => {
+            const downloadUrl = await getDownloadURL(ref(storage, doc.data().url));
+            return {
+              id: doc.id,
+              title: doc.data().title,
+              preacher: doc.data().preacher,
+              series: doc.data().series,
+              videoUrl: downloadUrl,
+              isFeatured: doc.data().isFeatured
+            };
+          })
+        );
+      
+          console.log(`LOG Fetched Latest Videos for ${collectionName}:`, fetchedLatestVideos);
+      
+          setStateFunction(fetchedLatestVideos);
+        } catch (error) {
+          console.error(`Error fetching latest ${collectionName}:`, error);
+        }
+      };
+      
+    
+      // Fetch featured videos for sermons and excerpts
+      fetchFeaturedVideos('sermon', setFeaturedSermons);
+    
+      // Fetch latest videos for sermons, excerpts, and inspirationals
+      fetchLatestVideos('sermon', setSermons);
+      fetchLatestVideos('excerpt', setExcerpts);
+      fetchLatestVideos('inspirationals', setInspirationals);
+    }, []); // Empty dependency array to run the effect only once
+    
+  
+  
+    const Thumbnail = ({ videoUrl }) => {
+      console.log('Video URL:', videoUrl);
+
+      return (
+      <Video
+        style={styles.thumbnail}
+        source={{
+          uri: videoUrl,
+        }}
+        useNativeControls
+        isLooping
+        resizeMode='contain'
+        onFullscreenUpdate={onFullscreenUpdate}
+      />
+      )
+      };
+    
+    const Ithumbnail = ({ videoUrl }) => (
+      <Video
+        style={styles.image}
+        source={{
+          uri: videoUrl,
+        }}
+        useNativeControls
+        isLooping
+        resizeMode='contain'
+        onFullscreenUpdate={onFullscreenUpdate}
+      />
+    );
+    
 
 const Heading = (props) => (
   <Text style={styles.heading}>
@@ -87,6 +165,14 @@ const SeeMore = (props) => (
     <Ionicons name="chevron-forward" size={20} color = {Colors.blue} />
   </TouchableOpacity>
 );
+
+const onFullscreenUpdate = async () => {
+  if (Dimensions.get('window').height > Dimensions.get('window').width) {
+    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+  } else {
+    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+  }
+};
 
 const styles = StyleSheet.create({
   thumbnail: {
@@ -145,7 +231,7 @@ const styles = StyleSheet.create({
 
 const FeaturedCard = (props) => (
   <View style={featuredCardStyles.card}>
-    <Thumbnail url={props.thumbnail} />
+    <Thumbnail videoUrl={props.videoUrl} />
     <View style={featuredCardStyles.title}>
       <Title>{props.name}</Title>
       <Preacher>{props.preacher}</Preacher>
@@ -182,7 +268,7 @@ const featuredCardStyles = StyleSheet.create({
 
 const SermonCard = (props) => (
   <View style={sermonCardStyles.card}>
-  <Ithumbnail url={props.ithumbnail} />
+  <Ithumbnail videoUrl={props.videoUrl} />
   <View style={sermonCardStyles.title}>
     <Title>{props.name}</Title>
     <Preacher>{props.preacher}</Preacher>
@@ -232,9 +318,10 @@ const sermonCardStyles = StyleSheet.create({
       <ScrollView style={{top: Platform.OS === 'ios' ? 50 : 50, marginBottom: Platform.OS === 'ios' ? 50 : 130}}>
         <Heading>Featured</Heading>
         <FlatList horizontal style={{paddingHorizontal: 24}}
-          data={data.featured}
-          renderItem={({item}) => <FeaturedCard name={item.title} thumbnail={item.thumbnail} preacher={item.preacher} duration={item.duration} series={item.series} /> }
-          keyExtractor={item => item.id.toString()}
+          data={featuredSermons}
+          keyExtractor={item => item.id}
+          renderItem={({item}) => 
+          (<FeaturedCard name={item.title} thumbnail={item.videoUrl} preacher={item.preacher} duration={item.duration} series={item.series} />) }
         />
 
 
@@ -243,9 +330,9 @@ const sermonCardStyles = StyleSheet.create({
           <SeeMore />
         </View>
         <FlatList horizontal style={{paddingHorizontal: 24}}
-          data={data.sermons}
-          renderItem={({item}) => <SermonCard ithumbnail={item.ithumbnail} name={item.title} preacher={item.preacher} duration={item.duration} />}
-          keyExtractor={item => item.id.toString()}
+          data={sermons}
+          keyExtractor={item => item.id}
+          renderItem={({item}) => <SermonCard ithumbnail={item.videoUrl} name={item.title} preacher={item.preacher} duration={item.duration} />}
         />
 
         <View style={{justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center'}}>
@@ -253,8 +340,8 @@ const sermonCardStyles = StyleSheet.create({
           <SeeMore />
         </View>
         <FlatList horizontal style={{paddingHorizontal: 24}}
-          data={data.sermons}
-          renderItem={({item}) => <ExCard ithumbnail={item.ithumbnail} name={item.title} preacher={item.preacher} duration={item.duration} />}
+          data={excerpts}
+          renderItem={({item}) => <ExCard ithumbnail={item.videoUrl} name={item.title} preacher={item.preacher} duration={item.duration} />}
           keyExtractor={item => item.id.toString()}
         />
 
@@ -263,145 +350,13 @@ const sermonCardStyles = StyleSheet.create({
           <SeeMore />
         </View>
         <FlatList horizontal style={{paddingHorizontal: 24}}
-          data={data.sermons}
-          renderItem={({item}) => <ExCard ithumbnail={item.ithumbnail} name={item.title} preacher={item.preacher} duration={item.duration} />}
+          data={inspirationals}
+          renderItem={({item}) => <ExCard ithumbnail={item.videoUrl} name={item.title} preacher={item.preacher} duration={item.duration} />}
           keyExtractor={item => item.id.toString()}
         />
       </ScrollView>
 </SafeAreaView>
 );
-}
-
-
-
-
-
-const data = {
-  featured: [
-  {
-    id: 'f-1',
-    title: 'Risen King',
-    duration: 48,
-    preacher: 'Pastor Jimi Olopade',
-    series: '',
-    thumbnail: 'https://images.unsplash.com/photo-1609234680415-f10a17c1fa72?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  },
-  {
-    id: 'f-2',
-    title: 'Foreshadowing Grace',
-    duration: 52,
-    preacher: 'Pastor Jimi Olopade',
-    series: 'LoveSeries',
-    thumbnail: 'https://images.unsplash.com/photo-1587143987442-ae0cc2508c31?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  },
-  {
-    id: 'f-3',
-    title: 'Seeds of Divinty',
-    duration: 30,
-    preacher: 'Pastor Jimi Olopade',
-    series: '',
-    thumbnail: 'https://images.unsplash.com/photo-1542296120-cd8d3eb196d5?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  },
-],
-sermons: [
-  {
-    id: 's-1',
-    title: 'Risen King',
-    duration: 48,
-    preacher: 'Pastor Jimi Olopade',
-    ithumbnail: 'https://images.unsplash.com/photo-1609234680415-f10a17c1fa72?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'                                                                                                                  
-
-  },
-  {
-    id: 's-2',
-    title: 'Christ-like Living',
-    duration: 36,
-    preacher: 'Pastor Tomi Olopade',
-    ithumbnail: 'https://images.unsplash.com/photo-1580974019294-f399db0e992b?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-
-  },
-  {
-    id: 's-3',
-    title: 'Rock of Judah',
-    duration: 67,
-    preacher: 'Pastor Victor Adisa',
-    ithumbnail: 'https://images.unsplash.com/photo-1602025745825-28c7044dabcd?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-
-  },
-  {
-    id: 's-4',
-    title: 'Rise and Shine',
-    duration: 33,
-    preacher: 'Minister Erin Oguntoyibo',
-    ithumbnail: 'https://images.unsplash.com/photo-1602026084040-78e6134b2661?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  }, 
-],
-  excerpts: [
-    {
-      id: 'e-1',
-      title: 'Risen King',
-      duration: 34,
-      preacher: 'Pastor Jimi Olopade',
-      ithumbnail: 'https://images.unsplash.com/photo-1609234680415-f10a17c1fa72?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'                                                                                                                  
-  
-    },
-    {
-      id: 'e-2',
-      title: 'Christ-like Living',
-      duration: 120,
-      preacher: 'Pastor Tomi Olopade',
-      ithumbnail: 'https://images.unsplash.com/photo-1580974019294-f399db0e992b?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  
-    },
-    {
-      id: 'e-3',
-      title: 'Rock of Judah',
-      duration: 114,
-      preacher: 'Pastor Victor Adisa',
-      ithumbnail: 'https://images.unsplash.com/photo-1602025745825-28c7044dabcd?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  
-    },
-    {
-      id: 'e-4',
-      title: 'Rise and Shine',
-      duration: 30,
-      preacher: 'Minister Erin Oguntoyibo',
-      ithumbnail: 'https://images.unsplash.com/photo-1602026084040-78e6134b2661?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-    }, 
-  ],
-    inspirational: [
-      {
-        id: 'i-1',
-        title: 'Risen King',
-        duration: 30,
-        preacher: 'Pastor Jimi Olopade',
-        ithumbnail: 'https://images.unsplash.com/photo-1609234680415-f10a17c1fa72?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'                                                                                                                  
-    
-      },
-      {
-        id: 'i-2',
-        title: 'Christ-like Living',
-        duration: 15,
-        preacher: 'Pastor Tomi Olopade',
-        ithumbnail: 'https://images.unsplash.com/photo-1580974019294-f399db0e992b?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-    
-      },
-      {
-        id: 'i-3',
-        title: 'Rock of Judah',
-        duration: 27,
-        preacher: 'Pastor Victor Adisa',
-        ithumbnail: 'https://images.unsplash.com/photo-1602025745825-28c7044dabcd?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-    
-      },
-      {
-        id: 'i-4',
-        title: 'Rise and Shine',
-        duration: 120,
-        preacher: 'Minister Erin Oguntoyibo',
-        ithumbnail: 'https://images.unsplash.com/photo-1602026084040-78e6134b2661?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-      },
-]
 }
 
 export default Sermon

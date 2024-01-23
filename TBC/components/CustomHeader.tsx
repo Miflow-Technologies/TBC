@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Platform, SafeAreaView, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { DarkTheme, DefaultTheme, ThemeProvider, useTheme } from '@react-navigation/native';
+import { DarkTheme, DefaultTheme, ThemeProvider, useNavigation, useTheme } from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
 import { Poppins_500Medium, Poppins_700Bold, useFonts as usePoppinsFonts } from '@expo-google-fonts/poppins';
 import { NotoSerif_400Regular, NotoSerif_700Bold, useFonts as useNotoFonts } from '@expo-google-fonts/noto-serif';
@@ -13,6 +13,9 @@ type titleProps = {
 }
 
 const CustomHeader = (props: titleProps) => {
+
+    const navigation = useNavigation()
+
     const [poppinsFontsLoaded] = usePoppinsFonts({
         Poppins_500Medium,
         Poppins_700Bold
@@ -44,7 +47,7 @@ const CustomHeader = (props: titleProps) => {
                         <Text style={[styles.title, { color: isDarkMode ? '#fff' : '#000' }]}>{ props.name }</Text>
                     </View>
                     <View>
-                        <TouchableOpacity style={[styles.profileButton, {backgroundColor: theme.colors.background}]}>
+                        <TouchableOpacity style={[styles.profileButton, {backgroundColor: theme.colors.background}]} onPress={() => navigation.navigate('profile')}>
                             <Ionicons name="person-outline" size={25} color={theme.colors.text} />
                         </TouchableOpacity>
                     </View>

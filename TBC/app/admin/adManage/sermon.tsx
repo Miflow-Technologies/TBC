@@ -84,6 +84,8 @@ const Sermon = (props) => {
         }, {});
         setVideoStates(initialVideoStates);
 
+        console.log(`LOG Fetched Latest Videos for ${videos}:`, fetchedVideos);
+
         setVideos(fetchedVideos);
       } catch (error) {
         console.error('Error fetching videos:', error);

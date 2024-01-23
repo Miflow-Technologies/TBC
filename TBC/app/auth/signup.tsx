@@ -20,7 +20,7 @@ import Colors from '@/constants/Colors';
 import Button from '@/components/Button';
 import { useNavigation } from '@react-navigation/native';
 import { Link } from 'expo-router';
-import { AuthContext } from '../auth/Auth';
+import { AuthContext } from './Auth';
   
   
   const Signup = () => {
@@ -331,7 +331,7 @@ import { AuthContext } from '../auth/Auth';
                 }}>
                     <Text style={{ fontSize: 16, color: isDarkMode ? '#fff' : '#000' }}>Already have an account</Text>
                     <Pressable
-                        onPress={() => navigation.navigate("(modals)/login")}
+                        onPress={() => navigation.navigate("auth/login")}
                     >
                         <Text style={{
                             fontSize: 16,

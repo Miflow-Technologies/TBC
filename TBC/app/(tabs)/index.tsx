@@ -1,41 +1,28 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { View, Text, SafeAreaView, StyleSheet, Platform, ScrollView, useColorScheme } from 'react-native';
-import { CommonActions, useNavigation, useTheme } from '@react-navigation/native';
+import { useNavigation, useTheme } from '@react-navigation/native';
 import Colors from '@/constants/Colors';
-import { Poppins_500Medium, Poppins_700Bold, useFonts as usePoppinsFonts } from '@expo-google-fonts/poppins';
-import { NotoSerif_400Regular, NotoSerif_700Bold, useFonts as useNotoFonts } from '@expo-google-fonts/noto-serif';
+import { Poppins_700Bold} from '@expo-google-fonts/poppins';
+import { NotoSerif_400Regular } from '@expo-google-fonts/noto-serif';
 import CollapsibleContainer from '@/components/CollapsibleContainer';
 import CustomHeader from '@/components/CustomHeader';
+import { useFonts } from 'expo-font';
 
 const Tbc = () => {
-  const [poppinsFontsLoaded] = usePoppinsFonts({
-    Poppins_500Medium,
-    Poppins_700Bold,
-  });
-  const [notoFontsLoaded] = useNotoFonts({
-    NotoSerif_400Regular,
-    NotoSerif_700Bold,
-  });
 
   const navigation = useNavigation();
-
-  useEffect(() => {
-    if (notoFontsLoaded && poppinsFontsLoaded) {
-      return ;
-    }
-
-    // Reset the navigation stack when the component is mounte
-  }, [notoFontsLoaded, poppinsFontsLoaded]);
-
-  
   const colorScheme = useColorScheme();
   const theme = useTheme();
   const isDarkMode = colorScheme === 'dark';
 
+  const [fontsLoaded] = useFonts({
+    Poppins_700Bold,
+    NotoSerif_400Regular,
+  });
+
   return (
     <SafeAreaView>
       <CustomHeader name='TBC'/>
-  
       <ScrollView style={{marginTop: Platform.OS === 'ios' ? 70: 100, marginBottom: Platform.OS === 'ios' ? 70 : 100}}>
         <View style={styles.container}>
           <Text style={[styles.subtitle, {fontFamily: 'NotoSerif_400Regular',  color: isDarkMode ? '#fff' : Colors.textGrey }]}>WELCOME,</Text>
