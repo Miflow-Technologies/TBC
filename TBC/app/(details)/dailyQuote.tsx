@@ -138,7 +138,7 @@ const DailyQuote = () => {
 
    
 
-    {!isSharing && (
+  {!isSharing && (
         <TouchableOpacity activeOpacity={0.9} style={styles.card} onPress={handleShare}>
           <Text style={{color: '#fff', fontFamily: 'Poppins_700Bold', fontSize: 15,}}>SHARE QUOTE</Text>
         </TouchableOpacity>
