@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Platform, ScrollView, Pressable, Animated } fro
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
-import { Poppins_500Medium, NotoSerif_400Regular } from '@expo-google-fonts/poppins';
+import { Poppins_500Medium, } from '@expo-google-fonts/poppins';
 import { useFonts } from 'expo-font';
 import { useColorScheme } from 'react-native';
 import { useTheme, useNavigation } from '@react-navigation/native';

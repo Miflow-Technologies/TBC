@@ -18,7 +18,7 @@ const PlayerWidget = (uri, imageUri, artist, title) => {
     const fetchSong = async () => {
       
     }
-
+              
     fetchSong();
   }, )
 

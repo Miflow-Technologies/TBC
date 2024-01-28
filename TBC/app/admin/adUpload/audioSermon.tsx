@@ -97,7 +97,7 @@ import {
               series,
               new Date().getTime()
             );
-            setaudioFile("");
+            setAudioFile("");
             console.log("Upload completed");
             navigation.navigate('admin/adManage/sermon')
           } catch (error) {

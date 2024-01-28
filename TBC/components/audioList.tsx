@@ -1,8 +1,14 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {Text, Image, View, TouchableWithoutFeedback, TouchableOpacity} from 'react-native';
 import { StyleSheet} from "react-native";
 
 const AudioList = (imageUri, title, artist) => {
+
+    const {audioId, setAudioId} = useState(null)
+
+    const onPlay = () => {
+        setAudioId(id);
+      }
   
   return (
     <TouchableOpacity onPress={onPlay}>
