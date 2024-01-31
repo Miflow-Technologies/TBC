@@ -1,16 +1,24 @@
-import CustomHeader from '@/components/CustomHeader'
-import * as Haptics from 'expo-haptics';
-import { SafeAreaView, ScrollView, StyleSheet, Text, View, FlatList, Platform, TouchableOpacity, TextInput } from 'react-native';
-import React from 'react'
-import { Ionicons } from '@expo/vector-icons';
-import Colors from '@/constants/Colors';
+import React, { useEffect, useState } from 'react';
+import {
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  Platform,
+  Pressable,
+} from 'react-native';
+import CustomHeader from '@/components/CustomHeader';
 import { useColorScheme } from 'react-native';
-import {  useNavigation, useTheme } from '@react-navigation/native';
+import { useNavigation, useTheme } from '@react-navigation/native';
 import { Poppins_700Bold } from '@expo-google-fonts/poppins';
 import { useFonts } from 'expo-font';
+import { collection, getDocs } from 'firebase/firestore';
+import { db, storage } from '@/config/firebaseConfig';
+import SearchBar from '@/components/searchBar';
+import { getDownloadURL, ref } from 'firebase/storage';
 
 const ArticleScreen = () => {
-
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
   const theme = useTheme();
@@ -19,18 +27,48 @@ const ArticleScreen = () => {
   const [fontsLoaded] = useFonts({
     Poppins_700Bold,
   });
-  
+
+  const [articles, setArticles] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+
+  const handleSearch = (searchTerm) => {
+    const articleResults = articles.filter((item) =>
+      item.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setSearchResults(articleResults);
+  };
+
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const articlesRef = collection(db, 'articles');
+        const querySnapshot = await getDocs(articlesRef);
+
+        const fetchedArticles = await Promise.all(
+          querySnapshot.docs.map(async (doc) => {
+            const pdfDownloadUrl = await getDownloadURL(ref(storage, doc.data().pdfUrl));
+            return {
+              id: doc.id,
+              title: doc.data().title,
+              author: doc.data().author,
+              pdfUrl: pdfDownloadUrl,
+            };
+          })
+        );
+
+        setArticles(fetchedArticles);
+      } catch (error) {
+        console.error('Error fetching articles:', error);
+      }
+    };
+
+    fetchArticles();
+  }, []);
+
   const Title = (props) => (
     <Text style={styles.title}>
       {props.children}
     </Text>
-  );
-  const Card = (props) => (
-    <View style={cardStyles.card}>
-      <View style={cardStyles.title}>
-        <Title>{props.name}</Title>
-      </View>
-    </View>
   );
 
   const styles = StyleSheet.create({
@@ -38,33 +76,30 @@ const ArticleScreen = () => {
       fontFamily: 'Poppins_700Bold',
       fontSize: 20,
       textTransform: 'uppercase',
-      color: isDarkMode ? '#fff' : '#000'
+      color: isDarkMode ? '#fff' : '#000',
     },
-    searchContainer: {
-      height: 60,
-    },
-    searchSection: {
-      flexDirection: 'row',
-      gap: 10,
-      flex: 1,
-      paddingHorizontal: 20,
-      alignItems: 'center',
-    },
-    searchField: {
-      flex: 1,
-      backgroundColor: isDarkMode ? Colors.textGrey : "#EEEBEB",
-      borderRadius: 8,
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    input: {
-      padding: 10,
-      color: isDarkMode  ? "#fff" : "#000" ,
-    },
-    searchIcon: {
-      paddingLeft: 10,
-    },
-  })
+
+  });
+
+  const navigateToArticleReader = (pdfUrl) => {
+    navigation.navigate('app/(details)/articleDetail', { pdfUrl });
+  };
+
+  const renderItem = ({ item }) => (
+    <Pressable
+      style={({ pressed }) => [
+        {
+          opacity: pressed ? 0.6 : 1,
+        },
+        cardStyles.card,
+      ]}
+      onPress={() => navigateToArticleReader(item.pdfUri)}
+    >
+      <View style={cardStyles.title}>
+        <Title>{item.title}</Title>
+      </View>
+    </Pressable>
+  );
 
   const cardStyles = StyleSheet.create({
     card: {
@@ -80,82 +115,32 @@ const ArticleScreen = () => {
       shadowColor: isDarkMode ? '#fff' : '#000',
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.3,
-      shadowRadius: 4,  
-      elevation: 5
+      shadowRadius: 4,
+      elevation: 5,
     },
     title: {
       alignSelf: 'flex-start',
-      padding: 10
+      padding: 10,
     },
   });
 
-  const SearchBar = () => (
-    <View style={styles.searchContainer}>
-      <View style={styles.searchSection}>
-        <View style={styles.searchField}>
-          <Ionicons style={styles.searchIcon} name="ios-search" size={20} color={Colors.medium} />
-          <TextInput style={styles.input} placeholder="Search Article" />
-        </View>
-      </View>
-    </View>
-  );
-  
-  
-  
   return (
     <SafeAreaView>
-      <CustomHeader name='Article'/>
-      <View style={{marginTop: Platform.OS === 'ios' ? 70: 100, marginBottom: Platform.OS === 'ios' ? 240 : 260}}>
-        <SearchBar />
-      
-      <View style={{marginTop: Platform.OS === 'ios' ? 10 : 10,  }}>
-          <FlatList 
-              data={data.articles}
-              keyExtractor={item => item.id}
-              renderItem={({item}) => <Card name={item.title} /> }
-            />
+      <CustomHeader name="Article" />
+      <View
+        style={{ marginTop: Platform.OS === 'ios' ? 70 : 100, marginBottom: Platform.OS === 'ios' ? 240 : 260 }}
+      >
+        <SearchBar onSearch={handleSearch} />
+        <View style={{ marginTop: Platform.OS === 'ios' ? 10 : 10 }}>
+          <FlatList
+            data={searchResults.length > 0 ? searchResults : articles}
+            keyExtractor={(item) => item.id}
+            renderItem={renderItem}
+          />
+        </View>
       </View>
-      </View>
-      
     </SafeAreaView>
-  )
-}
+  );
+};
 
-
-const data = {
-  articles: [
-    {
-      id: "1",
-      title: "Purposeful Boarding",
-    },
-    {
-      id: "2",
-      title: "Rise Up Israel",
-    },
-    {
-      id: "4",
-      title: "Shining Lights",
-    },
-    {
-      id: "5",
-      title: "A family of God",
-    },
-    {
-      id: "6",
-      title: "Hopeful Living",
-    },
-    {
-      id: "7",
-      title: "Overflow",
-    },
-    {
-      id: "8",
-      title:"Separation from the world",
-    },
-    {
-      id: "9",
-      title: "This is a sample article.",
-    },
-  ]
-}
-export default ArticleScreen
+export default ArticleScreen;

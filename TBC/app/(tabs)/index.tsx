@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, SafeAreaView, StyleSheet, Platform, ScrollView, useColorScheme } from 'react-native';
 import { useNavigation, useTheme } from '@react-navigation/native';
 import Colors from '@/constants/Colors';
@@ -7,6 +7,8 @@ import { NotoSerif_400Regular } from '@expo-google-fonts/noto-serif';
 import CollapsibleContainer from '@/components/CollapsibleContainer';
 import CustomHeader from '@/components/CustomHeader';
 import { useFonts } from 'expo-font';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '@/config/firebaseConfig';
 
 const Tbc = () => {
 
@@ -19,6 +21,37 @@ const Tbc = () => {
     Poppins_700Bold,
     NotoSerif_400Regular,
   });
+
+  const [devotionalDetails, setDevotionalDetails] = useState({
+    title: '',
+    subtitle: '',
+    author: '',,
+  });
+
+  useEffect(() => {
+    const fetchDevotionalDetails = async () => {
+      try {
+        const devotionalRef = collection(db, 'devotional');
+        const querySnapshot = await getDocs(devotionalRef);
+
+        if (querySnapshot.docs.length > 0) {
+          const firstDevotional = querySnapshot.docs[0].data();
+          setDevotionalDetails({
+            title: firstDevotional.title || '',
+            subtitle: firstDevotional.passage || '',
+            author: firstDevotional.author || '',
+            buttonText: firstDevotional.buttonText || '',
+            backgroundColor: firstDevotional.backgroundColor || '',
+            screen: firstDevotional.screen || '',
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching devotional details:', error);
+      }
+    };
+
+    fetchDevotionalDetails();
+  }, []);
 
   return (
     <SafeAreaView>
@@ -38,9 +71,9 @@ const Tbc = () => {
             screen="(details)/dailyQuote"
           />
           <CollapsibleContainer
-            title="Devotional"
-            subtitle="Luke 4:12 "
-            author="Walking with God"
+            title={devotionalDetails.title}
+            subtitle={devotionalDetails.subtitle}
+            author={devotionalDetails.author}
             buttonText="READ"
             backgroundColor="#1CB4EE"
             screen="(details)/devotional"

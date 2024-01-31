@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, PermissionsAndroid, StyleSheet, Platform } from 'react-native';
 import { captureRef } from 'react-native-view-shot';
 import { Share } from 'react-native';
@@ -8,13 +8,12 @@ import { Poppins_500Medium, Poppins_700Bold } from '@expo-google-fonts/poppins';
 import { NotoSerif_400Regular, NotoSerif_700Bold } from '@expo-google-fonts/noto-serif';
 import { useFonts } from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
+import { collection, getDocs, limit, orderBy, query, } from 'firebase/firestore';
+import { db } from '@/config/firebaseConfig';
 
 const DailyQuote = () => {
 
   const navigation = useNavigation()
-  const imagePath =
-    'https://images.unsplash.com/photo-1662329219657-ad19333b0c7b?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
-
   const [fontsLoaded] = useFonts({
     Poppins_500Medium,
     Poppins_700Bold,
@@ -78,7 +77,23 @@ const DailyQuote = () => {
   });
 
   const [isSharing, setIsSharing] = useState(false);
+  const [dailyQuote, setDailyQuote] = useState(null);
   const captureViewRef = useRef(null);
+
+  useEffect(() => {
+    // Fetch the latest daily quote from Firestore
+    const fetchLatestDailyQuote = async () => {
+      const dailyQuoteQuery = query(collection(db, 'dailyQuote'), orderBy('createdAt', 'desc'), limit(1));
+      const querySnapshot = await getDocs(dailyQuoteQuery);
+
+      if (!querySnapshot.empty) {
+        const latestQuote = querySnapshot.docs[0].data();
+        setDailyQuote(latestQuote);
+      }
+    };
+
+    fetchLatestDailyQuote();
+  }, []);
 
   const handleShare = async () => {
     setIsSharing(true);
@@ -111,7 +126,7 @@ const DailyQuote = () => {
       try {
         await Share.share({
           message: '',
-          url: `file://${screenshotURI}`, // Use file:// protocol for local files
+          url: `file://${screenshotURI}`, 
         });
       } catch (error) {
         console.error('Error sharing screenshot:', error);
@@ -127,32 +142,31 @@ const DailyQuote = () => {
 
   return (
     <View style={styles.container} ref={captureViewRef}>
-      
-       <Image source={{ uri: imagePath }} style={styles.backgroundImage} />
-        <View style={styles.overlay} />
-        <Image style={styles.image} source={require('@/assets/images/wlogo.png')}/>
-        <View style={styles.textContainer}>
-          <Text style={styles.quoteText}>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Neque tenetur beatae, itaque dolore possimus eveniet.</Text>
-          <Text style={styles.quoteAuthor}>Anonymous</Text>
-        </View>
+      {dailyQuote && (
+        <>
+          <Image source={{ uri: dailyQuote.url }} style={styles.backgroundImage} />
+          <View style={styles.overlay} />
+          <Image style={styles.image} source={require('@/assets/images/wlogo.png')} />
+          <View style={styles.textContainer}>
+            <Text style={styles.quoteText}>{dailyQuote.content}</Text>
+            <Text style={styles.quoteAuthor}>{dailyQuote.author}</Text>
+          </View>
+        </>
+      )}
 
-   
-
-  {!isSharing && (
+      {!isSharing && (
         <TouchableOpacity activeOpacity={0.9} style={styles.card} onPress={handleShare}>
-          <Text style={{color: '#fff', fontFamily: 'Poppins_700Bold', fontSize: 15,}}>SHARE QUOTE</Text>
+          <Text style={{ color: '#fff', fontFamily: 'Poppins_700Bold', fontSize: 15 }}>SHARE QUOTE</Text>
         </TouchableOpacity>
       )}
 
       {!isSharing && (
-        <TouchableOpacity activeOpacity={0.9} style={{alignSelf: 'center', marginBottom: 40}} onPress={() => navigation.goBack()}>
-        <Text style={{ color:Colors.textGrey, fontFamily: 'Poppins_500Medium', fontSize: 15}}>TAP HERE TO GO BACK</Text>
+        <TouchableOpacity activeOpacity={0.9} style={{ alignSelf: 'center', marginBottom: 40 }} onPress={() => navigation.goBack()}>
+          <Text style={{ color: Colors.textGrey, fontFamily: 'Poppins_500Medium', fontSize: 15 }}>TAP HERE TO GO BACK</Text>
         </TouchableOpacity>
       )}
-
     </View>
-  )
-}
-  
+  );
+};
 
-export default DailyQuote
+export default DailyQuote;

@@ -1,26 +1,17 @@
-import {
-  View,
-  Text,
-  Platform,
-  StyleSheet,
-  SafeAreaView,
-  ScrollView,
-  ViewComponent,
-} from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { View, Text, Platform, StyleSheet, SafeAreaView, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import Colors from "@/constants/Colors";
 import { Poppins_500Medium, Poppins_700Bold } from "@expo-google-fonts/poppins";
-import {
-  NotoSerif_400Regular,
-  NotoSerif_700Bold,
-} from "@expo-google-fonts/noto-serif";
+import { NotoSerif_400Regular, NotoSerif_700Bold } from "@expo-google-fonts/noto-serif";
 import { useFonts } from "expo-font";
 import { useColorScheme } from "react-native";
 import { useTheme } from "@react-navigation/native";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/config/firebaseConfig";
 
-const devotional = () => {
+const Devotional = () => {
   const [fontsLoaded] = useFonts({
     Poppins_500Medium,
     Poppins_700Bold,
@@ -32,24 +23,52 @@ const devotional = () => {
   const theme = useTheme();
   const isDarkMode = colorScheme === "dark";
 
+  const [devotionalContent, setDevotionalContent] = useState({
+    title: "",
+    content: "",
+    passage: "", // Added passage to state
+  });
+
+  useEffect(() => {
+    const fetchDevotionalContent = async () => {
+      try {
+        const devotionalRef = collection(db, "devotional");
+        const querySnapshot = await getDocs(devotionalRef);
+
+        if (querySnapshot.docs.length > 0) {
+          const firstDevotional = querySnapshot.docs[0].data();
+          setDevotionalContent({
+            title: firstDevotional.title || "",
+            content: firstDevotional.content || "",
+            passage: firstDevotional.passage || "", // Set passage from Firestore data
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching devotional content:", error);
+      }
+    };
+
+    fetchDevotionalContent();
+  }, []);
+
   const styles = StyleSheet.create({
     container: {
       backgroundColor: theme.colors.background,
       justifyContent: "center",
       top: 1,
-      bottom: 20
+      bottom: 20,
     },
     content: {
-      width: '90%',
-      alignSelf:'center',
+      width: "90%",
+      alignSelf: "center",
     },
     containerText: {
       fontSize: 15,
       padding: 5,
       color: isDarkMode ? "#fff" : Colors.textGrey,
-      textAlign: 'justify',
-      lineHeight: Platform.OS === 'ios' ? 30 : 40
-      },
+      textAlign: "justify",
+      lineHeight: Platform.OS === "ios" ? 30 : 40,
+    },
     header: {
       display: "flex",
       justifyContent: "center",
@@ -77,7 +96,7 @@ const devotional = () => {
   const Header = ({ passage }) => {
     return (
       <View style={styles.header}>
-        <Link href={"/(tabs)"}>
+        <<Link href={"/(tabs)"}>>
           <Ionicons
             name="arrow-back-outline"
             size={25}
@@ -89,11 +108,14 @@ const devotional = () => {
       </View>
     );
   };
+
   const Content = ({ title, content }) => {
     return (
-      <View style={styles.content }>
-        <ScrollView style={{top: 10, marginBottom: 250}}>
-        <Text style={{textAlign: 'center',fontFamily: 'Poppins_500Medium', fontSize: 17, paddingVertical: 20}}>{title}</Text>
+      <View style={styles.content}>
+        <ScrollView style={{ top: 10, marginBottom: 250 }}>
+          <Text style={{ textAlign: "center", fontFamily: "Poppins_500Medium", fontSize: 17, paddingVertical: 20 }}>
+            {title}
+          </Text>
           <Text style={styles.containerText}>{content}</Text>
         </ScrollView>
       </View>
@@ -102,21 +124,13 @@ const devotional = () => {
 
   return (
     <View>
-      <Header passage="Luke 4:12" />
+      <Header passage={devotionalContent.passage} />
       <View style={styles.container}>
-      <Content
-        title="Walking with God"
-        content="Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eius laudantium neque rem autem quas facere ratione distinctio tempora adipisci vitae suscipit, natus beatae nam tenetur recusandae voluptate quaerat dolore quasi hic nesciunt optio praesentium! 
-        Architecto, blanditiis laboriosam, nihil magni adipisci nostrum quidem amet corrupti ratione voluptates similique impedit nesciunt sequi, numquam labore quaerat incidunt voluptas eos. 
-        Iure explicabo nam corporis at iusto mollitia perspiciatis necessitatibus ipsam quisquam sit, labore vitae doloribus. Eveniet voluptas atque explicabo hic iure officiis quibusdam dignissimos pariatur consequatur, nam earum distinctio eius voluptate similique. 
-        
-        Alias nemo, doloribus itaque voluptatibus praesentium accusamus ratione libero consequuntur nisi quasi minus ullam officiis enim assumenda impedit nihil? Ex assumenda provident dolor omnis dicta beatae animi alias ea eligendi amet aspernatur ipsum optio voluptatum autem dignissimos, iure adipisci, vel odit. 
-        Veniam nobis molestiae soluta eligendi! Alias, perferendis consequuntur dicta odio facilis dolorum ducimus quam sed optio neque praesentium nisi cupiditate libero ratione repellendus maxime obcaecati temporibus nihil vitae iusto molestias fuga nesciunt vel. Eum expedita quos minima doloribus dicta ipsam tempore ea autem labore. Deleniti adipisci nobis consectetur. Quis voluptate voluptas quas, placeat iusto quam libero tenetur nulla sed dolores numquam est optio reprehenderit iste reiciendis eligendi? Recusandae sapiente quo quia?"
-      />
-      <View style={{top: 20}}></View>
+        <Content title={devotionalContent.title} content={devotionalContent.content} />
+        <View style={{ top: 20 }}></View>
       </View>
     </View>
   );
 };
 
-export default devotional;
+export default Devotional;

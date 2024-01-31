@@ -6,8 +6,8 @@ import {
     useColorScheme,
     TouchableOpacity,
   } from "react-native";
-  import React, { useState } from "react";
-  import * as ImagePicker from "expo-image-picker";
+  import React, { useState, useEffect } from "react";
+  import * as DocumentPicker from "expo-document-picker";
   import { db, storage } from "@/config/firebaseConfig";
   import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
   import { addDoc, collection } from "firebase/firestore";
@@ -15,7 +15,7 @@ import {
   import Button from "@/components/Button";
   import { useNavigation, useTheme } from "@react-navigation/native";
   import Colors from "@/constants/Colors";
-  import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+  import { Ionicons } from "@expo/vector-icons";
   
   const AudioSermon = () => {
   
@@ -28,31 +28,27 @@ import {
     const [title, setTitle] = useState("");
     const [preacher, setPreacher] = useState("");
     const [series, setSeries] = useState("");
-    const [filename, setFilename] = useState("");
-  
     const [audioFile, setAudioFile] = useState(""); // New state for audio file
     const [filename, setFilename] = useState(""); // Updated state for filename
 
-  async function pickAudio() {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Audio,
-      allowsEditing: true,
-      quality: 1,
-      aspect: [3, 4]
-    });
 
-    if (!result.canceled) {
-      setAudioFile(result.assets[0].uri);
-      const filenameParts = result.assets[0].uri.split("/");
-      setFilename(filenameParts[filenameParts.length - 1]);
+  async function pickAudio() {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "audio/*", // Specify the MIME type for audio files
+        copyToCacheDirectory: false,
+      });
+
+      if (!result.canceled) {
+        setAudioFile(result.assets[0].uri);
+        const filenameParts = result.assets[0].uri.split("/");
+        setFilename(filenameParts[filenameParts.length - 1]);
+      }
+    } catch (error) {
+      console.error("Error picking audio:", error);
     }
   }
-    const formatDuration = (seconds) => {
-      const minutes = Math.floor(seconds / 60);
-      const secondsRemaining = Math.floor(seconds % 60);
-      return `${minutes}:${secondsRemaining.toString().padStart(2, "0")}`;
-    };
-  
+
     async function handleUpload() {
       if (audioFile) {
         await upload(audioFile);
@@ -99,7 +95,7 @@ import {
             );
             setAudioFile("");
             console.log("Upload completed");
-            navigation.navigate('admin/adManage/sermon')
+            navigation.navigate('admin/adManage/audioSermon')
           } catch (error) {
             console.error("Error getting download URL or saving record:", error);
           }
@@ -128,7 +124,7 @@ import {
       <SafeAreaView
         style={{ flex: 1, backgroundColor: isDarkMode ? "#000" : "#fff" }}
       >
-        <Header heading="SERMON" />
+        <Header heading="Audio Sermon" />
         <View style={{ flex: 1, marginHorizontal: 22 }}>
           <View style={{ marginBottom: 12 }}>
             <Text
@@ -246,11 +242,11 @@ import {
                 color: isDarkMode ? "#fff" : "#000",
               }}
             >
-              Add Video
+              Add Audio
             </Text>
   
             <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <TouchableOpacity onPress={() => pickVideo()} style={{ width: 50 }}>
+              <TouchableOpacity onPress={() => pickAudio()} style={{ width: 50 }}>
                 <View
                   style={{
                     width: 50,
@@ -263,11 +259,7 @@ import {
                     paddingLeft: 5,
                   }}
                 >
-                  <MaterialIcons
-                    name="video-call"
-                    size={24}
-                    color={isDarkMode ? "#fff" : "#000"}
-                  />
+                  <Ionicons name="musical-notes-outline" size={24} color={isDarkMode ? "#fff" : "#000"}/>
                 </View>
               </TouchableOpacity>
               <Text

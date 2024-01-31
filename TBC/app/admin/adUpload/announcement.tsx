@@ -1,15 +1,27 @@
-import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, TouchableOpacity, Text, useColorScheme } from 'react-native';
-import { useNavigation, useTheme } from '@react-navigation/native';
-import { collection, addDoc } from 'firebase/firestore';
-import { db, storage } from '@/config/firebaseConfig';
-import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
+import {
+  View,
+  Text,
+  SafeAreaView,
+  TextInput,
+  useColorScheme,
+  TouchableOpacity,
+} from "react-native";
+import React, { useState } from "react";
+import { db, storage } from "@/config/firebaseConfig";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { addDoc, collection } from "firebase/firestore";
+import Header from "@/components/Header";
+import Button from "@/components/Button";
+import { useNavigation, useTheme } from "@react-navigation/native";
+import Colors from "@/constants/Colors";
+import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import { Ionicons } from '@expo/vector-icons';
+
 
 const AnnouncementsUpload = () => {
   const navigation = useNavigation();
   const [imageFile, setImageFile] = useState('');
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState('');
   const [filename, setFilename] = useState("");
 
@@ -87,7 +99,7 @@ const AnnouncementsUpload = () => {
   
   async function saveRecord(url, title, description, createdAt) {
     try {
-      const docRef = await addDoc(collection(db, "sermon"), {
+      const docRef = await addDoc(collection(db, "announcement"), {
         url,
         title,
         description,
@@ -100,78 +112,138 @@ const AnnouncementsUpload = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder="Description"
-        multiline
-        numberOfLines={4}
-        value={description}
-        onChangeText={(text) => setDescription(text)}
-      />
+    <SafeAreaView
+    style={{ flex: 1, backgroundColor: isDarkMode ? "#000" : "#fff" }}
+  >
+    <Header heading="Announcements" />
+    <View style={{ flex: 1, marginHorizontal: 22 }}>
       <View style={{ marginBottom: 12 }}>
-          <Text
+        <Text
+          style={{
+            fontSize: 16,
+            fontWeight: 400,
+            marginVertical: 8,
+            color: isDarkMode ? "#fff" : "#000",
+          }}
+        >
+          Title
+        </Text>
+
+        <View
+          style={{
+            width: "100%",
+            height: 48,
+            borderColor: isDarkMode ? "#fff" : "#000",
+            borderWidth: 1,
+            borderRadius: 8,
+            alignItems: "center",
+            justifyContent: "center",
+            paddingLeft: 12,
+          }}
+        >
+          <TextInput
+            placeholder="Enter your sermon title"
+            onChangeText={(text) => setTitle(text)}
+            placeholderTextColor={isDarkMode ? "#fff" : Colors.textGrey}
             style={{
-              fontSize: 16,
-              fontWeight: 400,
-              marginVertical: 8,
+              width: "100%",
               color: isDarkMode ? "#fff" : "#000",
             }}
-          >
-            Add Video
-          </Text>
+          />
+        </View>
+      </View>
 
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <TouchableOpacity onPress={() => pickImage()} style={{ width: 50 }}>
-              <View
-                style={{
-                  width: 50,
-                  height: 48,
-                  borderColor: isDarkMode ? "#fff" : "#000",
-                  borderWidth: 1,
-                  borderRadius: 8,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  paddingLeft: 5,
-                }}
-              >
-                <Ionicons
-                  name="image-outline"
-                  size={24}
-                  color={isDarkMode ? "#fff" : "#000"}
-                />
-              </View>
-            </TouchableOpacity>
-            <Text
+      <View style={{ marginBottom: 12 }}>
+        <Text
+          style={{
+            fontSize: 16,
+            fontWeight: 400,
+            marginVertical: 8,
+            color: isDarkMode ? "#fff" : "#000",
+          }}
+        >
+          Description
+        </Text>
+
+        <View
+          style={{
+            width: "100%",
+            height: 48,
+            borderColor: isDarkMode ? "#fff" : "#000",
+            borderWidth: 1,
+            borderRadius: 8,
+            alignItems: "center",
+            justifyContent: "center",
+            paddingLeft: 12,
+          }}
+        >
+          <TextInput
+            placeholder="Enter your sermon title"
+            onChangeText={(text) => setDescription(text)}
+            placeholderTextColor={isDarkMode ? "#fff" : Colors.textGrey}
+            style={{
+              width: "100%",
+              color: isDarkMode ? "#fff" : "#000",
+            }}
+          />
+        </View>
+      </View>
+
+
+      <View style={{ marginBottom: 12 }}>
+        <Text
+          style={{
+            fontSize: 16,
+            fontWeight: 400,
+            marginVertical: 8,
+            color: isDarkMode ? "#fff" : "#000",
+          }}
+        >
+          Add PDF
+        </Text>
+
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <TouchableOpacity onPress={() => pickImage()} style={{ width: 50 }}>
+            <View
               style={{
-                marginLeft: 10,
-                marginRight: 20,
-                color: isDarkMode ? "#fff" : "#000",
+                width: 50,
+                height: 48,
+                borderColor: isDarkMode ? "#fff" : "#000",
+                borderWidth: 1,
+                borderRadius: 8,
+                alignItems: "center",
+                justifyContent: "center",
+                paddingLeft: 5,
               }}
-              numberOfLines={2}
             >
-              {filename}
-            </Text>
-          </View>
-          </View>
+              <Ionicons name="musical-notes-outline" size={24} color={isDarkMode ? "#fff" : "#000"}/>
+            </View>
+          </TouchableOpacity>
+          <Text
+            style={{
+              marginLeft: 10,
+              marginRight: 20,
+              color: isDarkMode ? "#fff" : "#000",
+            }}
+            numberOfLines={2}
+          >
+            {filename}
+          </Text>
+        </View>
+      </View>
 
-      <Button title="Upload Announcement" onPress={() => handleUpload()} />
+      <Button
+        title="Upload"
+        filled
+        style={{
+          marginTop: 18,
+          marginBottom: 4,
+        }}
+        onPress={() => handleUpload()}
+      />
     </View>
+  </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 16,
-    padding: 8,
-  },
-});
 
 export default AnnouncementsUpload;
