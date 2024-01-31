@@ -41,17 +41,17 @@ const ArticleScreen = () => {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const articlesRef = collection(db, 'articles');
+        const articlesRef = collection(db, 'article');
         const querySnapshot = await getDocs(articlesRef);
 
         const fetchedArticles = await Promise.all(
           querySnapshot.docs.map(async (doc) => {
-            const pdfDownloadUrl = await getDownloadURL(ref(storage, doc.data().pdfUrl));
+            const downloadUrl = await getDownloadURL(ref(storage, doc.data().url));
             return {
               id: doc.id,
               title: doc.data().title,
               author: doc.data().author,
-              pdfUrl: pdfDownloadUrl,
+              pdfUrl: downloadUrl,
             };
           })
         );
@@ -82,7 +82,7 @@ const ArticleScreen = () => {
   });
 
   const navigateToArticleReader = (pdfUrl) => {
-    navigation.navigate('app/(details)/articleDetail', { pdfUrl });
+    navigation.navigate('(details)/articleDetail', { pdfUrl });
   };
 
   const renderItem = ({ item }) => (

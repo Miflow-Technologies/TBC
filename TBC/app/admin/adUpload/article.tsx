@@ -23,6 +23,7 @@ const ArticleUpload = () => {
   const [author, setAuthor] = useState('');
   const [article, setArticle] = useState('')
   const [filename, setFilename] = useState("");
+  const [blobFile, setBlobFile] = useState(blobFile)
 
 
   const colorScheme = useColorScheme();
@@ -33,7 +34,7 @@ const ArticleUpload = () => {
   async function pickPDF() {
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: "application/pdf,application", // Specify the MIME type for audio files
+        type: "application/pdf",
         copyToCacheDirectory: false,
       });
 
@@ -41,9 +42,12 @@ const ArticleUpload = () => {
         setArticle(result.assets[0].uri);
         const filenameParts = result.assets[0].uri.split("/");
         setFilename(filenameParts[filenameParts.length - 1]);
+        const response = await fetch(result.assets[0].uri.uri); // Use uri.uri for documents
+        const blob = await response.blob();
+        setBlobFile(blob)
       }
     } catch (error) {
-      console.error("Error picking audio:", error);
+      console.error("Error picking pdf:", error);
     }
   }
 
@@ -55,12 +59,10 @@ const ArticleUpload = () => {
     }
   }
 
-  async function upload(uri) {
-    const response = await fetch(uri.uri); // Use uri.uri for documents
-    const blob = await response.blob();
-
+  async function upload(blobFile) {
+  
     const storageRef = ref(storage, "Article/" + new Date().getTime()); // Change storage path
-    const uploadTask = uploadBytesResumable(storageRef, blob);
+    const uploadTask = uploadBytesResumable(storageRef, blobFile);
 
     uploadTask.on(
       "state_changed",

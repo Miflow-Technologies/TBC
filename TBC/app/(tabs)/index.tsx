@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, SafeAreaView, StyleSheet, Platform, ScrollView, useColorScheme } from 'react-native';
 import { useNavigation, useTheme } from '@react-navigation/native';
 import Colors from '@/constants/Colors';
@@ -25,7 +25,7 @@ const Tbc = () => {
   const [devotionalDetails, setDevotionalDetails] = useState({
     title: '',
     subtitle: '',
-    author: '',,
+    author: '',
   });
 
   useEffect(() => {
@@ -40,9 +40,6 @@ const Tbc = () => {
             title: firstDevotional.title || '',
             subtitle: firstDevotional.passage || '',
             author: firstDevotional.author || '',
-            buttonText: firstDevotional.buttonText || '',
-            backgroundColor: firstDevotional.backgroundColor || '',
-            screen: firstDevotional.screen || '',
           });
         }
       } catch (error) {
@@ -71,7 +68,7 @@ const Tbc = () => {
             screen="(details)/dailyQuote"
           />
           <CollapsibleContainer
-            title={devotionalDetails.title}
+            title='Devotionals'
             subtitle={devotionalDetails.subtitle}
             author={devotionalDetails.author}
             buttonText="READ"

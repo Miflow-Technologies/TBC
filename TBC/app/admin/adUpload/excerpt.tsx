@@ -13,11 +13,14 @@ import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { addDoc, collection } from "firebase/firestore";
 import Header from "@/components/Header";
 import Button from "@/components/Button";
-import { useTheme } from "@react-navigation/native";
+import { useNavigation, useTheme } from "@react-navigation/native";
 import Colors from "@/constants/Colors";
-import { MaterialIcons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 const excerpt = () => {
+
+  const navigation = useNavigation();
+
   const colorScheme = useColorScheme();
   const theme = useTheme();
   const isDarkMode = colorScheme === "dark";
@@ -33,6 +36,7 @@ const excerpt = () => {
       mediaTypes: ImagePicker.MediaTypeOptions.Videos,
       allowsEditing: true,
       quality: 1,
+      aspect: [3, 4]
     });
 
     if (!result.canceled) {
@@ -42,11 +46,6 @@ const excerpt = () => {
     }
   }
 
-  const formatDuration = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const secondsRemaining = Math.floor(seconds % 60);
-    return `${minutes}:${secondsRemaining.toString().padStart(2, "0")}`;
-  };
 
   async function handleUpload() {
     if (videoFile) {
@@ -55,28 +54,53 @@ const excerpt = () => {
       alert("Please select a video first.");
     }
   }
-
+  
   async function upload(uri) {
     const response = await fetch(uri);
     const blob = await response.blob();
-
+  
     const storageRef = ref(storage, "Excerpt/" + new Date().getTime());
     const uploadTask = uploadBytesResumable(storageRef, blob);
-
-    uploadTask.on("state_changed", () => {
-      getDownloadURL(uploadTask.snapshot.ref).then(async (downloadUrl) => {
-        await saveRecord(
-          downloadUrl,
-          title,
-          preacher,
-          series,
-          new Date().getTime()
-        );
-        setVideoFile("");
-      });
-    });
+  
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        // Handle upload progress if needed
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log(`Upload progress: ${progress}%`);
+  
+        if (snapshot.state === "paused") {
+          console.log("Upload paused");
+        } else if (snapshot.state === "running") {
+          console.log("Upload running");
+        }
+      },
+      (error) => {
+        // Handle unsuccessful uploads
+        console.error("Error during upload:", error);
+      },
+      async () => {
+        // Handle successful uploads on complete
+        try {
+          const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
+          await saveRecord(
+            downloadUrl,
+            title,
+            preacher,
+            series,
+            new Date().getTime()
+          );
+          setVideoFile("");
+          console.log("Upload completed");
+          navigation.navigate('admin/adManage/excerpt')
+        } catch (error) {
+          console.error("Error getting download URL or saving record:", error);
+        }
+      }
+    );
   }
-
+  
   async function saveRecord(url, title, preacher, series, createdAt) {
     try {
       const docRef = await addDoc(collection(db, "excerpt"), {
@@ -85,18 +109,20 @@ const excerpt = () => {
         preacher,
         series,
         createdAt,
-        isFeatured: '0'
+        isFeatured: "0",
       });
-      console.log("file saved", docRef.id);
+      console.log("File saved with document ID:", docRef.id);
     } catch (e) {
-      console.log(e);
+      console.error("Error saving record:", e);
     }
   }
+  
+
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: isDarkMode ? "#000" : "#fff" }}
     >
-      <Header heading="Upload Excerpt" />
+      <Header heading="Excerpt" />
       <View style={{ flex: 1, marginHorizontal: 22 }}>
         <View style={{ marginBottom: 12 }}>
           <Text

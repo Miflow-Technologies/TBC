@@ -45,7 +45,7 @@ const upload = () => {
         };
     
         return (
-          <Pressable onPress={() => navigation.navigate(route)} onPressIn={handlePressIn} onPressOut={handlePressOut}>
+          <Pressable onPress={route} onPressIn={handlePressIn} onPressOut={handlePressOut}>
             <Animated.View style={[styles.card, animatedStyle]}>
               <Text style={styles.cardText}>{title}</Text>
             </Animated.View>
@@ -109,8 +109,8 @@ const upload = () => {
         <Header heading='UPLOAD' />
         <ScrollView>
           <View style={[styles.container, {top: 10, marginBottom: 50}]}>
-            <Card title= 'Upload Video Sermon' route={() => navigation.navigate('admin/adUpload/semon')} />
-            <Card title= 'Upload Audio Sermon' route={() => navigation.navigate('admin/adUpload/audioSemon')} />
+            <Card title= 'Upload Video Sermon' route={() => navigation.navigate('admin/adUpload/sermon')}/>
+            <Card title= 'Upload Audio Sermon' route={() => navigation.navigate('admin/adUpload/audioSermon')} />
             <Card title= 'Upload Excerpts' route={() => navigation.navigate('admin/adUpload/excerpt')} />
             <Card title= 'Upload Inspirational' route={() => navigation.navigate('admin/adUpload/inspirational')} />
             <Card title= 'Upload Daily Quotes' route={() => navigation.navigate('admin/adUpload/quote')} />

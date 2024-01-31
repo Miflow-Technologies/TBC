@@ -96,7 +96,7 @@ const Devotional = () => {
   const Header = ({ passage }) => {
     return (
       <View style={styles.header}>
-        <<Link href={"/(tabs)"}>>
+        <Link href={"/(tabs)"}>
           <Ionicons
             name="arrow-back-outline"
             size={25}
