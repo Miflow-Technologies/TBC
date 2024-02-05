@@ -1,18 +1,21 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import PDFView from 'react-native-view-pdf/lib/index';
+import Pdf from 'react-native-pdf'
 
-const articleReader: React.FC<{ pdfUri: string }> = ({ pdfUri }) => {
-  const resourceType = 'url';
+const articleDetail = ({pdfUrl}) => {
+
+  const PdfResource = { uri: pdfUrl, cache: true };
 
   return (
     <View style={styles.mainView}>
-      <PDFView
-        fadeInDuration={250.0}
+      <Pdf
+        trustAllCerts={false}
+        source={PdfResource}
         style={styles.pdfView}
-        resource={{ uri: pdfUri }}
-        resourceType={resourceType}
-      />
+        onLoadComplete={(numberOfPages, filePath) => {
+            console.log(`number of pages: ${numberOfPages}`);
+        }}
+/>
     </View>
   );
 };
@@ -29,4 +32,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default articleReader;
+export default articleDetail;

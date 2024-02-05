@@ -1,63 +1,58 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {Text, Image, View, TouchableOpacity} from 'react-native';
-import { AntDesign, FontAwesome } from "@expo/vector-icons";
-import {Sound} from "expo-av/build/Audio/Sound";
-import { StyleSheet} from "react-native";
+// PlayerWidget.js
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet,} from 'react-native';
+import { AntDesign, FontAwesome } from '@expo/vector-icons';
+import { Audio } from 'expo-av';
+import { useAudioContext } from '@/app/context/audio';
+import { Slider } from 'react-native-awesome-slider';
 
 
 
-const PlayerWidget = (uri, imageUri, artist, title) => {
-
-  const [song, setSong] = useState(null);
-  const [sound, setSound] = useState<Sound|null>(null);
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [duration, setDuration] = useState<number|null>(null);
-  const [position, setPosition] = useState<number|null>(null);
+const PlayerWidget = () => {
+  const { currentSong, playSong } = useAudioContext();
+  const [sound, setSound] = useState<Audio.Sound | null>(null);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [duration, setDuration] = useState<number | null>(null);
+  const [position, setPosition] = useState<number | null>(null);
 
   useEffect(() => {
-    const fetchSong = async () => {
-      
-    }
-              
-    fetchSong();
-  }, )
+    const loadSound = async () => {
+      if (currentSong && !sound) {
+        const { sound: newSound } = await Audio.Sound.createAsync(
+          { uri: currentSong.uri },
+          { shouldPlay: true },
+          onPlaybackStatusUpdate
+        );
+        setSound(newSound);
+      }
+    };
+
+    loadSound();
+
+    return () => {
+      if (sound) {
+        sound.unloadAsync();
+      }
+    };
+  }, [currentSong]);
 
   const onPlaybackStatusUpdate = (status) => {
     setIsPlaying(status.isPlaying);
     setDuration(status.durationMillis);
     setPosition(status.positionMillis);
-  }
-
-  const playCurrentSong = async () => {
-    if (sound) {
-      await sound.unloadAsync();
-    }
-
-    const { sound: newSound } = await Sound.createAsync(
-      { uri: uri },
-      { shouldPlay: isPlaying },
-      onPlaybackStatusUpdate
-    )
-
-    setSound(newSound)
-  }
-
-  useEffect(() => {
-    if (song) {
-      playCurrentSong();
-    }
-  }, [song])
+  };
 
   const onPlayPausePress = async () => {
     if (!sound) {
       return;
     }
+
     if (isPlaying) {
-      await sound.stopAsync();
+      await sound.pauseAsync();
     } else {
       await sound.playAsync();
     }
-  }
+  };
 
   const getProgress = () => {
     if (sound === null || duration === null || position === null) {
@@ -65,81 +60,83 @@ const PlayerWidget = (uri, imageUri, artist, title) => {
     }
 
     return (position / duration) * 100;
-  }
+  };
 
-  if (!song) {
-    return null;
-  }
+  const handlePositionChange = (value) => {
+    setPosition(value);
+
+    // Update the audio playback to match the new position:
+    if (sound) {
+      sound.setPositionAsync(value);
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <View style={[styles.progress, { width: `${getProgress()}%`}]} />
-      <View style={styles.row}>
-        <Image source={{ uri: imageUri }} style={styles.image} />
-        <View style={styles.rightContainer}>
-          <View style={styles.nameContainer}>
-            <Text style={styles.title}>{title}</Text>
-            <Text style={styles.artist}>{artist}</Text>
-          </View>
+      <Image style={styles.albumArt} source={{ uri: currentSong ? currentSong.imageUri : '' }} />
 
-          <View style={styles.iconsContainer}>
-            <AntDesign name="hearto" size={30} color={"white"}/>
-            <TouchableOpacity onPress={onPlayPausePress}>
-              <FontAwesome name={isPlaying ? 'pause' : 'play'} size={30} color={"white"}/>
-            </TouchableOpacity>
-          </View>
-        </View>
+      <View style={styles.songInfo}>
+        <Text style={styles.title}>{currentSong ? currentSong.title : ''}</Text>
+        <Text style={styles.artist}>{currentSong ? currentSong.artist : ''}</Text>
+      </View>
+
+      <Slider
+        style={styles.progressBar}
+        progress={getProgress()} // Use the getProgress function for value
+        minimumValue={0}
+        maximumValue={duration || 1}
+        minimumTrackTintColor="#3498db"
+        thumbTintColor="#3498db"
+        onValueChange={handlePositionChange}
+      />
+
+
+      <View style={styles.controls}>
+        <TouchableOpacity onPress={onPlayPausePress}>
+          <FontAwesome name={isPlaying ? 'pause' : 'play'} size={30} color="#000" />
+        </TouchableOpacity>
       </View>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
-    container: {
-      position: 'absolute',
-      bottom: 79,
-      backgroundColor: '#131313',
-      width: '100%',
-      borderWidth: 2,
-      borderColor: 'black',
+  container: {
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 10,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
     },
-    progress: {
-      height: 3,
-      backgroundColor: '#bcbcbc'
-    },
-    row: {
-      flexDirection: 'row',
-    },
-    image: {
-      width: 75,
-      height: 75,
-      marginRight: 10,
-    },
-    rightContainer: {
-      flex: 1,
-      flexDirection: 'row',
-      justifyContent: 'space-between'
-    },
-    nameContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    iconsContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      width: 100,
-      justifyContent: 'space-around'
-    },
-    title: {
-      color: 'white',
-      fontSize: 18,
-      fontWeight: 'bold',
-      margin: 10,
-    },
-    artist: {
-      color: 'lightgray',
-      fontSize: 18,
-    }
-  })
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  albumArt: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  songInfo: {
+    marginBottom: 16,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  artist: {
+    color: '#888',
+  },
+  progressBar: {
+    marginBottom: 16,
+  },
+  controls: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+});
 
 export default PlayerWidget;

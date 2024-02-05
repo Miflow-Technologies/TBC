@@ -12,7 +12,7 @@ import { CommonActions, useNavigation } from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AuthContext } from './Auth';
+import { AuthContext } from '../context/Auth';
 
 const Login = () => {
   const navigation = useNavigation();

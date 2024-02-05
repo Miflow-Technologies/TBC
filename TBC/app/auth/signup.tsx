@@ -20,7 +20,7 @@ import Colors from '@/constants/Colors';
 import Button from '@/components/Button';
 import { useNavigation } from '@react-navigation/native';
 import { Link } from 'expo-router';
-import { AuthContext } from './Auth';
+import { AuthContext } from '../context/Auth';
   
   
   const Signup = () => {

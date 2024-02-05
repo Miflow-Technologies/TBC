@@ -1,8 +1,8 @@
-import { SafeAreaView, ScrollView, StyleSheet, Text, View, FlatList, Platform, TouchableOpacity, Dimensions } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, Text, View, FlatList, Platform, TouchableOpacity, Dimensions , Image, Pressable} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from 'react-native';
-import { useTheme } from '@react-navigation/native';
+import { useNavigation, useTheme } from '@react-navigation/native';
 import { Poppins_500Medium, Poppins_700Bold, } from '@expo-google-fonts/poppins';
 import { NotoSerif_400Regular, NotoSerif_700Bold, } from '@expo-google-fonts/noto-serif';
 import { useFonts } from 'expo-font';
@@ -11,12 +11,17 @@ import { Ionicons } from '@expo/vector-icons';
 import { query, collection, getDocs, where, orderBy, limit } from 'firebase/firestore'; // Import query, where, orderBy, and limit
 import { getDownloadURL, ref } from 'firebase/storage';
 import { db, storage } from '@/config/firebaseConfig';
+import { AudioProvider, useAudioContext } from '../context/audio';
 
 const Sermon = () => {
-    const [featuredSermons, setFeaturedSermons] = useState([]);
+
+    const navigation = useNavigation()
+
+    const [audioSermons, setAudioSermons] = useState([]);
     const [sermons, setSermons] = useState([]);
     const [excerpts, setExcerpts] = useState([]);
     const [inspirationals, setInspirationals] = useState([]);
+    const { setSongs } = useAudioContext(); 
 
     const colorScheme = useColorScheme();
     const theme = useTheme();
@@ -29,30 +34,7 @@ const Sermon = () => {
       NotoSerif_700Bold,
     });
   
-    useEffect(() => {
-      const fetchFeaturedVideos = async (collectionName, setStateFunction) => {
-        try {
-          const featuredVideosQuery = query(collection(db, collectionName), where('isFeatured', '==', true));
-          const featuredVideosSnapshot = await getDocs(featuredVideosQuery);
-    
-          const fetchedFeaturedVideos = await Promise.all(
-            featuredVideosSnapshot.docs.map(async (doc) => ({
-              id: doc.id,
-              title: doc.data().title,
-              preacher: doc.data().preacher,
-              series: doc.data().series,
-              videoUrl: await getDownloadURL(ref(storage, doc.data().url)),
-              isFeatured: doc.data().isFeatured
-            }))
-          );
-    
-          setStateFunction(fetchedFeaturedVideos);
-          console.log(`Fetched Featured Videos for ${collectionName}:`, fetchedFeaturedVideos);
-        } catch (error) {
-          console.error(`Error fetching featured ${collectionName}:`, error);
-        }
-      };
-    
+    useEffect(() => {    
       const fetchLatestVideos = async (collectionName, setStateFunction) => {
         try {
           const videosRef = query(collection(db, collectionName), limit(5));
@@ -79,35 +61,53 @@ const Sermon = () => {
           console.error(`Error fetching latest ${collectionName}:`, error);
         }
       };
+
+      const fetchAudioSermons = async () => {
+        try {
+          const audioSermonsQuery = query(collection(db, 'audioSermon'));
+          const audioSermonsSnapshot = await getDocs(audioSermonsQuery);
+      
+          const fetchedAudioSermons = await Promise.all(
+            audioSermonsSnapshot.docs.map(async (doc) => {
+              const audioDownloadUrl = await getDownloadURL(ref(storage, doc.data().audioUrl));
+              const imageDownloadUrl = await getDownloadURL(ref(storage, doc.data().imageUrl));
+              return {
+                id: doc.id,
+                title: doc.data().title,
+                preacher: doc.data().preacher,
+                series: doc.data().series,
+                audioUrl: audioDownloadUrl,
+                imageUrl: imageDownloadUrl,
+                isFeatured: doc.data().isFeatured,
+              };
+            })
+          );
+      
+          setAudioSermons(fetchedAudioSermons);
+          setSongs(fetchedAudioSermons); // Update the list of songs
+          console.log('Fetched Audio Sermons:', fetchedAudioSermons);
+        } catch (error) {
+          console.error('Error fetching audio sermons:', error);
+        }
+      };
+      
       
     
-      // Fetch featured videos for sermons and excerpts
-      fetchFeaturedVideos('sermon', setFeaturedSermons);
     
-      // Fetch latest videos for sermons, excerpts, and inspirationals
+      fetchAudioSermons()
       fetchLatestVideos('sermon', setSermons);
       fetchLatestVideos('excerpt', setExcerpts);
       fetchLatestVideos('inspirationals', setInspirationals);
-    }, []); // Empty dependency array to run the effect only once
+    }, []);
     
   
   
-    const Thumbnail = ({ videoUrl }) => {
-      console.log('Video URL:', videoUrl);
-
-      return (
-      <Video
-        style={styles.thumbnail}
-        source={{
-          uri: videoUrl,
-        }}
-        useNativeControls
-        isLooping
-        resizeMode='contain'
-        onFullscreenUpdate={onFullscreenUpdate}
+    const Thumbnail = ( props ) => (
+      <Image
+        style={styles.mage}
+        source={{ uri:props.imageUrl }}
       />
-      )
-      };
+)
     
     const Ithumbnail = ({ videoUrl }) => (
       <Video
@@ -159,8 +159,8 @@ const Series = (props) => (
   </Text>
 );
 
-const SeeMore = (props) => (
-  <TouchableOpacity style={styles.seeMore} onPress={props.onPress}>
+const SeeMore = (route) => (
+  <TouchableOpacity style={styles.seeMore} onPress={() => navigation.navigate(route)}>
     <Text style={{color: Colors.blue, fontFamily: 'Poppins_500Medium'}}>SEE MORE</Text>
     <Ionicons name="chevron-forward" size={20} color = {Colors.blue} />
   </TouchableOpacity>
@@ -180,10 +180,18 @@ const styles = StyleSheet.create({
     height: 150,
     width: 270
   },
-  image: {
+  video: {
     borderRadius: 8,
     height: 150,
     width: 225
+  },
+  image: {
+    height: 262,
+    width: 17
+  },
+  mage: {
+    height: 170,
+    width: 200
   },
   heading: {
     color: isDarkMode ? '#fff': Colors.textGrey,
@@ -244,19 +252,12 @@ const FeaturedCard = (props) => (
 const featuredCardStyles = StyleSheet.create({
   card: {
     backgroundColor: theme.colors.background,
-    borderColor: isDarkMode ? '#000' : '#E7E3EB',
-    borderRadius: 12,
-    borderWidth: 1,
     height: Platform.OS === 'ios' ? 250 : 250,
     width: Platform.OS === 'ios' ? 300 : 300,
     padding: 12,
     marginRight: 16,
     marginBottom: 10,
     shadowColor: isDarkMode ? '#fff' : '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,  
-    elevation: 5
   },
   title: {
     textAlign: 'flex-start',
@@ -268,14 +269,12 @@ const featuredCardStyles = StyleSheet.create({
 
 const SermonCard = (props) => (
   <View style={sermonCardStyles.card}>
-  <Ithumbnail videoUrl={props.videoUrl} />
-  <View style={sermonCardStyles.title}>
-    <Title>{props.name}</Title>
-    <Preacher>{props.preacher}</Preacher>
-    <Duration>{props.duration}</Duration>
-    <Series>{props.series}</Series>
+    <Thumbnail imageUrl={props.imageUrl} />
+    <View style={sermonCardStyles.title}>
+      <Title>{props.name}</Title>
+      <Preacher>{props.preacher}</Preacher>
+    </View>
   </View>
-</View>
 );
 
 const ExCard = (props) => (
@@ -293,19 +292,11 @@ const ExCard = (props) => (
 const sermonCardStyles = StyleSheet.create({
   card: {
     backgroundColor: theme.colors.background,
-    borderColor: isDarkMode ? '#000' : '#E7E3EB',
-    borderRadius: 12,
-    borderWidth: 1,
     height: Platform.OS === 'ios' ? 252 : 252,
-    width: Platform.OS === 'ios' ? 252 : 252,
+    width: Platform.OS === 'ios' ? 250 : 250,
     padding: 12,
     marginRight: 16,
     marginBottom: 10,
-    shadowColor: isDarkMode ? '#fff' : '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,  
-    elevation: 5
   },
   title: {
     textAlign: 'flex-start',
@@ -313,49 +304,86 @@ const sermonCardStyles = StyleSheet.create({
   },
 });
 
+const ExcerptsCardStyles = StyleSheet.create({
+  card: {
+    height: Platform.OS === 'ios' ? 262 : 262,
+    width: Platform.OS === 'ios' ? 176 : 176,
+    marginRight: 16,
+    marginBottom: 10,
+  },
+  title: {
+    textAlign: 'flex-start',
+    paddingTop: 8,
+  },
+});
+
+  const { playSong } = useAudioContext();
+
   return (
     <SafeAreaView>
-      <ScrollView style={{top: Platform.OS === 'ios' ? 50 : 50, marginBottom: Platform.OS === 'ios' ? 50 : 130}}>
-        <Heading>Featured</Heading>
-        <FlatList horizontal style={{paddingHorizontal: 24}}
-          data={featuredSermons}
-          keyExtractor={item => item.id}
-          renderItem={({item}) => 
-          (<FeaturedCard name={item.title} thumbnail={item.videoUrl} preacher={item.preacher} duration={item.duration} series={item.series} />) }
-        />
+    <ScrollView style={{ top: Platform.OS === 'ios' ? 50 : 50, marginBottom: Platform.OS === 'ios' ? 50 : 130 }}>
 
+      <View style={{ justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center' }}>
+        <Heading>Audio Sermon</Heading>
+        <SeeMore route='(details)/audioList' />
+      </View>
+      <FlatList horizontal style={{ paddingHorizontal: 24 }}
+        data={audioSermons}
+        keyExtractor={item => item.id}
+        renderItem={({ item }) => (
+          <Pressable onPress={() => playSong(item)}>
+          <View style={sermonCardStyles.card}>
+            <Thumbnail imageUrl={item.imageUrl} />
+            <View style={sermonCardStyles.title}>
+              <Title>{item.title}</Title>
+              <Preacher>{item.preacher}</Preacher>
+            </View>
+          </View>
+          </Pressable>
+        )}
+      />
 
-        <View style={{justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center'}}>
-          <Heading>Sermon</Heading>
-          <SeeMore />
-        </View>
-        <FlatList horizontal style={{paddingHorizontal: 24}}
-          data={sermons}
-          keyExtractor={item => item.id}
-          renderItem={({item}) => <SermonCard ithumbnail={item.videoUrl} name={item.title} preacher={item.preacher} duration={item.duration} />}
-        />
+      <View style={{ justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center' }}>
+        <Heading>Excerpts</Heading>
+        <SeeMore route='(details)/excerpts' />
+      </View>
+      <FlatList horizontal style={{ paddingHorizontal: 24 }}
+        data={excerpts}
+        renderItem={({ item }) => (
+          <View style={ExcerptsCardStyles.card}>
+            <Ithumbnail videoUrl={item.videoUrl} />
+            <View style={sermonCardStyles.title}>
+              <Title>{item.title}</Title>
+              <Preacher>{item.preacher}</Preacher>
+              <ExDuration>{item.duration}</ExDuration>
+              <Series>{item.series}</Series>
+            </View>
+          </View>
+        )}
+        keyExtractor={item => item.id.toString()}
+      />
 
-        <View style={{justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center'}}>
-          <Heading>Excerpts</Heading>
-          <SeeMore />
-        </View>
-        <FlatList horizontal style={{paddingHorizontal: 24}}
-          data={excerpts}
-          renderItem={({item}) => <ExCard ithumbnail={item.videoUrl} name={item.title} preacher={item.preacher} duration={item.duration} />}
-          keyExtractor={item => item.id.toString()}
-        />
-
-        <View style={{justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center'}}>
-          <Heading>Inspirationals</Heading>
-          <SeeMore />
-        </View>
-        <FlatList horizontal style={{paddingHorizontal: 24}}
-          data={inspirationals}
-          renderItem={({item}) => <ExCard ithumbnail={item.videoUrl} name={item.title} preacher={item.preacher} duration={item.duration} />}
-          keyExtractor={item => item.id.toString()}
-        />
-      </ScrollView>
-</SafeAreaView>
+      <View style={{ justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center' }}>
+        <Heading>Inspirationals</Heading>
+        <SeeMore route='(details)/inspirationals' />
+      </View>
+      <FlatList horizontal style={{ paddingHorizontal: 24 }}
+        data={inspirationals}
+        renderItem={({ item }) => (
+          <View style={sermonCardStyles.card}>
+            <Ithumbnail videoUrl={item.videoUrl} />
+            <View style={sermonCardStyles.title}>
+              <Title>{item.title}</Title>
+              <Preacher>{item.preacher}</Preacher>
+              <ExDuration>{item.duration}</ExDuration>
+              <Series>{item.series}</Series>
+            </View>
+          </View>
+        )}
+        keyExtractor={item => item.id.toString()}
+      />
+    </ScrollView>
+  </SafeAreaView>
 );
 }
 

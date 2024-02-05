@@ -219,7 +219,7 @@ const DailyQuoteUpload = () => {
                 paddingLeft: 5,
               }}
             >
-              <Ionicons name="musical-notes-outline" size={24} color={isDarkMode ? "#fff" : "#000"}/>
+              <Ionicons name="image" size={24} color={isDarkMode ? "#fff" : "#000"}/>
             </View>
           </TouchableOpacity>
           <Text

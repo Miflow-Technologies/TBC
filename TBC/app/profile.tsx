@@ -20,7 +20,7 @@ import { useNavigation } from '@react-navigation/native';
 import Header from '@/components/Header'
 import { FontAwesome5, Ionicons } from '@expo/vector-icons'
 import Button from '@/components/Button'
-import { AuthContext } from './auth/Auth';
+import { AuthContext } from './context/Auth';
 
 
 

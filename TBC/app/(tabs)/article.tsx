@@ -82,7 +82,7 @@ const ArticleScreen = () => {
   });
 
   const navigateToArticleReader = (pdfUrl) => {
-    navigation.navigate('(details)/articleDetail', { pdfUrl });
+    navigation.navigate('(details)/articleReader', { pdfUrl });
   };
 
   const renderItem = ({ item }) => (
@@ -93,7 +93,7 @@ const ArticleScreen = () => {
         },
         cardStyles.card,
       ]}
-      onPress={() => navigateToArticleReader(item.pdfUri)}
+      onPress={() => navigateToArticleReader(item.pdfUrl)}
     >
       <View style={cardStyles.title}>
         <Title>{item.title}</Title>

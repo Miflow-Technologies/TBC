@@ -4,7 +4,8 @@ import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
 import {  useContext, useEffect } from 'react';
 import { useColorScheme } from 'react-native';
-import { AuthProvider } from '@/app/auth/Auth'
+import { AuthProvider } from '@/app/context/Auth'
+import { AudioProvider } from './context/audio';
 
 
 
@@ -52,6 +53,7 @@ function RootLayoutNav() {
 
   return (
     <AuthProvider>
+      <AudioProvider>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -60,7 +62,7 @@ function RootLayoutNav() {
           <Stack.Screen name="(details)/dailyQuote" options={{ headerShown: false }} />
           <Stack.Screen name="(details)/devotional" options={{ headerShown: false }} />
           <Stack.Screen name="(details)/announcements" options={{ headerShown: false }} />
-          <Stack.Screen name="(details)/articleDetail" options={{ headerShown: false }} />
+          <Stack.Screen name="(details)/articleReader" options={{ headerShown: false }} />
           <Stack.Screen name="admin/adminPanel" options={{ headerShown: false }} />
           <Stack.Screen 
           name="auth/login" 
@@ -74,6 +76,7 @@ function RootLayoutNav() {
           />
         </Stack>
       </ThemeProvider>
+      </AudioProvider>
     </AuthProvider>
   );
 }
