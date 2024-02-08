@@ -11,7 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { query, collection, getDocs, where, orderBy, limit } from 'firebase/firestore'; // Import query, where, orderBy, and limit
 import { getDownloadURL, ref } from 'firebase/storage';
 import { db, storage } from '@/config/firebaseConfig';
-import { AudioProvider, useAudioContext } from '../context/audio';
+import { useAudioContext } from '../context/audio';
 
 const Sermon = () => {
 
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
   },
   image: {
     height: 262,
-    width: 17
+    width: 176
   },
   mage: {
     height: 170,
@@ -351,26 +351,6 @@ const ExcerptsCardStyles = StyleSheet.create({
         data={excerpts}
         renderItem={({ item }) => (
           <View style={ExcerptsCardStyles.card}>
-            <Ithumbnail videoUrl={item.videoUrl} />
-            <View style={sermonCardStyles.title}>
-              <Title>{item.title}</Title>
-              <Preacher>{item.preacher}</Preacher>
-              <ExDuration>{item.duration}</ExDuration>
-              <Series>{item.series}</Series>
-            </View>
-          </View>
-        )}
-        keyExtractor={item => item.id.toString()}
-      />
-
-      <View style={{ justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center' }}>
-        <Heading>Inspirationals</Heading>
-        <SeeMore route='(details)/inspirationals' />
-      </View>
-      <FlatList horizontal style={{ paddingHorizontal: 24 }}
-        data={inspirationals}
-        renderItem={({ item }) => (
-          <View style={sermonCardStyles.card}>
             <Ithumbnail videoUrl={item.videoUrl} />
             <View style={sermonCardStyles.title}>
               <Title>{item.title}</Title>

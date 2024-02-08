@@ -10,7 +10,7 @@ interface Song {
 }
 
 
-// Define the AudioContextProps interface
+
 interface AudioContextProps {
   currentSong: Song | null;
   songs: Song[];
@@ -21,22 +21,23 @@ interface AudioContextProps {
   toggleRepeatMode: () => void;
 }
 
-// Create the AudioContext with the AudioContextProps interface
+
 const AudioContext = createContext<AudioContextProps | undefined>(undefined);
 
-// Create the AudioProvider component
+
 export const AudioProvider: React.FC = ({ children }) => {
-  // State variables for currentSong, sound, songs, currentSongIndex, and isRepeating
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [songs, setSongs] = useState<Song[]>([]); 
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
   const [isRepeating, setIsRepeating] = useState(false);
 
-  // useEffect to load sound when currentSong changes
+
   useEffect(() => {
+    console.log("Current Song:", currentSong);
     const loadSound = async () => {
       if (currentSong) {
+        console.log("Loading Sound...");
         const { sound: newSound } = await Audio.Sound.createAsync(
           { uri: currentSong.audioUrl },
           { shouldPlay: true }
@@ -47,20 +48,20 @@ export const AudioProvider: React.FC = ({ children }) => {
 
     loadSound();
 
-    // Clean up function to unload sound when component unmounts
     return () => {
+      console.log("Unloading Sound...");
       if (sound) {
         sound.unloadAsync();
       }
     };
   }, [currentSong]);
 
-  // Function to play a specific song
+
   const playSong = (song: Song) => {
     setCurrentSong(song);
   };
 
-  // Function to play the previous song
+
   const playPreviousSong = () => {
     if (currentSongIndex > 0) {
       setCurrentSongIndex(currentSongIndex - 1);
@@ -68,7 +69,7 @@ export const AudioProvider: React.FC = ({ children }) => {
     }
   };
 
-  // Function to play the next song
+
   const playNextSong = () => {
     if (currentSongIndex < songs.length - 1) {
       setCurrentSongIndex(currentSongIndex + 1);
@@ -76,12 +77,11 @@ export const AudioProvider: React.FC = ({ children }) => {
     }
   };
 
-  // Function to toggle repeat mode
+
   const toggleRepeatMode = () => {
     setIsRepeating(!isRepeating);
   };
 
-  // Define the value to be provided by the context
   const value: AudioContextProps = {
     currentSong,
     songs,
@@ -93,13 +93,13 @@ export const AudioProvider: React.FC = ({ children }) => {
     setSongs,
   };
 
-  // Provide the context with the specified value to the children components
+
   return (
     <AudioContext.Provider value={value}>{children}</AudioContext.Provider>
   );
 };
 
-// Create a custom hook to use the audio context
+
 export const useAudioContext = () => {
   const context = useContext(AudioContext);
   if (!context) {

@@ -1,4 +1,4 @@
-import { View, Text, useColorScheme, Platform, TouchableOpacity, SafeAreaView, StyleSheet } from 'react-native'
+import { View, Text, useColorScheme, Platform, TouchableOpacity, SafeAreaView, StyleSheet, ScrollView } from 'react-native'
 import React from 'react'
 import { useNavigation, useTheme } from '@react-navigation/native';
 import { Poppins_500Medium, Poppins_700Bold, useFonts } from '@expo-google-fonts/poppins';
@@ -89,14 +89,33 @@ const manage = () => {
   return (
     <SafeAreaView>
         <Header heading='MANAGE' />
-          <View style={[styles.container, {top: 10, marginBottom: 50}]}>
+          <ScrollView style={[styles.container, {top: 10, marginBottom: 50}]}>
             <TouchableOpacity onPress={() => navigation.navigate('')}>
                 <Card title='Sermon'/>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate('')}>
                 <Card title='Excerpts'/>
             </TouchableOpacity>
-          </View>
+            <TouchableOpacity onPress={() => navigation.navigate('')}>
+                <Card title='Audio Sermon'/>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('')}>
+                <Card title='Goaks'/>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('')}>
+                <Card title='Devotional'/>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('')}>
+                <Card title='Articles'/>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('')}>
+                <Card title='Daily Quote'/>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('')}>
+                <Card title='Announcements'/>
+            </TouchableOpacity>
+          </ScrollView>
+
     </SafeAreaView>
   )
 }

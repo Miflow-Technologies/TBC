@@ -112,7 +112,6 @@ const upload = () => {
             <Card title= 'Upload Video Sermon' route={() => navigation.navigate('admin/adUpload/sermon')}/>
             <Card title= 'Upload Audio Sermon' route={() => navigation.navigate('admin/adUpload/audioSermon')} />
             <Card title= 'Upload Excerpts' route={() => navigation.navigate('admin/adUpload/excerpt')} />
-            <Card title= 'Upload Inspirational' route={() => navigation.navigate('admin/adUpload/inspirational')} />
             <Card title= 'Upload Daily Quotes' route={() => navigation.navigate('admin/adUpload/quote')} />
             <Card title= 'Upload Articles' route={() => navigation.navigate('admin/adUpload/article')} />
             <Card title= 'Upload Devotionals' route={() => navigation.navigate('admin/adUpload/devotional')} />
