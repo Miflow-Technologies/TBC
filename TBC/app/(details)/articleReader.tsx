@@ -1,35 +1,30 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import Pdf from 'react-native-pdf'
+import React, { useEffect } from 'react';
+import { View, } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
+import WebView from 'react-native-webview';
+import { PdfReader } from '@bildau/rn-pdf-reader';
 
-const articleDetail = ({pdfUrl}) => {
+const ArticleReaderScreen = () => {
+  const navigation = useNavigation();
+  const route = useRoute();
 
-  const PdfResource = { uri: pdfUrl, cache: true };
+  const { pdfUrl } = route.params;
+  console.log(pdfUrl)
+
+  useEffect(() => {
+    if (!pdfUrl) {
+      navigation.goBack(); 
+    }
+  }, [navigation, pdfUrl]);
 
   return (
-    <View style={styles.mainView}>
-      <Pdf
-        trustAllCerts={false}
-        source={PdfResource}
-        style={styles.pdfView}
-        onLoadComplete={(numberOfPages, filePath) => {
-            console.log(`number of pages: ${numberOfPages}`);
-        }}
-/>
-    </View>
+      <PdfReader
+      uri={pdfUrl}
+      style={{ flex: 1 }}
+      // Add other PdfReader props as needed (e.g., password, initialPage)
+    />
   );
 };
 
-const styles = StyleSheet.create({
-  mainView: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-  },
-  pdfView: {
-    height: '100%',
-    width: '100%',
-  },
-});
-
-export default articleDetail;
+export default ArticleReaderScreen;

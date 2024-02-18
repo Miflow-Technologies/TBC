@@ -5,6 +5,7 @@ import {
   TextInput,
   useColorScheme,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import * as DocumentPicker from "expo-document-picker";
@@ -29,29 +30,25 @@ const AudioSermon = () => {
   const [series, setSeries] = useState("");
   const [audioFile, setAudioFile] = useState("");
   const [audioFilename, setAudioFilename] = useState("");
-  const [audioBlob, setAudioBlob] = useState(null); // New state for audio blob
   const [imageFile, setImageFile] = useState("");
   const [imageFilename, setImageFilename] = useState("");
-  const [imageBlob, setImageBlob] = useState(null); // New state for image blob
+  const [isUploading, setIsUploading] = useState(false);
 
-  async function pickAudio() {
+  const pickAudio = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: "audio/*", // Specify the MIME type for audio files
-        copyToCacheDirectory: false,
+        type: 'audio/*',
       });
 
       if (!result.canceled) {
-        setAudioFile(result.assets[0].uri);
-        setAudioFilename(result.assets[0].name);
-        const response = await fetch(result.assets[0].uri);
-        const blob = await response.blob();
-        setAudioBlob(blob);
+        const asset = result.assets[0];
+        setAudioFile(asset.uri);
+        setAudioFilename(asset.name);
       }
     } catch (error) {
-      console.error("Error picking audio:", error);
+      console.error('Error picking audio:', error);
     }
-  }
+  };
 
   async function pickImage() {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -65,24 +62,27 @@ const AudioSermon = () => {
       setImageFile(result.assets[0].uri);
       const filenameParts = result.assets[0].uri.split("/")
       setImageFilename(filenameParts[filenameParts.length - 1]);
-      const response = await fetch(result.assets[0].uri);
-      const blob = await response.blob();
-      setImageBlob(blob);
     }
   }
 
   async function handleUpload() {
     if (audioFile && imageFile) {
-      await upload(audioBlob, imageBlob);
+      setIsUploading(true);
+      await upload(audioFile, imageFile);
     } else {
       alert("Please select both audio and album art.");
     }
   }
 
-  async function upload(audioBlob, imageBlob) {
+  async function upload(audioFile, imageFile) {
+    const response = await fetch(audioFile);
+    const audioBlob = await response.blob();
     const audioStorageRef = ref(storage, "audioSermon/" + new Date().getTime());
     const audioUploadTask = uploadBytesResumable(audioStorageRef, audioBlob);
 
+
+    const iresponse = await fetch(imageFile);
+    const imageBlob = await iresponse.blob();
     const imageStorageRef = ref(storage, "albumArt/" + new Date().getTime());
     const imageUploadTask = uploadBytesResumable(imageStorageRef, imageBlob);
 
@@ -132,8 +132,10 @@ const AudioSermon = () => {
         isFeatured: "0",
       });
       console.log("Record saved with document ID:", docRef.id);
+      setIsUploading(false);
     } catch (e) {
       console.error("Error saving record:", e);
+      setIsUploading(false);
     }
   }
 
@@ -337,7 +339,8 @@ const AudioSermon = () => {
           </View>
   
           <Button
-            title="Upload"
+            title={isUploading ? "Uploading..." : "Upload"}
+            loading={isUploading} // Use loading prop for native button
             filled
             style={{
               marginTop: 18,
@@ -345,6 +348,12 @@ const AudioSermon = () => {
             }}
             onPress={() => handleUpload()}
           />
+
+      {isUploading && (
+        <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, alignItems: "center", justifyContent: "center" }}>
+          <ActivityIndicator size="large" color={isDarkMode ? "#fff" : "#000"} />
+        </View>
+      )}  
         </View>
       </SafeAreaView>
     );

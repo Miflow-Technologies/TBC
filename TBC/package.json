@@ -13,6 +13,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@bildau/rn-pdf-reader": "^4.2.7",
     "@expo-google-fonts/noto-serif": "^0.2.3",
     "@expo-google-fonts/poppins": "^0.2.3",
     "@expo/vector-icons": "^13.0.0",

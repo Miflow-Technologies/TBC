@@ -23,7 +23,6 @@ const ArticleUpload = () => {
   const [author, setAuthor] = useState('');
   const [article, setArticle] = useState('')
   const [filename, setFilename] = useState("");
-  const [blobFile, setBlobFile] = useState(blobFile)
 
 
   const colorScheme = useColorScheme();
@@ -31,25 +30,21 @@ const ArticleUpload = () => {
   const isDarkMode = colorScheme === "dark";
 
 
-  async function pickPDF() {
+  const pickPDF = async  () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: "application/pdf",
-        copyToCacheDirectory: false,
+        type: 'application/pdf',
       });
 
       if (!result.canceled) {
-        setArticle(result.assets[0].uri);
-        const filenameParts = result.assets[0].uri.split("/");
-        setFilename(filenameParts[filenameParts.length - 1]);
-        const response = await fetch(result.assets[0].uri.uri); // Use uri.uri for documents
-        const blob = await response.blob();
-        setBlobFile(blob)
+        const asset = result.assets[0];
+        setArticle(asset.uri);
+        setFilename(asset.name);
       }
     } catch (error) {
-      console.error("Error picking pdf:", error);
+      console.error('Error picking PDF:', error);
     }
-  }
+  };
 
   async function handleUpload() {
     if (article) {
@@ -59,10 +54,17 @@ const ArticleUpload = () => {
     }
   }
 
-  async function upload(blobFile) {
-  
+  async function upload(article) {
+
+    if (!article) {
+      alert('Please select a PDF file first.');
+      return;
+    }
+    const response = await fetch(article);
+    const blob = await response.blob();
+
     const storageRef = ref(storage, "Article/" + new Date().getTime()); // Change storage path
-    const uploadTask = uploadBytesResumable(storageRef, blobFile);
+    const uploadTask = uploadBytesResumable(storageRef, blob);
 
     uploadTask.on(
       "state_changed",

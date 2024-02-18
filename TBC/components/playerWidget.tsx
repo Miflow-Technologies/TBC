@@ -18,12 +18,16 @@ const PlayerWidget = () => {
   useEffect(() => {
     const loadSound = async () => {
       if (currentSong && !sound) {
-        const { sound: newSound } = await Audio.Sound.createAsync(
-          { uri: currentSong.uri },
-          { shouldPlay: true },
-          onPlaybackStatusUpdate
-        );
-        setSound(newSound);
+        try {
+          const { sound: newSound } = await Audio.Sound.createAsync(
+            { uri: currentSong.audioUrl },
+            { shouldPlay: true },
+            onPlaybackStatusUpdate
+          );
+          setSound(newSound);
+        } catch (error) {
+          console.error("Error loading sound:", error);
+        }
       }
     };
 

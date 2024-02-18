@@ -12,6 +12,7 @@ import { query, collection, getDocs, where, orderBy, limit } from 'firebase/fire
 import { getDownloadURL, ref } from 'firebase/storage';
 import { db, storage } from '@/config/firebaseConfig';
 import { useAudioContext } from '../context/audio';
+import PlayerWidget from '@/components/playerWidget';
 
 const Sermon = () => {
 
@@ -21,7 +22,9 @@ const Sermon = () => {
     const [sermons, setSermons] = useState([]);
     const [excerpts, setExcerpts] = useState([]);
     const [inspirationals, setInspirationals] = useState([]);
-    const { setSongs } = useAudioContext(); 
+    const { setSongs } = useAudioContext();
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [isVisible, setIsVisible] = useState(false);
 
     const colorScheme = useColorScheme();
     const theme = useTheme();
@@ -363,6 +366,7 @@ const ExcerptsCardStyles = StyleSheet.create({
         keyExtractor={item => item.id.toString()}
       />
     </ScrollView>
+    <PlayerWidget />
   </SafeAreaView>
 );
 }
