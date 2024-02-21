@@ -3,7 +3,7 @@ import { View, } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
 import WebView from 'react-native-webview';
-import { PdfReader } from '@bildau/rn-pdf-reader';
+import  PdfReader  from '@bildau/rn-pdf-reader';
 
 const ArticleReaderScreen = () => {
   const navigation = useNavigation();
@@ -20,8 +20,10 @@ const ArticleReaderScreen = () => {
 
   return (
       <PdfReader
-      uri={pdfUrl}
-      style={{ flex: 1 }}
+        source={{
+          uri : pdfUrl
+        }}
+        style={{ flex: 1 }}
       // Add other PdfReader props as needed (e.g., password, initialPage)
     />
   );
