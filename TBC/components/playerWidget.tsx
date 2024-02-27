@@ -4,8 +4,11 @@ import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
 import { useAudioContext } from '@/app/context/audio';
 import Colors from '@/constants/Colors';
+import { useNavigation } from 'expo-router';
 
-const PlayerWidget = () => {
+const PlayerWidget = ({style}) => {
+  const navigation = useNavigation();
+  
   const { currentSong, playNextSong, isRepeating } = useAudioContext();
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -80,20 +83,24 @@ const PlayerWidget = () => {
     }
   };
 
+  
+
+  
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {bottom: style}]}>
       
       <View style={styles.section}>
-      <Pressable onPress={() => navigation.navigate('Home')}>
+      <Pressable onPress={() => }>
         <View style={styles.section2}>
           <Image
             style={styles.albumArt}
-            source={{ uri: currentSong ? currentSong.imageUri : '' }}
+            source={{ uri: currentSong?.imageUrl || ''  }}
           />
 
           <View style={styles.songInfo}>
-            <Text style={styles.title}>{currentSong ? currentSong.title : ''}</Text>
-            <Text style={styles.artist}>{currentSong ? currentSong.artist : ''}</Text>
+            <Text style={styles.title}>{currentSong?.title || 'No Title'}</Text>
+            <Text style={styles.artist}>{currentSong?.preacher || 'Unknown Artist'}</Text>
           </View>
         </View>
       </Pressable>
@@ -118,13 +125,12 @@ const PlayerWidget = () => {
 
 const styles = StyleSheet.create({
   container: {
+    position: 'absolute',
     height: 60,
     width: '85%',
+    alignSelf: 'center',
     backgroundColor: Colors.secondary,
     borderRadius: 9,
-    marginBottom: 300,
-    alignSelf: 'center',
-    display: 'flex'
   },
   section : {
     flexDirection: 'row',
@@ -141,7 +147,8 @@ const styles = StyleSheet.create({
     height: 40,
   },
   songInfo: {
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
+    paddingLeft: 10
   },
   title: {
     fontSize: 15,
@@ -185,7 +192,7 @@ const styles = StyleSheet.create({
   controls: {
     flexDirection: 'row',
     justifyContent: 'center',
-    paddingRight: 10
+    paddingRight: 15
   },
 });
 

@@ -1,15 +1,17 @@
-// MusicPlayerScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  Animated,
+  PanResponder,
+} from 'react-native';
 import { AntDesign, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAudioContext } from '@/app/context/audio';
 import { Audio } from 'expo-av';
-import { Slider } from 'react-native-awesome-slider';
-import Animated, {
-  useSharedValue,
-  withSpring,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
+import { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 const MusicPlayerScreen = () => {
   const { currentSong, songs, playPreviousSong, playNextSong } = useAudioContext();
@@ -122,6 +124,43 @@ const MusicPlayerScreen = () => {
     // Implement logic to disable repeat mode
   };
 
+  const renderProgressBar = () => {
+    const activeWidth = getProgress() * parseFloat(styles.progressBarContainer.width);
+
+    return (
+      <View style={styles.progressBarContainer}>
+        <View style={[styles.progressBar, { width: `${activeWidth}px` }]} />
+        <Animated.View
+          style={[
+            styles.thumb,
+            {
+              left: animatedStyle.progress,
+            },
+          ]}
+          {...panResponder.panHandlers}
+        >
+          <View style={styles.thumbInner} />
+        </Animated.View>
+      </View>
+    );
+  };
+  
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderGrant: () => {
+      // Stop audio playback on touch start (optional behavior)
+      // audio.pauseAsync();
+    },
+    onPanResponderMove: (event, gestureState) => {
+      const newPosition = gestureState.dx / parseFloat(styles.progressBarContainer.width) * (duration || 0);
+      setPosition(newPosition);
+    },
+    onPanResponderRelease: () => {
+      // Resume audio playback on touch release (optional behavior)
+      // audio.playAsync();
+    },
+  });
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -139,15 +178,7 @@ const MusicPlayerScreen = () => {
       <Text style={styles.title}>{currentSong ? currentSong.title : ''}</Text>
       <Text style={styles.artist}>{currentSong ? currentSong.artist : ''}</Text>
 
-      <Slider
-        style={styles.progressBar}
-        progress={animatedStyle.progress}
-        minimumValue={min.value}
-        maximumValue={max.value}
-        minimumTrackTintColor="#3498db"
-        thumbTintColor="#3498db"
-        onValueChange={handlePositionChange}
-      />
+      {renderProgressBar()}
 
       <View style={styles.controls}>
         <TouchableOpacity onPress={onPlayPausePress}>

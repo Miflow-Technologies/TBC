@@ -246,9 +246,8 @@ const sermonCardStyles = StyleSheet.create({
     backgroundColor: theme.colors.background,
     height: Platform.OS === 'ios' ? 252 : 252,
     width: Platform.OS === 'ios' ? 250 : 250,
-    padding: 12,
-    marginRight: 16,
-    marginBottom: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 5
   },
   title: {
     textAlign: 'flex-start',
@@ -272,8 +271,8 @@ const ExcerptsCardStyles = StyleSheet.create({
   const { playSong } = useAudioContext();
 
   return (
-    <SafeAreaView style={{flex: 1}}>
-    <ScrollView style={{ top: Platform.OS === 'ios' ? 50 : 50, marginBottom: Platform.OS === 'ios' ? 50 : 130 }}>
+    <SafeAreaView style={{flex: 1,}}>
+    <ScrollView style={{ top: Platform.OS === 'ios' ? 50 : 50, marginBottom: Platform.OS === 'ios' ? 50 : 50 }}>
 
       <View style={{ justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center' }}>
         <Heading>Audio Sermon</Heading>
@@ -282,7 +281,7 @@ const ExcerptsCardStyles = StyleSheet.create({
           <Ionicons name="chevron-forward" size={20} color = {Colors.blue} />
         </TouchableOpacity>
       </View>
-      <FlatList horizontal style={{ paddingHorizontal: 24 }}
+      <FlatList horizontal style={{ marginHorizontal: 8 }}
         data={audioSermons}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
@@ -318,7 +317,7 @@ const ExcerptsCardStyles = StyleSheet.create({
         keyExtractor={item => item.id.toString()}
       />
     </ScrollView>
-    <PlayerWidget />
+    <PlayerWidget style={90}/>
   </SafeAreaView>
 );
 }

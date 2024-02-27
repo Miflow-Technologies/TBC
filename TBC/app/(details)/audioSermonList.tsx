@@ -77,14 +77,14 @@ const audioSermonList = () => {
                         <Text style={styles.queueArtist}>{item.preacher}</Text>
                     </View>
                     <TouchableOpacity onPress={() => handleOptions()}>
-                        <MaterialCommunityIcons name="dots-vertical" size={24} color="#000" />
+                        <MaterialCommunityIcons name="dots-vertical" size={24} color="#fff" />
                     </TouchableOpacity>
                 </View>
             </Pressable>
         );
 
   return (
-    <View>
+    <SafeAreaView style={{flex: 1}}>
         <Header heading='Audio List'/>
         <SearchBar dbName={'audioSermon'} renderItem={renderItem} />
         <View style={{padding: 10}}>
@@ -94,7 +94,8 @@ const audioSermonList = () => {
                 renderItem={renderItem}
             />
         </View>
-    </View>
+      <PlayerWidget style={10} />
+    </SafeAreaView>
   )
 }
 
