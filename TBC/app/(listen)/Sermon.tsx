@@ -162,7 +162,7 @@ const Series = (props) => (
   </Text>
 );
 
-const SeeMore = (route) => (
+const SeeMore = (route: any) => (
   <TouchableOpacity style={styles.seeMore} onPress={() => navigation.navigate(route)}>
     <Text style={{color: Colors.blue, fontFamily: 'Poppins_500Medium'}}>SEE MORE</Text>
     <Ionicons name="chevron-forward" size={20} color = {Colors.blue} />
@@ -240,57 +240,6 @@ const styles = StyleSheet.create({
     },
 });
 
-const FeaturedCard = (props) => (
-  <View style={featuredCardStyles.card}>
-    <Thumbnail videoUrl={props.videoUrl} />
-    <View style={featuredCardStyles.title}>
-      <Title>{props.name}</Title>
-      <Preacher>{props.preacher}</Preacher>
-      <Duration>{props.duration}</Duration>
-      <Series>{props.series}</Series>
-    </View>
-  </View>
-);
-
-const featuredCardStyles = StyleSheet.create({
-  card: {
-    backgroundColor: theme.colors.background,
-    height: Platform.OS === 'ios' ? 250 : 250,
-    width: Platform.OS === 'ios' ? 300 : 300,
-    padding: 12,
-    marginRight: 16,
-    marginBottom: 10,
-    shadowColor: isDarkMode ? '#fff' : '#000',
-  },
-  title: {
-    textAlign: 'flex-start',
-    paddingTop: 10
-  },
-});
-
-
-
-const SermonCard = (props) => (
-  <View style={sermonCardStyles.card}>
-    <Thumbnail imageUrl={props.imageUrl} />
-    <View style={sermonCardStyles.title}>
-      <Title>{props.name}</Title>
-      <Preacher>{props.preacher}</Preacher>
-    </View>
-  </View>
-);
-
-const ExCard = (props) => (
-  <View style={sermonCardStyles.card}>
-  <Ithumbnail url={props.ithumbnail} />
-  <View style={sermonCardStyles.title}>
-    <Title>{props.name}</Title>
-    <Preacher>{props.preacher}</Preacher>
-    <ExDuration>{props.duration}</ExDuration>
-    <Series>{props.series}</Series>
-  </View>
-</View>
-);
 
 const sermonCardStyles = StyleSheet.create({
   card: {
@@ -323,12 +272,15 @@ const ExcerptsCardStyles = StyleSheet.create({
   const { playSong } = useAudioContext();
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{flex: 1}}>
     <ScrollView style={{ top: Platform.OS === 'ios' ? 50 : 50, marginBottom: Platform.OS === 'ios' ? 50 : 130 }}>
 
       <View style={{ justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center' }}>
         <Heading>Audio Sermon</Heading>
-        <SeeMore route='(details)/audioList' />
+        <TouchableOpacity style={styles.seeMore} onPress={() => navigation.navigate('(details)/audioSermonList')}>
+          <Text style={{color: Colors.blue, fontFamily: 'Poppins_500Medium'}}>SEE MORE</Text>
+          <Ionicons name="chevron-forward" size={20} color = {Colors.blue} />
+        </TouchableOpacity>
       </View>
       <FlatList horizontal style={{ paddingHorizontal: 24 }}
         data={audioSermons}
@@ -348,7 +300,7 @@ const ExcerptsCardStyles = StyleSheet.create({
 
       <View style={{ justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center' }}>
         <Heading>Excerpts</Heading>
-        <SeeMore route='(details)/excerpts' />
+        <SeeMore route='(details)/excerptList' />
       </View>
       <FlatList horizontal style={{ paddingHorizontal: 24 }}
         data={excerpts}

@@ -30,7 +30,7 @@ const QueueScreen = ({ onClose }) => {
         data={queueData}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
-        contentContainerStyle={styles.queueList}
+        contentContainerStyle={styles.queueList}s
       />
     </View>
   );

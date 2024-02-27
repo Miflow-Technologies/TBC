@@ -54,28 +54,30 @@ function RootLayoutNav() {
   return (
     <AuthProvider>
       <AudioProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="settings" options={{ headerShown: false }} />
-          <Stack.Screen name="profile" options={{ headerShown: false }} />
-          <Stack.Screen name="(details)/dailyQuote" options={{ headerShown: false }} />
-          <Stack.Screen name="(details)/devotional" options={{ headerShown: false }} />
-          <Stack.Screen name="(details)/announcements" options={{ headerShown: false }} />
-          <Stack.Screen name="(details)/articleReader" options={{ headerShown: false }} />
-          <Stack.Screen name="admin/adminPanel" options={{ headerShown: false }} />
-          <Stack.Screen 
-          name="auth/login" 
-          options={{  
-          headerShown: false,
-          }} />
-          <Stack.Screen name="auth/signup" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="modal"
-            options={{ presentation: 'modal' }}
-          />
-        </Stack>
-      </ThemeProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="settings" options={{ headerShown: false }} />
+            <Stack.Screen name="profile" options={{ headerShown: false }} />
+            <Stack.Screen name="(details)/dailyQuote" options={{ headerShown: false }} />
+            <Stack.Screen name="(details)/devotional" options={{ headerShown: false }} />
+            <Stack.Screen name="(details)/announcements" options={{ headerShown: false }} />
+            <Stack.Screen name="(details)/articleReader" options={{ headerShown: false }} />
+            <Stack.Screen name="(details)/audioSermonList" options={{ headerShown: false }} />
+            <Stack.Screen name="(details)/excerptList" options={{ headerShown: false }} />
+            <Stack.Screen name="admin/adminPanel" options={{ headerShown: false }} />
+            <Stack.Screen 
+            name="auth/login" 
+            options={{  
+            headerShown: false,
+            }} />
+            <Stack.Screen name="auth/signup" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="modal"
+              options={{ presentation: 'modal' }}
+            />
+          </Stack>
+        </ThemeProvider>
       </AudioProvider>
     </AuthProvider>
   );

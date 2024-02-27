@@ -1,15 +1,12 @@
-// PlayerWidget.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet,} from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Pressable } from 'react-native';
 import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
 import { useAudioContext } from '@/app/context/audio';
-import { Slider } from 'react-native-awesome-slider';
-
-
+import Colors from '@/constants/Colors';
 
 const PlayerWidget = () => {
-  const { currentSong, playSong } = useAudioContext();
+  const { currentSong, playNextSong, isRepeating } = useAudioContext();
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [duration, setDuration] = useState<number | null>(null);
@@ -33,17 +30,23 @@ const PlayerWidget = () => {
 
     loadSound();
 
+    // Update when playback status changes or song changes
     return () => {
       if (sound) {
         sound.unloadAsync();
       }
     };
-  }, [currentSong]);
+  }, [currentSong, isPlaying]);
 
   const onPlaybackStatusUpdate = (status) => {
     setIsPlaying(status.isPlaying);
     setDuration(status.durationMillis);
     setPosition(status.positionMillis);
+
+    // Play the next song when playback finishes and repeat mode is enabled
+    if (!isPlaying && isRepeating && status.didJustFinish) {
+      playNextSong();
+    }
   };
 
   const onPlayPausePress = async () => {
@@ -59,87 +62,130 @@ const PlayerWidget = () => {
   };
 
   const getProgress = () => {
-    if (sound === null || duration === null || position === null) {
+    if (duration === null || position === null) {
       return 0;
     }
 
     return (position / duration) * 100;
   };
 
-  const handlePositionChange = (value) => {
-    setPosition(value);
+  const handleSeek = (x) => {
+    // Adjust position based on click position (x) on the slider
+    const newPosition = x / 100 * (duration || 0);
+    setPosition(newPosition);
 
-    // Update the audio playback to match the new position:
+    // Update audio playback to match the new position
     if (sound) {
-      sound.setPositionAsync(value);
+      sound.setPositionAsync(newPosition);
     }
   };
 
   return (
     <View style={styles.container}>
-      <Image style={styles.albumArt} source={{ uri: currentSong ? currentSong.imageUri : '' }} />
+      
+      <View style={styles.section}>
+      <Pressable onPress={() => navigation.navigate('Home')}>
+        <View style={styles.section2}>
+          <Image
+            style={styles.albumArt}
+            source={{ uri: currentSong ? currentSong.imageUri : '' }}
+          />
 
-      <View style={styles.songInfo}>
-        <Text style={styles.title}>{currentSong ? currentSong.title : ''}</Text>
-        <Text style={styles.artist}>{currentSong ? currentSong.artist : ''}</Text>
+          <View style={styles.songInfo}>
+            <Text style={styles.title}>{currentSong ? currentSong.title : ''}</Text>
+            <Text style={styles.artist}>{currentSong ? currentSong.artist : ''}</Text>
+          </View>
+        </View>
+      </Pressable>
+
+        <View style={styles.controls}>
+          <TouchableOpacity onPress={onPlayPausePress}>
+            <FontAwesome name={isPlaying ? 'pause' : 'play'} size={15} color="#fff" />
+          </TouchableOpacity>
+        </View>
       </View>
-
-      <Slider
-        style={styles.progressBar}
-        progress={getProgress()} // Use the getProgress function for value
-        minimumValue={0}
-        maximumValue={duration || 1}
-        minimumTrackTintColor="#3498db"
-        thumbTintColor="#3498db"
-        onValueChange={handlePositionChange}
-      />
-
-
-      <View style={styles.controls}>
-        <TouchableOpacity onPress={onPlayPausePress}>
-          <FontAwesome name={isPlaying ? 'pause' : 'play'} size={30} color="#000" />
-        </TouchableOpacity>
-      </View>
+      <View style={styles.progressBarContainer}>
+          <View
+            style={[styles.progressBar, { width: `${getProgress()}%` }]}
+          />
+          <TouchableOpacity style={styles.thumb} onPress={() => {}} onMove={(event) => handleSeek(event.nativeEvent.locationX)}>
+            <View style={styles.thumbInner} />
+          </TouchableOpacity>
+        </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
-    padding: 16,
-    borderRadius: 10,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    height: 60,
+    width: '85%',
+    backgroundColor: Colors.secondary,
+    borderRadius: 9,
+    marginBottom: 300,
+    alignSelf: 'center',
+    display: 'flex'
+  },
+  section : {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  section2: {
+    padding: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   albumArt: {
-    width: '100%',
-    height: 200,
-    borderRadius: 8,
-    marginBottom: 16,
+    width: 40,
+    height: 40,
   },
   songInfo: {
-    marginBottom: 16,
+    alignItems: 'flex-start'
   },
   title: {
-    fontSize: 18,
+    fontSize: 15,
     fontWeight: 'bold',
+    color: '#fff'
   },
   artist: {
-    color: '#888',
+    color: '#fff',
+    fontSize: 12,
+  },
+  progressBarContainer: {
+    height: 5,
+    backgroundColor: 'ddd',
+    borderRadius: 5,
+    overflow: 'hidden',
   },
   progressBar: {
-    marginBottom: 16,
+    backgroundColor: '#fff',
+    height: 5,
+  },
+  thumb: {
+    position: 'absolute',
+    width: 5,
+    height: 5,
+    backgroundColor: '#000',
+    borderRadius: 50,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  thumbInner: {
+    width: 10,
+    height: 10,
+    backgroundColor: '#000',
+    borderRadius: 50,
   },
   controls: {
     flexDirection: 'row',
     justifyContent: 'center',
+    paddingRight: 10
   },
 });
 

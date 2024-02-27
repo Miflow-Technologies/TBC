@@ -1,37 +1,62 @@
-import React, { useState } from 'react';
-import { View, TextInput, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, TextInput, StyleSheet, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
+import { query, collection, where, getDocs } from 'firebase/firestore'; // Add necessary Firebase imports
+import { db } from '@/config/firebaseConfig';
 
-const SearchBar = ({ onSearch }) => {
+const SearchBar = ({ dbName, renderItem }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
 
-  const handleSearch = () => {
-    // Call the onSearch prop with the search term
-    onSearch(searchTerm);
-  };
+  useEffect(() => {
+    const handleSearch = async () => {
+      if (!searchTerm) {
+        setSearchResults([]); 
+        return;
+      }
+
+      try {
+        const q = query(collection(db, dbName), where('searchableField', '>=', searchTerm.toLowerCase()));
+        const querySnapshot = await getDocs(q);
+        const results = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+        setSearchResults(results);
+      } catch (error) {
+        console.error("Error searching:", error);
+      }
+    };
+
+    handleSearch();
+  }, [searchTerm]);
 
   return (
-    <View style={styles.searchContainer}>
-      <View style={styles.searchSection}>
-        <View style={styles.searchField}>
-          <Ionicons style={styles.searchIcon} name="ios-search" size={20} color={Colors.medium} />
-          <TextInput
-            style={styles.input}
-            placeholder="Search"
-            value={searchTerm}
-            onChangeText={(text) => setSearchTerm(text)}
-            onSubmitEditing={handleSearch}
-          />
+    <View style={{ padding: 10 }}>
+      <View style={styles.searchContainer}>
+        <View style={styles.searchSection}>
+          <View style={styles.searchField}>
+            <Ionicons style={styles.searchIcon} name="ios-search" size={20} color={Colors.medium} />
+            <TextInput
+              style={styles.input}
+              placeholder="Search"
+              value={searchTerm}
+              onChangeText={(text) => setSearchTerm(text)}
+            />
+          </View>
         </View>
       </View>
+      <FlatList
+        data={searchResults}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   searchContainer: {
-    height: 60,
+    height: 40,
+    width: "100%"
   },
   searchSection: {
     flexDirection: 'row',
@@ -50,7 +75,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     padding: 10,
-    color: '#fff', // Adjust text color according to your theme
+    color: '#fff',
   },
   searchIcon: {
     paddingLeft: 10,
