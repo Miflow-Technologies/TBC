@@ -9,6 +9,8 @@ import CustomHeader from '@/components/CustomHeader';
 import { useFonts } from 'expo-font';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/config/firebaseConfig';
+import PlayerWidget from '@/components/playerWidget';
+import { useAudioContext } from '../context/audio';
 
 const Tbc = () => {
 
@@ -22,6 +24,7 @@ const Tbc = () => {
     NotoSerif_400Regular,
   });
 
+  const { setSongs, isPlaying, isPaused } = useAudioContext();
   const [devotionalDetails, setDevotionalDetails] = useState({
     title: '',
     subtitle: '',
@@ -85,6 +88,7 @@ const Tbc = () => {
           />
         </View>
         </ScrollView>
+        {isPlaying ? <PlayerWidget style={90}/> : isPaused ? <PlayerWidget style={90}/> : null}
     </SafeAreaView>
     )
 }

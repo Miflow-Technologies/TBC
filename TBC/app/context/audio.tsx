@@ -1,5 +1,6 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { AVPlaybackStatus, Audio } from 'expo-av';
+import { useDebounce } from 'react-use';
 
 interface Song {
   uri: string;
@@ -25,30 +26,44 @@ interface AudioContextProps {
   isLoading: boolean; 
   error: string | null; 
   setSongs: (songs: Song[]) => void;
+  isPlaying: boolean
+  sound: Audio.Sound
+  isPaused: boolean
+}
+
+interface AudioProviderProps {
+  children: ReactNode;
 }
 
 type SoundPlaybackStatus = AVPlaybackStatus | { didJustFinish: boolean };
 
 const AudioContext = createContext<AudioContextProps | undefined>(undefined);
 
-export const AudioProvider: React.FC = ({ children }) => {
+export const AudioProvider: React.FC<AudioProviderProps> = ({ children }) => {
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [songs, setSongs] = useState<Song[]>([]);
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
   const [isRepeating, setIsRepeating] = useState(false);
   const [isLoading, setIsLoading] = useState(false); 
-  const [error, setError] = useState<string | null>(null); 
+  const [error, setError] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
-    const loadSound = async () => {
+    const loadSound = async (currentSong) => {
+      console.log('loadingSound')
       setIsLoading(true);
+      console.log('isLoading set to true')
       setError(null);
-      try {
-        if (song) {
-          const { sound: newSound } = await Audio.Sound.createAsync({ uri: song.audioUrl }, { shouldPlay: true });
-          setSound(newSound);
+      console.log('Error set to null')
 
+      try {
+        if (currentSong) {
+          console.log('currentsong', currentSong.title)
+          const { sound: newSound } = await Audio.Sound.createAsync({ uri: currentSong.audioUrl }, { shouldPlay: true });
+          setSound(newSound);
+          console.log('new sound set')
           newSound.setOnPlaybackStatusUpdate((playbackStatus: SoundPlaybackStatus) => {
             if (playbackStatus.didJustFinish && isRepeating) {
               playNextSong();
@@ -60,6 +75,7 @@ export const AudioProvider: React.FC = ({ children }) => {
         setError(`Error fetching audio: ${error.message}`); // Provide more informative error
       } finally {
         setIsLoading(false);
+        console.log('isLoading set to false')
       }
     };
 
@@ -71,15 +87,46 @@ export const AudioProvider: React.FC = ({ children }) => {
       console.log("Unloading Sound...");
       if (sound) {
         sound.unloadAsync();
+        console.log('sound unloaded')
       }
+
     };
   }, [currentSong, isRepeating]);
 
 
-  const playSong = (song: Song) => {
-    setCurrentSong(song);
-    setCurrentSongIndex(songs.indexOf(song));
-  };
+
+
+    
+  const playSong = async (song: Song) => {
+    console.log(song)
+      setCurrentSong(song);
+      console.log(currentSong)
+      setCurrentSongIndex(songs.indexOf(song));
+      console.log(songs.indexOf(song))
+      setIsPlaying(true)
+  
+   
+      if (sound) {
+        console.log(sound)
+        sound.stopAsync().then(async () => {
+          console.log(sound)
+          try {
+            const { sound: newSound } = await Audio.Sound.createAsync({ uri: currentSong.audioUrl }, { shouldPlay: true });
+            setSound(newSound);
+          } catch (error) {
+            console.error('Error creating/playing sound:', error);
+          }
+        });
+      } else {
+        try {
+          const { sound: newSound } = await Audio.Sound.createAsync({ uri: currentSong.audioUrl }, { shouldPlay: true });
+          setSound(newSound);
+          console.log(newSound)
+        } catch (error) {
+          console.error('Error creating/playing sound:', error);
+        }
+      }
+    };
 
   const playPreviousSong = () => {
     if (songs.length > 0 && currentSongIndex > 0) { // Handle empty list
@@ -109,6 +156,8 @@ export const AudioProvider: React.FC = ({ children }) => {
     if (sound) {
       try {
         await sound.pauseAsync();
+        setIsPaused(true)
+        setIsPlaying(false)
       } catch (error) {
         setError(error.toString());
       }
@@ -119,9 +168,11 @@ export const AudioProvider: React.FC = ({ children }) => {
     if (sound) {
       try {
         await sound.playAsync();
+        setIsPaused(false)
+        setIsPlaying(true)
       } catch (error) {
         console.error('Error resuming playback:', error);
-        setError(`Error resuming playback: ${error.message}`); // Provide informative error
+        setError(`Error resuming playback: ${error.message}`);
       }
     }
   };
@@ -135,9 +186,9 @@ export const AudioProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     return () => {
-      unloadSound(); // Unload sound on cleanup
+      unloadSound();
     };
-  }, []); // Empty dependency array ensures cleanup on unmount
+  }, []);
 
   const value: AudioContextProps = {
     currentSong,
@@ -152,6 +203,9 @@ export const AudioProvider: React.FC = ({ children }) => {
     isLoading,
     error,
     setSongs,
+    isPlaying,
+    sound,
+    isPaused
   };
 
   
@@ -166,4 +220,6 @@ export const AudioProvider: React.FC = ({ children }) => {
       throw new Error("useAudioContext must be used within an AudioProvider");
     }
     return context;
-  };3
+  };
+
+

@@ -9,6 +9,8 @@ import { NotoSerif_400Regular, NotoSerif_700Bold } from '@expo-google-fonts/noto
 import { useFonts } from 'expo-font'
 import { Ionicons } from '@expo/vector-icons'
 import { Video } from 'expo-av'
+import { useAudioContext } from '../context/audio'
+import PlayerWidget from '@/components/playerWidget'
 
 const AboutScreen = () => {
 
@@ -16,6 +18,7 @@ const AboutScreen = () => {
   const colorScheme = useColorScheme();
   const theme = useTheme();
   const isDarkMode = colorScheme === 'dark';
+  const { setSongs, isPlaying, isPaused } = useAudioContext();
 
   const [fontsLoaded] = useFonts({
     Poppins_700Bold,
@@ -82,7 +85,9 @@ Changers</Text>
                     size={25}
                     color= {Colors.yellow}
                   /></Pressable>
+
       </View>
+      {isPlaying ? <PlayerWidget style={90}/> : isPaused ? <PlayerWidget style={90}/> : null}
     </SafeAreaView>
   )
 }

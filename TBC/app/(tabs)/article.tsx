@@ -17,6 +17,8 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db, storage } from '@/config/firebaseConfig';
 import SearchBar from '@/components/searchBar';
 import { getDownloadURL, ref } from 'firebase/storage';
+import PlayerWidget from '@/components/playerWidget';
+import { useAudioContext } from '../context/audio';
 
 const ArticleScreen = () => {
   const navigation = useNavigation();
@@ -30,7 +32,9 @@ const ArticleScreen = () => {
 
   const [articles, setArticles] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
+  const { setSongs, isPlaying, isPaused } = useAudioContext();
 
+ 
   const handleSearch = (searchTerm) => {
     const articleResults = articles.filter((item) =>
       item.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -139,6 +143,7 @@ const ArticleScreen = () => {
           />
         </View>
       </View>
+      {isPlaying ? <PlayerWidget style={90}/> : isPaused ? <PlayerWidget style={90}/> : null}
     </SafeAreaView>
   );
 };

@@ -5,7 +5,8 @@ import { SplashScreen, Stack } from 'expo-router';
 import {  useContext, useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 import { AuthProvider } from '@/app/context/Auth'
-import { AudioProvider } from './context/audio';
+import { AudioProvider } from '@/app/context/audio';
+
 
 
 

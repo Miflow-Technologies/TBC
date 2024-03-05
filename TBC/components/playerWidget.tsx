@@ -1,52 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Pressable } from 'react-native';
-import { AntDesign, FontAwesome } from '@expo/vector-icons';
+import { AntDesign, FontAwesome, Ionicons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
 import { useAudioContext } from '@/app/context/audio';
 import Colors from '@/constants/Colors';
 import { useNavigation } from 'expo-router';
 
+const defaultAlbumArt = require('@/assets/images/cover.jpg')
+
 const PlayerWidget = ({style}) => {
   const navigation = useNavigation();
   
-  const { currentSong, playNextSong, isRepeating } = useAudioContext();
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const { currentSong, playNextSong, isRepeating, isPlaying, pausePlayback, resumePlayback, sound } = useAudioContext();
   const [duration, setDuration] = useState<number | null>(null);
   const [position, setPosition] = useState<number | null>(null);
+ 
 
-  useEffect(() => {
-    const loadSound = async () => {
-      if (currentSong && !sound) {
-        try {
-          const { sound: newSound } = await Audio.Sound.createAsync(
-            { uri: currentSong.audioUrl },
-            { shouldPlay: true },
-            onPlaybackStatusUpdate
-          );
-          setSound(newSound);
-        } catch (error) {
-          console.error("Error loading sound:", error);
-        }
-      }
-    };
 
-    loadSound();
-
-    // Update when playback status changes or song changes
-    return () => {
-      if (sound) {
-        sound.unloadAsync();
-      }
-    };
-  }, [currentSong, isPlaying]);
 
   const onPlaybackStatusUpdate = (status) => {
-    setIsPlaying(status.isPlaying);
     setDuration(status.durationMillis);
     setPosition(status.positionMillis);
 
-    // Play the next song when playback finishes and repeat mode is enabled
     if (!isPlaying && isRepeating && status.didJustFinish) {
       playNextSong();
     }
@@ -56,46 +31,38 @@ const PlayerWidget = ({style}) => {
     if (!sound) {
       return;
     }
-
-    if (isPlaying) {
-      await sound.pauseAsync();
-    } else {
-      await sound.playAsync();
-    }
+    return isPlaying ? pausePlayback() : resumePlayback();
   };
+
 
   const getProgress = () => {
     if (duration === null || position === null) {
       return 0;
     }
-
     return (position / duration) * 100;
   };
 
   const handleSeek = (x) => {
-    // Adjust position based on click position (x) on the slider
     const newPosition = x / 100 * (duration || 0);
     setPosition(newPosition);
-
-    // Update audio playback to match the new position
     if (sound) {
       sound.setPositionAsync(newPosition);
     }
   };
 
   
-
+ 
   
 
   return (
     <View style={[styles.container, {bottom: style}]}>
       
       <View style={styles.section}>
-      <Pressable onPress={() => }>
+      <Pressable>
         <View style={styles.section2}>
           <Image
             style={styles.albumArt}
-            source={{ uri: currentSong?.imageUrl || ''  }}
+            source={currentSong ? { uri: currentSong.imageUrl} : defaultAlbumArt}
           />
 
           <View style={styles.songInfo}>
@@ -107,7 +74,7 @@ const PlayerWidget = ({style}) => {
 
         <View style={styles.controls}>
           <TouchableOpacity onPress={onPlayPausePress}>
-            <FontAwesome name={isPlaying ? 'pause' : 'play'} size={15} color="#fff" />
+            <Ionicons name={isPlaying ? 'pause' : 'play'} size={20} color="#fff" />
           </TouchableOpacity>
         </View>
       </View>

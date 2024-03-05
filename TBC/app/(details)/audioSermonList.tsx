@@ -1,6 +1,6 @@
 
 import Header from '@/components/Header'
-import { SafeAreaView, StyleSheet, Text, View, FlatList, Platform, TouchableOpacity, Image, Pressable} from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, FlatList, Image, Pressable} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from 'react-native';
@@ -13,7 +13,6 @@ import { getDownloadURL, ref } from 'firebase/storage';
 import { db, storage } from '@/config/firebaseConfig';
 import { useAudioContext } from '../context/audio';
 import PlayerWidget from '@/components/playerWidget';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import SearchBar from '@/components/searchBar';
 
 const audioSermonList = () => {
@@ -76,9 +75,6 @@ const audioSermonList = () => {
                         <Text style={{color: '#fff', fontFamily: 'Poppins_500Medium'}}>{item.title}</Text>
                         <Text style={styles.queueArtist}>{item.preacher}</Text>
                     </View>
-                    <TouchableOpacity onPress={() => handleOptions()}>
-                        <MaterialCommunityIcons name="dots-vertical" size={24} color="#fff" />
-                    </TouchableOpacity>
                 </View>
             </Pressable>
         );
@@ -127,7 +123,3 @@ const styles = StyleSheet.create({
   });
 
 export default audioSermonList
-
-function handleOptions(): void {
-  throw new Error('Function not implemented.');
-}

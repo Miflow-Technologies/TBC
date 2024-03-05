@@ -1,5 +1,5 @@
 import { SafeAreaView, ScrollView, StyleSheet, Text, View, FlatList, Platform, TouchableOpacity, Dimensions , Image, Pressable} from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from 'react-native';
 import { useNavigation, useTheme } from '@react-navigation/native';
@@ -11,20 +11,23 @@ import { Ionicons } from '@expo/vector-icons';
 import { query, collection, getDocs, where, orderBy, limit } from 'firebase/firestore'; // Import query, where, orderBy, and limit
 import { getDownloadURL, ref } from 'firebase/storage';
 import { db, storage } from '@/config/firebaseConfig';
-import { useAudioContext } from '../context/audio';
 import PlayerWidget from '@/components/playerWidget';
+import { useAudioContext } from '../context/audio';
+//import { setAudioSermon } from '../store/action';
+
+
 
 const Sermon = () => {
 
-    const navigation = useNavigation()
+ 
+    const navigation = useNavigation() 
 
     const [audioSermons, setAudioSermons] = useState([]);
     const [sermons, setSermons] = useState([]);
     const [excerpts, setExcerpts] = useState([]);
     const [inspirationals, setInspirationals] = useState([]);
-    const { setSongs } = useAudioContext();
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [isVisible, setIsVisible] = useState(false);
+    const { setSongs, isPlaying, isPaused } = useAudioContext();
+
 
     const colorScheme = useColorScheme();
     const theme = useTheme();
@@ -270,6 +273,7 @@ const ExcerptsCardStyles = StyleSheet.create({
 
   const { playSong } = useAudioContext();
 
+  
   return (
     <SafeAreaView style={{flex: 1,}}>
     <ScrollView style={{ top: Platform.OS === 'ios' ? 50 : 50, marginBottom: Platform.OS === 'ios' ? 50 : 50 }}>
@@ -285,7 +289,7 @@ const ExcerptsCardStyles = StyleSheet.create({
         data={audioSermons}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
-          <Pressable onPress={() => playSong(item)}>
+          <Pressable  onPress={() => playSong(item)}>
           <View style={sermonCardStyles.card}>
             <Thumbnail imageUrl={item.imageUrl} />
             <View style={sermonCardStyles.title}>
@@ -317,7 +321,7 @@ const ExcerptsCardStyles = StyleSheet.create({
         keyExtractor={item => item.id.toString()}
       />
     </ScrollView>
-    <PlayerWidget style={90}/>
+    {isPlaying ? <PlayerWidget style={90}/> : isPaused ? <PlayerWidget style={90}/> : null}
   </SafeAreaView>
 );
 }

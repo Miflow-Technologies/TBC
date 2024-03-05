@@ -64,7 +64,6 @@ export default function TopNav() {
             styles.indicator,
             {
               width: 'auto',
-              // Add more styles to suit your needs. Thank you for watching.
             },
           ],
         }}
