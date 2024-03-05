@@ -32,7 +32,7 @@ const ArticleScreen = () => {
 
   const [articles, setArticles] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
-  const { setSongs, isPlaying, isPaused } = useAudioContext();
+  const { isPlaying, isPaused } = useAudioContext();
 
  
   const handleSearch = (searchTerm) => {
@@ -128,7 +128,8 @@ const ArticleScreen = () => {
     },
   });
 
-  return (
+  if (fontsLoaded) {
+    return (
     <SafeAreaView>
       <CustomHeader name="Article" />
       <View
@@ -145,7 +146,10 @@ const ArticleScreen = () => {
       </View>
       {isPlaying ? <PlayerWidget style={90}/> : isPaused ? <PlayerWidget style={90}/> : null}
     </SafeAreaView>
-  );
+    )
+  } else {
+    console.log("Fonts are still loading...");
+  }
 };
 
 export default ArticleScreen;

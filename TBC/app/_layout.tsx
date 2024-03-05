@@ -58,8 +58,8 @@ function RootLayoutNav() {
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="settings" options={{ headerShown: false }} />
-            <Stack.Screen name="profile" options={{ headerShown: false }} />
+            <Stack.Screen name="utils/settings" options={{ headerShown: false }} />
+            <Stack.Screen name="utils/profile" options={{ headerShown: false }} />
             <Stack.Screen name="(details)/dailyQuote" options={{ headerShown: false }} />
             <Stack.Screen name="(details)/devotional" options={{ headerShown: false }} />
             <Stack.Screen name="(details)/announcements" options={{ headerShown: false }} />

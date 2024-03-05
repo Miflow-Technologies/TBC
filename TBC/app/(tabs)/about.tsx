@@ -1,7 +1,6 @@
 import { View, Text, SafeAreaView, Platform, StyleSheet, useColorScheme, Pressable, Dimensions } from 'react-native'
 import React from 'react'
 import CustomHeader from '@/components/CustomHeader'
-import { ScrollView } from 'react-native-gesture-handler'
 import { useNavigation, useTheme } from '@react-navigation/native'
 import Colors from '@/constants/Colors'
 import { Poppins_700Bold} from '@expo-google-fonts/poppins';
@@ -18,7 +17,7 @@ const AboutScreen = () => {
   const colorScheme = useColorScheme();
   const theme = useTheme();
   const isDarkMode = colorScheme === 'dark';
-  const { setSongs, isPlaying, isPaused } = useAudioContext();
+  const { isPlaying, isPaused } = useAudioContext();
 
   const [fontsLoaded] = useFonts({
     Poppins_700Bold,
@@ -36,39 +35,38 @@ const AboutScreen = () => {
 
   const videoUrl = require('@/assets/videos/creed.mp4');
 
-  return (
+  if (fontsLoaded) {
+    return (
     <SafeAreaView>
       <CustomHeader name='About'/>
-      <ScrollView style={{marginTop: Platform.OS === 'ios' ? 70: 100, marginBottom: Platform.OS === 'ios' ? 70 : 100}}>
+      <View style={{marginTop: Platform.OS === 'ios' ? 10: 80, marginBottom: Platform.OS === 'ios' ? 50 : 50}}>
       <View style={styles.container}>
           <Text style={[styles.subtitle, {fontFamily: 'NotoSerif_400Regular',  color: isDarkMode ? '#fff' : Colors.textGrey }]}>WELCOME,</Text>
           <Text style={[styles.title, {fontFamily: 'Poppins_700Bold',  color: isDarkMode ? Colors.primary : '#000' }]}>Shining Lights</Text>
 
-          <Text style={[styles.subtitle, {fontFamily: 'Poppins_700Bold',  color: isDarkMode ? Colors.primary : '#000' }]}>Who are we?</Text>
-          <Text style={[styles.content, {fontFamily: 'NotoSerif_400Regular',  color: isDarkMode ? '#fff' : Colors.textGrey }]}>We are a Christian Community of Godly World
+          <Text style={[styles.subtitle, {fontFamily: 'Poppins_700Bold',  color: isDarkMode ? Colors.primary : '#000', }]}>Who are we?</Text>
+          <Text style={[styles.content, {fontFamily: 'NotoSerif_400Regular',  color: isDarkMode ? '#fff' : Colors.textGrey, marginBottom: 10 }]}>We are a Christian Community of Godly World
 Changers</Text>
-          <Text style={[styles.subtitle, {fontFamily: 'Poppins_700Bold',  color: isDarkMode ? Colors.primary : '#000' }]}>What is our Mission?</Text>
-          <Text style={[styles.content, {fontFamily: 'NotoSerif_400Regular',  color: isDarkMode ? '#fff' : Colors.textGrey }]}>Raising Shining Lights....</Text>
+          <Text style={[styles.subtitle, {fontFamily: 'Poppins_700Bold',  color: isDarkMode ? Colors.primary : '#000', marginTop: 10 }]}>What is our Mission?</Text>
+          <Text style={[styles.content, {fontFamily: 'NotoSerif_400Regular',  color: isDarkMode ? '#fff' : Colors.textGrey, marginBottom: 10 }]}>Raising Shining Lights....</Text>
 
-          <Text style={[styles.subtitle, {fontFamily: 'Poppins_700Bold',  color: isDarkMode ? Colors.primary : '#000' }]}>Our Creed</Text>
+          <Text style={[styles.subtitle, {fontFamily: 'Poppins_700Bold',  color: isDarkMode ? Colors.primary : '#000', marginTop: 10 }]}>Our Creed</Text>
           <Video
             style={{width: '90%', height: 150, marginVertical: 10}}
-            source={{
-              uri: videoUrl,
-            }}
+            source={videoUrl}
             useNativeControls
             isLooping
             resizeMode='contain'
             onFullscreenUpdate={onFullscreenUpdate}
             onError={(error) => console.error('Video Error:', error)}/>
 
-          <Text style={[styles.subtitle, {fontFamily: 'Poppins_700Bold',  color: isDarkMode ? Colors.primary : '#000' }]}>Come Worship with Us</Text>
+          <Text style={[styles.subtitle, {fontFamily: 'Poppins_700Bold',  color: isDarkMode ? Colors.primary : '#000', marginTop: 20 }]}>Come Worship with Us</Text>
           <Text style={[styles.subtitle, {fontFamily: 'NotoSerif_700Bold',  color: isDarkMode ? Colors.primary : '#000' }]}>Sunday</Text>
           <Text style={[styles.content, {fontFamily: 'NotoSerif_400Regular',  color: isDarkMode ? '#fff' : Colors.textGrey }]}>Impart Service | 9AM</Text>
-          <Text style={[styles.subtitle, {fontFamily: 'NotoSerif_700Bold',  color: isDarkMode ? Colors.primary : '#000' }]}>Wednesday</Text>
+          <Text style={[styles.subtitle, {fontFamily: 'NotoSerif_700Bold',  color: isDarkMode ? Colors.primary : '#000', marginTop: 10 }]}>Wednesday</Text>
           <Text style={[styles.content, {fontFamily: 'NotoSerif_400Regular',  color: isDarkMode ? '#fff' : Colors.textGrey }]}>Refuel Service | 6PM</Text>
           <View>
-          <Text style={[styles.content, {fontFamily: 'NotoSerif_400Regular',  color: isDarkMode ? '#fff' : Colors.textGrey }]}>For direction to our location click on the floating</Text>
+          <Text style={[styles.content, {fontFamily: 'NotoSerif_400Regular',  color: isDarkMode ? '#fff' : Colors.textGrey, marginTop: 20 }]}>For directions to our location click on the floating</Text>
           <Ionicons
                     name='map-outline'
                     size={13}
@@ -78,7 +76,7 @@ Changers</Text>
 
           </View>
         </View>
-      </ScrollView>
+      </View>
       <View style={[styles.float, {zIndex: 1, backgroundColor: theme.colors.background, shadowColor: isDarkMode ? '#fff' : Colors.textGrey,}]}><Pressable onPress={() => navigation.navigate('(modals)/maps')}>
         <Ionicons
                     name='map-outline'
@@ -89,11 +87,14 @@ Changers</Text>
       </View>
       {isPlaying ? <PlayerWidget style={90}/> : isPaused ? <PlayerWidget style={90}/> : null}
     </SafeAreaView>
-  )
+    )
+  } else {
+    console.log("Fonts are still loading...");
+  }
 }
 const styles = StyleSheet.create ({
   container: {
-    marginTop: Platform.OS === 'ios' ? 10 : 35,
+    marginTop: Platform.OS === 'ios' ? 10 : 40,
     paddingHorizontal: Platform.OS === 'ios' ? 20 : 25
   },
   title: {
@@ -107,8 +108,8 @@ const styles = StyleSheet.create ({
   },
   float: {
     position: 'absolute',
-    right: Dimensions.get('window').width / 8 - 40, // Adjust as needed
-    bottom: Dimensions.get('window').height / 10 - 40, // Adjust as needed
+    right: Dimensions.get('window').width / 8 - 40,
+    bottom: Dimensions.get('window').height / 5 - 40,
     alignItems: 'center',
     justifyContent: 'center',
     width: 70,

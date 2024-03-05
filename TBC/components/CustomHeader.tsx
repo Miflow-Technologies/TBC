@@ -47,11 +47,11 @@ const CustomHeader = (props: titleProps) => {
                         <Text style={[styles.title, { color: isDarkMode ? '#fff' : '#000' }]}>{ props.name }</Text>
                     </View>
                     <View>
-                        <TouchableOpacity style={[styles.profileButton, {backgroundColor: theme.colors.background}]} onPress={() => navigation.navigate('profile')}>
+                        <TouchableOpacity style={[styles.profileButton, {backgroundColor: theme.colors.background}]} onPress={() => navigation.navigate('utils/profile')}>
                             <Ionicons name="person-outline" size={25} color={theme.colors.text} />
                         </TouchableOpacity>
                     </View>
-                    <Link href={'/settings'} asChild>
+                    <Link href={'utils/settings'} asChild>
                         <TouchableOpacity style={styles.settingsButton}>
                         <Ionicons name="options-outline" size={25} color={theme.colors.text} />
                         </TouchableOpacity>

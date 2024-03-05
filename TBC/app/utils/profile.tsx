@@ -13,14 +13,14 @@ import { useColorScheme } from 'react-native';
 import { CommonActions, useTheme } from '@react-navigation/native';
 import {  EmailAuthProvider, browserLocalPersistence, browserSessionPersistence, createUserWithEmailAndPassword, initializeAuth, updatePassword } from 'firebase/auth';
 import { app, auth, db } from '@/config/firebaseConfig';  
-import {  doc, setDoc } from 'firebase/firestore'; // Add this line for Firestore
+import {  doc, setDoc } from 'firebase/firestore';
 import { useContext, useState } from 'react';
 import Colors from '@/constants/Colors';
 import { useNavigation } from '@react-navigation/native';
 import Header from '@/components/Header'
 import { FontAwesome5, Ionicons } from '@expo/vector-icons'
 import Button from '@/components/Button'
-import { AuthContext } from './context/Auth';
+import { AuthContext } from '@/app/context/Auth';
 
 
 
@@ -48,7 +48,7 @@ const profile = () => {
 
     const handleLogout = () => {
         setAuthenticated(false);
-        navigation.navigate('(tabs)'); // Replace with your login screen route
+        navigation.navigate('(tabs)');
       };
 
       const handleChangePassword = async () => {
@@ -252,7 +252,6 @@ const profile = () => {
       );
 
       const renderUnauthenticatedContent = () => (
-        // Render the content that should be displayed when not authenticated
         <View>
           <Header heading="Profile" />
           <View style={{ padding: 12 }}>

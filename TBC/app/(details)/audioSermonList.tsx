@@ -1,6 +1,6 @@
 
 import Header from '@/components/Header'
-import { SafeAreaView, StyleSheet, Text, View, FlatList, Image, Pressable} from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, FlatList, Platform, TouchableOpacity, Image, Pressable} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from 'react-native';
@@ -13,15 +13,14 @@ import { getDownloadURL, ref } from 'firebase/storage';
 import { db, storage } from '@/config/firebaseConfig';
 import { useAudioContext } from '../context/audio';
 import PlayerWidget from '@/components/playerWidget';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import SearchBar from '@/components/searchBar';
 
 const audioSermonList = () => {
-    const { playSong } = useAudioContext();
+  const { setSongs, isPlaying, isPaused } = useAudioContext();
 
     const [audioSermons, setAudioSermons] = useState([]);;
-    const { setSongs } = useAudioContext();
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [isVisible, setIsVisible] = useState(false);
+
 
     const colorScheme = useColorScheme();
     const theme = useTheme();
@@ -90,7 +89,7 @@ const audioSermonList = () => {
                 renderItem={renderItem}
             />
         </View>
-      <PlayerWidget style={10} />
+        {isPlaying ? <PlayerWidget style={90}/> : isPaused ? <PlayerWidget style={10}/> : null}
     </SafeAreaView>
   )
 }

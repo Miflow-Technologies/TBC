@@ -6,10 +6,7 @@ import Goaks from '../(listen)/Goaks';
 import { Platform, View, StyleSheet } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { useColorScheme } from 'react-native';
-import { useTheme } from '@react-navigation/native';
 import { Poppins_700Bold, useFonts as usePoppinsFonts } from '@expo-google-fonts/poppins';
-
-
 
 const TopTab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
@@ -20,7 +17,7 @@ const ListenScreen = () => {
     <Stack.Screen
       name="ListenContent"
       component={TopTabs}
-      options={{ headerShown: false }} // Hide header for nested navigator
+      options={{ headerShown: false }}
     />
   </Stack.Navigator>
 );
@@ -33,7 +30,6 @@ const TopTabs = () => {
   });
 
   const colorScheme = useColorScheme();
-  const theme = useTheme();
   const isDarkMode = colorScheme === 'dark';
 
   if (!poppinsFontsLoaded) {

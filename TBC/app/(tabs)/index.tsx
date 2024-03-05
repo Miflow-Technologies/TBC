@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, SafeAreaView, StyleSheet, Platform, ScrollView, useColorScheme } from 'react-native';
-import { useNavigation, useTheme } from '@react-navigation/native';
 import Colors from '@/constants/Colors';
 import { Poppins_700Bold} from '@expo-google-fonts/poppins';
 import { NotoSerif_400Regular } from '@expo-google-fonts/noto-serif';
@@ -13,10 +12,7 @@ import PlayerWidget from '@/components/playerWidget';
 import { useAudioContext } from '../context/audio';
 
 const Tbc = () => {
-
-  const navigation = useNavigation();
   const colorScheme = useColorScheme();
-  const theme = useTheme();
   const isDarkMode = colorScheme === 'dark';
 
   const [fontsLoaded] = useFonts({
@@ -24,7 +20,7 @@ const Tbc = () => {
     NotoSerif_400Regular,
   });
 
-  const { setSongs, isPlaying, isPaused } = useAudioContext();
+  const { isPlaying, isPaused } = useAudioContext();
   const [devotionalDetails, setDevotionalDetails] = useState({
     title: '',
     subtitle: '',
@@ -53,8 +49,9 @@ const Tbc = () => {
     fetchDevotionalDetails();
   }, []);
 
-  return (
-    <SafeAreaView>
+    if (fontsLoaded) {
+      return (
+      <SafeAreaView>
       <CustomHeader name='TBC'/>
       <ScrollView style={{marginTop: Platform.OS === 'ios' ? 70: 100, marginBottom: Platform.OS === 'ios' ? 70 : 100}}>
         <View style={styles.container}>
@@ -81,7 +78,7 @@ const Tbc = () => {
           <CollapsibleContainer
             title="Announcements"
             subtitle="Weekly Announcements from:"
-            author=""
+            author="TBC"
             buttonText="READ"
             backgroundColor="#CB3CA0"
             screen='(details)/announcements'
@@ -89,8 +86,13 @@ const Tbc = () => {
         </View>
         </ScrollView>
         {isPlaying ? <PlayerWidget style={90}/> : isPaused ? <PlayerWidget style={90}/> : null}
-    </SafeAreaView>
-    )
+    </SafeAreaView>)
+   
+    } else {
+  
+      console.log("Fonts are still loading...");
+    }
+    
 }
 
 const styles = StyleSheet.create ({
