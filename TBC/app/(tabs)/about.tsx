@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, Platform, StyleSheet, useColorScheme, Pressable, Dimensions } from 'react-native'
+import { View, Text, SafeAreaView, Platform, StyleSheet, useColorScheme, Pressable, Dimensions, Linking, ScrollView } from 'react-native'
 import React from 'react'
 import CustomHeader from '@/components/CustomHeader'
 import { useNavigation, useTheme } from '@react-navigation/native'
@@ -34,12 +34,13 @@ const AboutScreen = () => {
   };
 
   const videoUrl = require('@/assets/videos/creed.mp4');
+  const url = 'https://www.google.com/maps/place/The+Beacon+Centre/@7.3651934,3.8153437,17z/data=!4m6!3m5!1s0x10398fa95920358b:0x6eb936f5446c6866!8m2!3d7.3651881!4d3.8179186!16s%2Fg%2F11j3rqv4gb?entry=ttu'
 
   if (fontsLoaded) {
     return (
     <SafeAreaView>
       <CustomHeader name='About'/>
-      <View style={{marginTop: Platform.OS === 'ios' ? 10: 80, marginBottom: Platform.OS === 'ios' ? 50 : 50}}>
+      <ScrollView style={{marginTop: Platform.OS === 'ios' ? 10: 100, marginBottom: Platform.OS === 'ios' ? 50 : 70}}>
       <View style={styles.container}>
           <Text style={[styles.subtitle, {fontFamily: 'NotoSerif_400Regular',  color: isDarkMode ? '#fff' : Colors.textGrey }]}>WELCOME,</Text>
           <Text style={[styles.title, {fontFamily: 'Poppins_700Bold',  color: isDarkMode ? Colors.primary : '#000' }]}>Shining Lights</Text>
@@ -76,8 +77,8 @@ Changers</Text>
 
           </View>
         </View>
-      </View>
-      <View style={[styles.float, {zIndex: 1, backgroundColor: theme.colors.background, shadowColor: isDarkMode ? '#fff' : Colors.textGrey,}]}><Pressable onPress={() => navigation.navigate('(modals)/maps')}>
+      </ScrollView>
+      <View style={[styles.float, {zIndex: 1, backgroundColor: theme.colors.background, shadowColor: isDarkMode ? '#fff' : Colors.textGrey,}]}><Pressable onPress={() => Linking.openURL(url)}>
         <Ionicons
                     name='map-outline'
                     size={25}

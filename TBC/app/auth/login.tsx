@@ -6,7 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox"
 import Button from '@/components/Button';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
-import { signInWithEmailAndPassword, initializeAuth } from 'firebase/auth';
+import { signInWithEmailAndPassword, initializeAuth, } from 'firebase/auth';
 import { app, auth } from '@/config/firebaseConfig'; // Import your Firebase configuration
 import { CommonActions, useNavigation } from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
@@ -26,7 +26,7 @@ const Login = () => {
   const [isPasswordShown, setIsPasswordShown] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const { isAuthenticated, setAuthenticated } = useContext(AuthContext);
-
+  const { isAdmin, setIsAdmin } = useContext(AuthContext);
 
 
   const handleLogin = async () => {
@@ -34,7 +34,6 @@ const Login = () => {
       const { user } = await signInWithEmailAndPassword(auth, email, password);
 
       if (user) {
-        // Save credentials to AsyncStorage if "Remember Me" is checked
         if (isChecked) {
           auth;
         }
@@ -48,6 +47,7 @@ const Login = () => {
 
           if (userData.isUser == '0') {
             setAuthenticated(true);
+            setIsAdmin(true)
             navigation.navigate('admin/adminPanel');
            
           } else {

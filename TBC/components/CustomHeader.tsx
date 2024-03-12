@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, Platform, SafeAreaView, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { DarkTheme, DefaultTheme, ThemeProvider, useNavigation, useTheme } from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
@@ -6,6 +6,7 @@ import { Poppins_500Medium, Poppins_700Bold, useFonts as usePoppinsFonts } from 
 import { NotoSerif_400Regular, NotoSerif_700Bold, useFonts as useNotoFonts } from '@expo-google-fonts/noto-serif';
 import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
+import { AuthContext } from '@/app/context/Auth';
 
 
 type titleProps = {
@@ -36,18 +37,28 @@ const CustomHeader = (props: titleProps) => {
         return null
     }
 
+    const {isAdmin, currentUser} = useContext(AuthContext)
+
+    const handleProfileNavigation = () => {
+        if (currentUser && isAdmin) {
+            navigation.navigate('admin/adminPanel');
+        } else {
+            navigation.navigate('utils/profile');
+        }
+    }
+
     return (
         <ThemeProvider value={isDarkMode ? DarkTheme : DefaultTheme}>
             <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.background }]}>
                 <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-                    <TouchableOpacity style={[styles.logoContainer, { shadowColor: isDarkMode ? '#fff' : '#000' }, { backgroundColor: theme.colors.background }]}>
+                    <TouchableOpacity style={[styles.logoContainer, { shadowColor: isDarkMode ? '#fff' : '#000' }, { backgroundColor: theme.colors.background }]} onPress={() => navigation.navigate('(tabs)')}>
                         <Image style={styles.logo} source={logoSource} />
                     </TouchableOpacity>
                     <View style={styles.titleContainer}>
                         <Text style={[styles.title, { color: isDarkMode ? '#fff' : '#000' }]}>{ props.name }</Text>
                     </View>
                     <View>
-                        <TouchableOpacity style={[styles.profileButton, {backgroundColor: theme.colors.background}]} onPress={() => navigation.navigate('utils/profile')}>
+                        <TouchableOpacity style={[styles.profileButton, {backgroundColor: theme.colors.background}]} onPress={() => handleProfileNavigation()}>
                             <Ionicons name="person-outline" size={25} color={theme.colors.text} />
                         </TouchableOpacity>
                     </View>

@@ -2,9 +2,9 @@ import { View, Text, useColorScheme, Platform, TouchableOpacity, SafeAreaView, S
 import React from 'react'
 import {  useNavigation, useTheme } from '@react-navigation/native';
 import { Poppins_500Medium, Poppins_700Bold, useFonts } from '@expo-google-fonts/poppins';
-import { NotoSerif_400Regular, NotoSerif_700Bold } from '@expo-google-fonts/noto-serif';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
+import { NotoSerif_400Regular, NotoSerif_700Bold } from '@expo-google-fonts/noto-serif';;
 import CustomHeader from '@/components/CustomHeader';
+import Colors from '@/constants/Colors';
 
 const adminPanel = () => {
   const navigation = useNavigation();
@@ -33,6 +33,7 @@ const adminPanel = () => {
 
         const styles = StyleSheet.create({
             container:{
+                marginTop: 100,
                 backgroundColor: theme.colors.background,
                 flexDirection: 'column'
             },
@@ -81,7 +82,7 @@ const adminPanel = () => {
         })
   return (
     <SafeAreaView>
-        <CustomHeader name={'ADMIN PANEL'}/>
+        <CustomHeader name={'Admin'}/>
           <View style={[styles.container,]}>
             <TouchableOpacity onPress={() => navigation.navigate('admin/adUpload/upload')}>
                 <Card title='Upload'/>

@@ -35,7 +35,6 @@ const manage = () => {
         const styles = StyleSheet.create({
             container:{
                 backgroundColor: theme.colors.background,
-                justifyContent:"flex-start"
             },
             containerText: {
                 fontFamily: 'NotoSerif_400Regular',
@@ -89,29 +88,29 @@ const manage = () => {
   return (
     <SafeAreaView>
         <Header heading='MANAGE' />
-          <ScrollView style={[styles.container, {top: 10, marginBottom: 50}]}>
-            <TouchableOpacity onPress={() => navigation.navigate('')}>
+          <ScrollView style={[styles.container, {top: 10, marginBottom: 50,}]}>
+            <TouchableOpacity onPress={() => navigation.navigate('admin/adManage/sermon')}>
                 <Card title='Sermon'/>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('')}>
+            <TouchableOpacity onPress={() => navigation.navigate('admin/adManage/excerpt')}>
                 <Card title='Excerpts'/>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('')}>
+            <TouchableOpacity onPress={() => navigation.navigate('admin/adManage/audioSermon')}>
                 <Card title='Audio Sermon'/>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('')}>
+            <TouchableOpacity onPress={() => navigation.navigate('admin/adManage/goaks')}>
                 <Card title='Goaks'/>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('')}>
+            <TouchableOpacity onPress={() => navigation.navigate('admin/adManage/devotional')}>
                 <Card title='Devotional'/>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('')}>
+            <TouchableOpacity onPress={() => navigation.navigate('admin/adManage/article')}>
                 <Card title='Articles'/>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('')}>
+            <TouchableOpacity onPress={() => navigation.navigate('admin/adManage/quote')}>
                 <Card title='Daily Quote'/>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('')}>
+            <TouchableOpacity onPress={() => navigation.navigate('admin/adManage/announcement')}>
                 <Card title='Announcements'/>
             </TouchableOpacity>
           </ScrollView>

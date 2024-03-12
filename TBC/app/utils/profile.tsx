@@ -53,24 +53,12 @@ const profile = () => {
 
       const handleChangePassword = async () => {
         try {
-          // Assuming you have the user's new password stored in the 'newPassword' variable
           const newPassword = "user's new password";
-      
-          // Re-authenticate the user if needed (e.g., if their session has expired)
-          // You may need to obtain the user's current password or use another re-authentication method
-          // Uncomment the following lines and replace them with your re-authentication logic
-          // const credentials = EmailAuthProvider.credential(email, oldPassword);
-          // await auth.currentUser.reauthenticateWithCredential(credentials);
-      
-          // Update the user's password
           await updatePassword(auth.currentUser, newPassword);
-      
-          // Handle success
           console.log('Password changed successfully!');
           
-          navigation.navigate('auth/login'); // Replace with your login screen route
+          navigation.navigate('auth/login');
         } catch (error) {
-          // Handle errors
           console.error('Failed to change password', error.message);
           Alert.alert('Password Change Failed', error.message);
         }

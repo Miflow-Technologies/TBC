@@ -5,12 +5,16 @@ interface AuthContextType {
   currentUser: any | null;
   isAuthenticated: boolean;
   setAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+  isAdmin: boolean;
+  setIsAdmin: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const AuthContext = createContext<AuthContextType>({
   currentUser: null,
   isAuthenticated: false,
   setAuthenticated: () => {},
+  isAdmin: false,
+  setIsAdmin: () => {} 
 });
 
 interface AuthProviderProps {
@@ -20,6 +24,7 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<any | null>(null);
   const [isAuthenticated, setAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false)
   const [pending, setPending] = useState(true);
 
   useEffect(() => {
@@ -29,12 +34,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setPending(false);
     });
 
-    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
 
   if (pending) {
-    // You might want to render a loading indicator here
     return null;
   }
 
@@ -44,6 +47,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         currentUser,
         isAuthenticated,
         setAuthenticated,
+        setIsAdmin,
+        isAdmin
       }}
     >
       {children}

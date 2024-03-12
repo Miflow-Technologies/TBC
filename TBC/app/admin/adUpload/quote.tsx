@@ -34,12 +34,12 @@ const DailyQuoteUpload = () => {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 1,
-      aspect: [3, 4]
+      aspect: [3, 4],
     });
 
     if (!result.canceled) {
       setImageFile(result.assets[0].uri);
-      const filenameParts = result.assets[0].uri.split("/");
+      const filenameParts = result.assets[0].uri.split("/")
       setFilename(filenameParts[filenameParts.length - 1]);
     }
   }
@@ -146,13 +146,13 @@ const DailyQuoteUpload = () => {
             numberOfLines={4}
             value={content}
             onChangeText={(text) => setContent(text)}
-          />
             placeholderTextColor={isDarkMode ? "#fff" : Colors.textGrey}
             style={{
               width: "100%",
               color: isDarkMode ? "#fff" : "#000",
             }}
           />
+            
         </View>
       </View>
 

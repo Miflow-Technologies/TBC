@@ -61,7 +61,7 @@ const CollapsibleContainer = ({
       height: animatedHeight.value,
       backgroundColor: animatedBackgroundColor.value,
       ...styles.wrap,
-      shadowColor: isDarkMode ? '#fff' : '#000', // Apply wrap styles directly
+      shadowColor: isDarkMode ? '#fff' : '#000',
     };
   }, [expanded]);
 
@@ -90,7 +90,7 @@ const CollapsibleContainer = ({
           <Text>Loading fonts...</Text>
         )}
         {expanded && (
-          <View>
+          <View style={{padding: 20}}>
             <Text style={styles.subtitle}>{subtitle}</Text>
             <Text style={styles.author}>{author}</Text>
             
@@ -151,15 +151,15 @@ const styles = StyleSheet.create({
     fontFamily: 'NotoSerif_400Regular',
     color: '#E8E8E8',
     alignSelf: 'flex-start',
-    top: -30,
-    left: Platform.OS === 'ios' ? -15 : -30,
+    bottom: 30,
+    right: Platform.OS === 'ios' ? 15 : 20,
   },
   author: {
     fontSize: 15,
     fontFamily: 'Poppins_700Bold',
     alignSelf: 'flex-start',
-    top: -25,
-    left: Platform.OS === 'ios' ? -14 : -30,
+    bottom: 25,
+    right: Platform.OS === 'ios' ? 15 : 20,
     color: '#fff',
   },
 });
