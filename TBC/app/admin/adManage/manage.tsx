@@ -89,12 +89,15 @@ const manage = () => {
     <SafeAreaView>
         <Header heading='MANAGE' />
           <ScrollView style={[styles.container, {top: 10, marginBottom: 50,}]}>
-            <TouchableOpacity onPress={() => navigation.navigate('admin/adManage/sermon')}>
+           {/*<TouchableOpacity onPress={() => navigation.navigate('admin/adManage/sermon')}>
                 <Card title='Sermon'/>
-            </TouchableOpacity>
+            </TouchableOpacity>*/}
             <TouchableOpacity onPress={() => navigation.navigate('admin/adManage/excerpt')}>
                 <Card title='Excerpts'/>
             </TouchableOpacity>
+             {/*<TouchableOpacity onPress={() => navigation.navigate('admin/adManage/inspirational')}>
+                <Card title='Sermon'/>
+            </TouchableOpacity>*/}
             <TouchableOpacity onPress={() => navigation.navigate('admin/adManage/audioSermon')}>
                 <Card title='Audio Sermon'/>
             </TouchableOpacity>
@@ -104,7 +107,7 @@ const manage = () => {
             <TouchableOpacity onPress={() => navigation.navigate('admin/adManage/devotional')}>
                 <Card title='Devotional'/>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('admin/adManage/article')}>
+            <TouchableOpacity onPress={() => navigation.navigate('admin/adManage/articles')}>
                 <Card title='Articles'/>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate('admin/adManage/quote')}>

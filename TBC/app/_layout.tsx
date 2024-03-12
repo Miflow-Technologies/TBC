@@ -87,7 +87,7 @@ function RootLayoutNav() {
             <Stack.Screen name="admin/adManage/excerpt" options={{ headerShown: false }} />
             <Stack.Screen name="admin/adManage/devotional" options={{ headerShown: false }} />
             <Stack.Screen name="admin/adManage/audioSermon" options={{ headerShown: false }} />
-            <Stack.Screen name="admin/adManage/article" options={{ headerShown: false }} />
+            <Stack.Screen name="admin/adManage/articles" options={{ headerShown: false }} />
             <Stack.Screen name="admin/adManage/announcement" options={{ headerShown: false }} />
             <Stack.Screen 
             name="auth/login" 
