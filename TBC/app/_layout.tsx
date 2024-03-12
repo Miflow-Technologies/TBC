@@ -66,7 +66,29 @@ function RootLayoutNav() {
             <Stack.Screen name="(details)/articleReader" options={{ headerShown: false }} />
             <Stack.Screen name="(details)/audioSermonList" options={{ headerShown: false }} />
             <Stack.Screen name="(details)/excerptList" options={{ headerShown: false }} />
+            <Stack.Screen name="(modals)/pnp" options={{ headerShown: false }} />
+            <Stack.Screen name="(modals)/tsnCs" options={{ headerShown: false }} />
             <Stack.Screen name="admin/adminPanel" options={{ headerShown: false }} />
+            <Stack.Screen name="admin/adUpload/upload" options={{ headerShown: false }} />
+            <Stack.Screen name="admin/adUpload/sermon" options={{ headerShown: false }} />
+            <Stack.Screen name="admin/adUpload/quote" options={{ headerShown: false }} />
+            <Stack.Screen name="admin/adUpload/inspirational" options={{ headerShown: false }} />
+            <Stack.Screen name="admin/adUpload/goaks" options={{ headerShown: false }} />
+            <Stack.Screen name="admin/adUpload/excerpt" options={{ headerShown: false }} />
+            <Stack.Screen name="admin/adUpload/devotional" options={{ headerShown: false }} />
+            <Stack.Screen name="admin/adUpload/audioSermon" options={{ headerShown: false }} />
+            <Stack.Screen name="admin/adUpload/article" options={{ headerShown: false }} />
+            <Stack.Screen name="admin/adUpload/announcement" options={{ headerShown: false }} />
+            <Stack.Screen name="admin/adManage/manage" options={{ headerShown: false }} />
+            <Stack.Screen name="admin/adManage/sermon" options={{ headerShown: false }} />
+            <Stack.Screen name="admin/adManage/quote" options={{ headerShown: false }} />
+            <Stack.Screen name="admin/adManage/inspirational" options={{ headerShown: false }} />
+            <Stack.Screen name="admin/adManage/goaks" options={{ headerShown: false }} />
+            <Stack.Screen name="admin/adManage/excerpt" options={{ headerShown: false }} />
+            <Stack.Screen name="admin/adManage/devotional" options={{ headerShown: false }} />
+            <Stack.Screen name="admin/adManage/audioSermon" options={{ headerShown: false }} />
+            <Stack.Screen name="admin/adManage/article" options={{ headerShown: false }} />
+            <Stack.Screen name="admin/adManage/announcement" options={{ headerShown: false }} />
             <Stack.Screen 
             name="auth/login" 
             options={{  
