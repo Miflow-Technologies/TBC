@@ -5,6 +5,7 @@ import {
   TextInput,
   useColorScheme,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import { db, storage } from "@/config/firebaseConfig";
@@ -24,6 +25,8 @@ const AnnouncementsUpload = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState('');
   const [filename, setFilename] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+
 
 
   const colorScheme = useColorScheme();
@@ -46,6 +49,7 @@ const AnnouncementsUpload = () => {
   }
   async function handleUpload() {
     if (imageFile) {
+      setIsUploading(true);
       await upload(imageFile);
     } else {
       alert("Please select a video first.");
@@ -76,6 +80,7 @@ const AnnouncementsUpload = () => {
       (error) => {
         // Handle unsuccessful uploads
         console.error("Error during upload:", error);
+        setIsUploading(false);
       },
       async () => {
         // Handle successful uploads on complete
@@ -89,9 +94,11 @@ const AnnouncementsUpload = () => {
           );
           setImageFile("");
           console.log("Upload completed");
+          setIsUploading(false);
           navigation.navigate('admin/adManage/announcement')
         } catch (error) {
           console.error("Error getting download URL or saving record:", error);
+          setIsUploading(false);
         }
       }
     );
@@ -202,7 +209,7 @@ const AnnouncementsUpload = () => {
           Add PDF
         </Text>
 
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={{ flexDirection: "row", alignItems: "center", }}>
           <TouchableOpacity onPress={() => pickImage()} style={{ width: 50 }}>
             <View
               style={{
@@ -216,7 +223,7 @@ const AnnouncementsUpload = () => {
                 paddingLeft: 5,
               }}
             >
-              <Ionicons name="musical-notes-outline" size={24} color={isDarkMode ? "#fff" : "#000"}/>
+              <Ionicons name="radio-outline" size={24} color={isDarkMode ? "#fff" : "#000"}/>
             </View>
           </TouchableOpacity>
           <Text
@@ -233,7 +240,7 @@ const AnnouncementsUpload = () => {
       </View>
 
       <Button
-        title="Upload"
+        title={isUploading ? "Uploading..." : "Upload"}
         filled
         style={{
           marginTop: 18,
@@ -241,6 +248,11 @@ const AnnouncementsUpload = () => {
         }}
         onPress={() => handleUpload()}
       />
+      {isUploading && (
+        <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, alignItems: "center", justifyContent: "center" }}>
+          <ActivityIndicator size="large" color={isDarkMode ? "#fff" : "#000"} />
+        </View>
+      )}  
     </View>
   </SafeAreaView>
   );

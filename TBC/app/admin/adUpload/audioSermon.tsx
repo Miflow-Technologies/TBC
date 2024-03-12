@@ -107,9 +107,11 @@ const AudioSermon = () => {
       setAudioFile("");
       setImageFile("");
       console.log("Upload completed");
+      setIsUploading(false);
       navigation.navigate("admin/adManage/audioSermon");
     } catch (error) {
       console.error("Error getting download URL or saving record:", error);
+      setIsUploading(false);
     }
   }
 
@@ -132,10 +134,8 @@ const AudioSermon = () => {
         isFeatured: "0",
       });
       console.log("Record saved with document ID:", docRef.id);
-      setIsUploading(false);
     } catch (e) {
       console.error("Error saving record:", e);
-      setIsUploading(false);
     }
   }
 

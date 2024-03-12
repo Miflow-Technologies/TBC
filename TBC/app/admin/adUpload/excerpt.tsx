@@ -5,6 +5,7 @@ import {
   TextInput,
   useColorScheme,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
@@ -15,7 +16,7 @@ import Header from "@/components/Header";
 import Button from "@/components/Button";
 import { useNavigation, useTheme } from "@react-navigation/native";
 import Colors from "@/constants/Colors";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import {  MaterialIcons } from "@expo/vector-icons";
 
 const excerpt = () => {
 
@@ -30,6 +31,8 @@ const excerpt = () => {
   const [videoFile, setVideoFile] = useState("");
   const [series, setSeries] = useState("");
   const [filename, setFilename] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+
 
   async function pickVideo() {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -49,6 +52,7 @@ const excerpt = () => {
 
   async function handleUpload() {
     if (videoFile) {
+      setIsUploading(true);
       await upload(videoFile);
     } else {
       alert("Please select a video first.");
@@ -79,6 +83,7 @@ const excerpt = () => {
       (error) => {
         // Handle unsuccessful uploads
         console.error("Error during upload:", error);
+        setIsUploading(false);  
       },
       async () => {
         // Handle successful uploads on complete
@@ -93,6 +98,7 @@ const excerpt = () => {
           );
           setVideoFile("");
           console.log("Upload completed");
+          setIsUploading(false);
           navigation.navigate('admin/adManage/excerpt')
         } catch (error) {
           console.error("Error getting download URL or saving record:", error);
@@ -278,7 +284,7 @@ const excerpt = () => {
         </View>
 
         <Button
-          title="Upload"
+          title={isUploading ? "Uploading..." : "Upload"}
           filled
           style={{
             marginTop: 18,
@@ -286,6 +292,11 @@ const excerpt = () => {
           }}
           onPress={() => handleUpload()}
         />
+        {isUploading && (
+        <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, alignItems: "center", justifyContent: "center" }}>
+          <ActivityIndicator size="large" color={isDarkMode ? "#fff" : "#000"} />
+        </View>
+      )}  
       </View>
     </SafeAreaView>
   );

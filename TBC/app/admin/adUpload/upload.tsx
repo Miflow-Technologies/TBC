@@ -3,7 +3,6 @@ import React from 'react'
 import { useNavigation, useTheme } from '@react-navigation/native';
 import { Poppins_500Medium, Poppins_700Bold, useFonts } from '@expo-google-fonts/poppins';
 import { NotoSerif_400Regular, NotoSerif_700Bold } from '@expo-google-fonts/noto-serif';
-import { Ionicons } from '@expo/vector-icons';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import Header from '@/components/Header';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -109,9 +108,10 @@ const upload = () => {
         <Header heading='UPLOAD' />
         <ScrollView>
           <View style={[styles.container, {top: 10, marginBottom: 50}]}>
-            <Card title= 'Upload Video Sermon' route={() => navigation.navigate('admin/adUpload/sermon')}/>
+            {/*<Card title= 'Upload Video Sermon' route={() => navigation.navigate('admin/adUpload/sermon')}/>*/}
             <Card title= 'Upload Audio Sermon' route={() => navigation.navigate('admin/adUpload/audioSermon')} />
             <Card title= 'Upload Excerpts' route={() => navigation.navigate('admin/adUpload/excerpt')} />
+            {/*<Card title= 'Upload Inspirational' route={() => navigation.navigate('admin/adUpload/inspirational')}/>*/}
             <Card title= 'Upload Daily Quotes' route={() => navigation.navigate('admin/adUpload/quote')} />
             <Card title= 'Upload Articles' route={() => navigation.navigate('admin/adUpload/article')} />
             <Card title= 'Upload Devotionals' route={() => navigation.navigate('admin/adUpload/devotional')} />

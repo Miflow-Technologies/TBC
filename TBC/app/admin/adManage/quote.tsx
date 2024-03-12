@@ -17,7 +17,7 @@ import { useFonts } from 'expo-font';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '@/config/firebaseConfig';
 
-const DailyQuoteManagementScreen = () => {
+const DailyQuote = () => {
   const colorScheme = useColorScheme();
   const theme = useTheme();
   const isDarkMode = colorScheme === 'dark';
@@ -174,4 +174,4 @@ const DailyQuoteManagementScreen = () => {
   );
 };
 
-export default DailyQuoteManagementScreen;
+export default DailyQuote;

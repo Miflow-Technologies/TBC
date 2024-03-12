@@ -88,7 +88,7 @@ const DailyQuoteUpload = () => {
           );
           setImageFile("");
           console.log("Upload completed");
-          navigation.navigate('admin/adManage/dailyQuote')
+          navigation.navigate('admin/adManage/quote')
         } catch (error) {
           console.error("Error getting download URL or saving record:", error);
         }

@@ -5,6 +5,7 @@ import {
   TextInput,
   useColorScheme,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
@@ -13,12 +14,13 @@ import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { addDoc, collection } from "firebase/firestore";
 import Header from "@/components/Header";
 import Button from "@/components/Button";
-import { useTheme } from "@react-navigation/native";
 import Colors from "@/constants/Colors";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { getVideoDuration } from "react-native-video-duration";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useNavigation, useTheme } from "@react-navigation/native";
+
 
 const inspirational = () => {
+  const navigation = useNavigation();
   const colorScheme = useColorScheme();
   const theme = useTheme();
   const isDarkMode = colorScheme === "dark";
@@ -28,12 +30,15 @@ const inspirational = () => {
   const [videoFile, setVideoFile] = useState("");
   const [series, setSeries] = useState("");
   const [filename, setFilename] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+
 
   async function pickVideo() {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Videos,
       allowsEditing: true,
       quality: 1,
+      aspect: [3, 4]
     });
 
     if (!result.canceled) {
@@ -43,54 +48,77 @@ const inspirational = () => {
     }
   }
 
-  const formatDuration = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const secondsRemaining = Math.floor(seconds % 60);
-    return `${minutes}:${secondsRemaining.toString().padStart(2, "0")}`;
-  };
 
   async function handleUpload() {
     if (videoFile) {
+      setIsUploading(true);
       await upload(videoFile);
     } else {
       alert("Please select a video first.");
     }
   }
-
+  
   async function upload(uri) {
     const response = await fetch(uri);
     const blob = await response.blob();
-
-    const storageRef = ref(storage, "Inspirational/" + new Date().getTime());
+  
+    const storageRef = ref(storage, "Inspirationals/" + new Date().getTime());
     const uploadTask = uploadBytesResumable(storageRef, blob);
-
-    uploadTask.on("state_changed", () => {
-      getDownloadURL(uploadTask.snapshot.ref).then(async (downloadUrl) => {
-        await saveRecord(
-          downloadUrl,
-          title,
-          preacher,
-          series,
-          new Date().getTime()
-        );
-        setVideoFile("");
-      });
-    });
+  
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        // Handle upload progress if needed
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log(`Upload progress: ${progress}%`);
+  
+        if (snapshot.state === "paused") {
+          console.log("Upload paused");
+        } else if (snapshot.state === "running") {
+          console.log("Upload running");
+        }
+      },
+      (error) => {
+        // Handle unsuccessful uploads
+        console.error("Error during upload:", error);
+        setIsUploading(false);  
+      },
+      async () => {
+        // Handle successful uploads on complete
+        try {
+          const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
+          await saveRecord(
+            downloadUrl,
+            title,
+            preacher,
+            series,
+            new Date().getTime()
+          );
+          setVideoFile("");
+          console.log("Upload completed");
+          setIsUploading(false);
+          navigation.navigate('admin/adManage/inspirational')
+        } catch (error) {
+          console.error("Error getting download URL or saving record:", error);
+        }
+      }
+    );
   }
-
+  
   async function saveRecord(url, title, preacher, series, createdAt) {
     try {
-      const docRef = await addDoc(collection(db, "inspirational"), {
+      const docRef = await addDoc(collection(db, "excerpt"), {
         url,
         title,
         preacher,
         series,
         createdAt,
-        isFeatured: '0'
+        isFeatured: "0",
       });
-      console.log("file saved", docRef.id);
+      console.log("File saved with document ID:", docRef.id);
     } catch (e) {
-      console.log(e);
+      console.error("Error saving record:", e);
     }
   }
   return (
@@ -253,7 +281,7 @@ const inspirational = () => {
         </View>
 
         <Button
-          title="Upload"
+          title={isUploading ? "Uploading..." : "Upload"}
           filled
           style={{
             marginTop: 18,
@@ -261,6 +289,11 @@ const inspirational = () => {
           }}
           onPress={() => handleUpload()}
         />
+        {isUploading && (
+        <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, alignItems: "center", justifyContent: "center" }}>
+          <ActivityIndicator size="large" color={isDarkMode ? "#fff" : "#000"} />
+        </View>
+      )}  
       </View>
     </SafeAreaView>
   );

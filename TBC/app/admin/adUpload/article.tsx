@@ -5,6 +5,7 @@ import {
   TextInput,
   useColorScheme,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import * as DocumentPicker from "expo-document-picker";
@@ -23,6 +24,8 @@ const ArticleUpload = () => {
   const [author, setAuthor] = useState('');
   const [article, setArticle] = useState('')
   const [filename, setFilename] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+
 
 
   const colorScheme = useColorScheme();
@@ -48,6 +51,7 @@ const ArticleUpload = () => {
 
   async function handleUpload() {
     if (article) {
+      setIsUploading(true);
       await upload(article);
     } else {
       alert("Please select a document first.");
@@ -83,6 +87,7 @@ const ArticleUpload = () => {
       (error) => {
         // Handle unsuccessful uploads
         console.error("Error during upload:", error);
+        setIsUploading(false);
       },
       async () => {
         // Handle successful uploads on complete
@@ -96,12 +101,14 @@ const ArticleUpload = () => {
           );
           setArticle("");
           console.log("Upload completed");
-          navigation.navigate("admin/adManage/article");
+          setIsUploading(false);
+          navigation.navigate("admin/adManage/articles");
         } catch (error) {
           console.error(
             "Error getting download URL or saving record:",
             error
           );
+          setIsUploading(false);
         }
       }
     );
@@ -242,7 +249,7 @@ const ArticleUpload = () => {
           </View>
   
           <Button
-            title="Upload"
+            title={isUploading ? "Uploading..." : "Upload"}
             filled
             style={{
               marginTop: 18,
@@ -250,6 +257,11 @@ const ArticleUpload = () => {
             }}
             onPress={() => handleUpload()}
           />
+          {isUploading && (
+        <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, alignItems: "center", justifyContent: "center" }}>
+          <ActivityIndicator size="large" color={isDarkMode ? "#fff" : "#000"} />
+        </View>
+      )} 
         </View>
       </SafeAreaView>
   );
