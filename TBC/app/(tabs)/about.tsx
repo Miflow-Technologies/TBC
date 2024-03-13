@@ -86,7 +86,6 @@ Changers</Text>
                   /></Pressable>
 
       </View>
-      {isPlaying ? <PlayerWidget style={90}/> : isPaused ? <PlayerWidget style={90}/> : null}
     </SafeAreaView>
     )
   } else {

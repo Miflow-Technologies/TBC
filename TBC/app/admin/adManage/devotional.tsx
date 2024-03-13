@@ -7,6 +7,7 @@ import {
   FlatList,
   Pressable,
   Alert,
+  Platform,
 } from 'react-native';
 import CustomHeader from '@/components/CustomHeader';
 import { useColorScheme } from 'react-native';
@@ -15,6 +16,7 @@ import { Poppins_700Bold } from '@expo-google-fonts/poppins';
 import { useFonts } from 'expo-font';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '@/config/firebaseConfig';
+import Header from '@/components/Header';
 
 const DevotionalManagementScreen = () => {
   const colorScheme = useColorScheme();
@@ -159,7 +161,7 @@ const DevotionalManagementScreen = () => {
 
   return (
     <SafeAreaView>
-      <CustomHeader name="Devotional Management" />
+      <Header heading='Manage Devotional'/>
       <View
         style={{ marginTop: Platform.OS === 'ios' ? 70 : 100, marginBottom: Platform.OS === 'ios' ? 240 : 260 }}
       >

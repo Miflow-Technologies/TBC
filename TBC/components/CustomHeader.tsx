@@ -39,13 +39,13 @@ const CustomHeader = (props: titleProps) => {
 
     const {isAdmin, currentUser} = useContext(AuthContext)
 
-    const handleProfileNavigation = () => {
+    /*const handleProfileNavigation = () => {
         if (currentUser && isAdmin) {
             navigation.navigate('admin/adminPanel');
         } else {
             navigation.navigate('utils/profile');
         }
-    }
+    }*/
 
     return (
         <ThemeProvider value={isDarkMode ? DarkTheme : DefaultTheme}>
@@ -58,7 +58,7 @@ const CustomHeader = (props: titleProps) => {
                         <Text style={[styles.title, { color: isDarkMode ? '#fff' : '#000' }]}>{ props.name }</Text>
                     </View>
                     <View>
-                        <TouchableOpacity style={[styles.profileButton, {backgroundColor: theme.colors.background}]} onPress={() => handleProfileNavigation()}>
+                        <TouchableOpacity style={[styles.profileButton, {backgroundColor: theme.colors.background}]} onPress={() => navigation.navigate('admin/adminPanel')}>
                             <Ionicons name="person-outline" size={25} color={theme.colors.text} />
                         </TouchableOpacity>
                     </View>

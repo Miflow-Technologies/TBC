@@ -152,14 +152,14 @@ const styles = StyleSheet.create({
     color: '#E8E8E8',
     alignSelf: 'flex-start',
     bottom: 30,
-    right: Platform.OS === 'ios' ? 15 : 20,
+    right: Platform.OS === 'ios' ? 15 : 28,
   },
   author: {
     fontSize: 15,
     fontFamily: 'Poppins_700Bold',
     alignSelf: 'flex-start',
     bottom: 25,
-    right: Platform.OS === 'ios' ? 15 : 20,
+    right: Platform.OS === 'ios' ? 15 : 28,
     color: '#fff',
   },
 });

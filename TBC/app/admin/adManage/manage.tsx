@@ -1,4 +1,4 @@
-import { View, Text, useColorScheme, Platform, TouchableOpacity, SafeAreaView, StyleSheet, ScrollView } from 'react-native'
+import { View, Text, useColorScheme, Platform, TouchableOpacity, SafeAreaView, StyleSheet, ScrollView, Pressable, Animated } from 'react-native'
 import React from 'react'
 import { useNavigation, useTheme } from '@react-navigation/native';
 import { Poppins_500Medium, Poppins_700Bold, useFonts } from '@expo-google-fonts/poppins';
@@ -21,20 +21,40 @@ const manage = () => {
     const isDarkMode = colorScheme === 'dark';
 
 
-  const Card =({
-    title,
-
-})=> {
-    return(
-            <View style={styles.card}>
-                <Text style={styles.cardText}>{title}</Text>
-            </View>
-        )
+    const Card = ({ title, route }) => {
+        const scaleValue = new Animated.Value(1);
+    
+        const handlePressIn = () => {
+          Animated.spring(scaleValue, {
+            toValue: 0.95,
+            useNativeDriver: true,
+          }).start();
         };
+    
+        const handlePressOut = () => {
+          Animated.spring(scaleValue, {
+            toValue: 1,
+            useNativeDriver: true,
+          }).start();
+        };
+    
+        const animatedStyle = {
+          transform: [{ scale: scaleValue }],
+        };
+    
+        return (
+          <Pressable onPress={route} onPressIn={handlePressIn} onPressOut={handlePressOut}>
+            <Animated.View style={[styles.card, animatedStyle]}>
+              <Text style={styles.cardText}>{title}</Text>
+            </Animated.View>
+          </Pressable>
+        );
+      };
 
         const styles = StyleSheet.create({
             container:{
                 backgroundColor: theme.colors.background,
+                justifyContent:"flex-start"
             },
             containerText: {
                 fontFamily: 'NotoSerif_400Regular',
@@ -75,9 +95,6 @@ const manage = () => {
                 shadowColor: isDarkMode ? '#fff' : '#000',
                 elevation:3,
             },
-            cardIcon: {
-                marginLeft: 20
-            },
             cardText: {
                 marginLeft: 20,
                 color: isDarkMode ? "#fff" : '#000',
@@ -88,34 +105,25 @@ const manage = () => {
   return (
     <SafeAreaView>
         <Header heading='MANAGE' />
-          <ScrollView style={[styles.container, {top: 10, marginBottom: 50,}]}>
-           {/*<TouchableOpacity onPress={() => navigation.navigate('admin/adManage/sermon')}>
-                <Card title='Sermon'/>
-            </TouchableOpacity>*/}
-            <TouchableOpacity onPress={() => navigation.navigate('admin/adManage/excerpt')}>
-                <Card title='Excerpts'/>
-            </TouchableOpacity>
-             {/*<TouchableOpacity onPress={() => navigation.navigate('admin/adManage/inspirational')}>
-                <Card title='Sermon'/>
-            </TouchableOpacity>*/}
-            <TouchableOpacity onPress={() => navigation.navigate('admin/adManage/audioSermon')}>
-                <Card title='Audio Sermon'/>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('admin/adManage/goaks')}>
-                <Card title='Goaks'/>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('admin/adManage/devotional')}>
-                <Card title='Devotional'/>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('admin/adManage/articles')}>
-                <Card title='Articles'/>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('admin/adManage/quote')}>
-                <Card title='Daily Quote'/>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('admin/adManage/announcement')}>
-                <Card title='Announcements'/>
-            </TouchableOpacity>
+          <ScrollView>
+          <View style={[styles.container, {top: 10, marginBottom: 50}]}>
+            
+        
+                <Card title='Excerpts' route={() => navigation.navigate('admin/adManage/excerpt')}/>
+                
+    
+                <Card title='Audio Sermon' route={() => navigation.navigate('admin/adManage/audioSermon')}/>
+            
+                <Card title='Goaks' route={() => navigation.navigate('admin/adManage/goaks')}/>
+            
+                <Card title='Devotional' route={() => navigation.navigate('admin/adManage/devotional')}/>
+
+                <Card title='Articles' route={() => navigation.navigate('admin/adManage/articles')}/>
+            
+                <Card title='Daily Quote' route={() => navigation.navigate('admin/adManage/quote')}/>
+            
+                <Card title='Announcements' route={() => navigation.navigate('admin/adManage/announcement')}/>
+            </View>
           </ScrollView>
 
     </SafeAreaView>

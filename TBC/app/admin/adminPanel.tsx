@@ -1,4 +1,4 @@
-import { View, Text, useColorScheme, Platform, TouchableOpacity, SafeAreaView, StyleSheet } from 'react-native'
+import { View, Text, useColorScheme, Platform, TouchableOpacity, SafeAreaView, StyleSheet, Pressable, Animated, ScrollView } from 'react-native'
 import React from 'react'
 import {  useNavigation, useTheme } from '@react-navigation/native';
 import { Poppins_500Medium, Poppins_700Bold, useFonts } from '@expo-google-fonts/poppins';
@@ -20,43 +20,46 @@ const adminPanel = () => {
     const theme = useTheme();
     const isDarkMode = colorScheme === 'dark';
 
-  const Card =({
-    title,
-
-})=> {
-    return(
-            <View style={styles.card}>
-                <Text style={styles.cardText}>{title}</Text>
-            </View>
-        )
+    const Card = ({ title, route }) => {
+        const scaleValue = new Animated.Value(1);
+    
+        const handlePressIn = () => {
+          Animated.spring(scaleValue, {
+            toValue: 0.95,
+            useNativeDriver: true,
+          }).start();
         };
+    
+        const handlePressOut = () => {
+          Animated.spring(scaleValue, {
+            toValue: 1,
+            useNativeDriver: true,
+          }).start();
+        };
+    
+        const animatedStyle = {
+          transform: [{ scale: scaleValue }],
+        };
+    
+        return (
+          <Pressable onPress={route} onPressIn={handlePressIn} onPressOut={handlePressOut}>
+            <Animated.View style={[styles.card, animatedStyle]}>
+              <Text style={styles.cardText}>{title}</Text>
+            </Animated.View>
+          </Pressable>
+        );
+      };
 
         const styles = StyleSheet.create({
             container:{
-                marginTop: 100,
                 backgroundColor: theme.colors.background,
-                flexDirection: 'column'
+                justifyContent:"flex-start",
             },
             containerText: {
                 fontFamily: 'NotoSerif_400Regular',
                 fontSize: 15,
                 padding: 10,
                 color: isDarkMode ? "#fff" : Colors.textGrey
-            },
-            header : {
-                top: 20,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'flex-start',
-                padding: 10,
-                backgroundColor: theme.colors.background,
-            },
-            headerText: {
-                alignSelf: 'center',
-                fontSize: 15,
-                fontFamily: 'NotoSerif_400Regular',
-                color: isDarkMode ? "#fff" : Colors.textGrey,
-                bottom: 22
             },
             card: {
                 height: Platform.OS === 'ios' ? 70 : 70,
@@ -66,7 +69,7 @@ const adminPanel = () => {
                 flexDirection:'row',
                 justifyContent: 'flex-start',
                 alignItems:'center',
-                marginVertical:10,
+                marginTop:10,
                 alignSelf: 'center',
                 shadowOffset:{width:0,height:3},
                 shadowOpacity:0.3,
@@ -81,17 +84,14 @@ const adminPanel = () => {
             },
         })
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{flex: 1,}}>
         <CustomHeader name={'Admin'}/>
-          <View style={[styles.container,]}>
-            <TouchableOpacity onPress={() => navigation.navigate('admin/adUpload/upload')}>
-                <Card title='Upload'/>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate('admin/adManage/manage')}>
-                <Card title='Manage'/>
-            </TouchableOpacity>
-          </View>
+        <ScrollView style={{top: -200}}>
+        <View style={[styles.container, {top: 10, marginBottom: 50}]}>
+            <Card title='Upload' route={() => navigation.navigate('admin/adUpload/upload')}/>
+            <Card title='Manage' route={() => navigation.navigate('admin/adManage/manage')}/>
+        </View>
+        </ScrollView>
     </SafeAreaView>
   )
 }

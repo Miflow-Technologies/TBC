@@ -1,6 +1,6 @@
 
 import Header from '@/components/Header'
-import { SafeAreaView, StyleSheet, Text, View, FlatList, Platform, TouchableOpacity, Image, Pressable} from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, FlatList, Image, Pressable} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from 'react-native';
@@ -13,7 +13,6 @@ import { getDownloadURL, ref } from 'firebase/storage';
 import { db, storage } from '@/config/firebaseConfig';
 import { useAudioContext } from '../context/audio';
 import PlayerWidget from '@/components/playerWidget';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import SearchBar from '@/components/searchBar';
 
 const audioSermonList = () => {
@@ -71,8 +70,8 @@ const audioSermonList = () => {
                 <View style={styles.queueItem}>
                     <Image style={styles.queueThumbnail} source={{ uri: item.imageUrl }} />
                     <View style={styles.queueDetails}>
-                        <Text style={{color: '#fff', fontFamily: 'Poppins_500Medium'}}>{item.title}</Text>
-                        <Text style={styles.queueArtist}>{item.preacher}</Text>
+                        <Text style={{color: isDarkMode ? '#fff' : '#000', fontFamily: 'Poppins_500Medium'}}>{item.title}</Text>
+                        <Text style={{color: isDarkMode ? '#fff' : '#000'}}>{item.preacher}</Text>
                     </View>
                 </View>
             </Pressable>
@@ -108,16 +107,13 @@ const styles = StyleSheet.create({
       marginBottom: 16,
     },
     queueThumbnail: {
-      width: 40,
-      height: 40,
+      width: 60,
+      height: 60,
       borderRadius: 0,
     },
     queueDetails: {
       flex: 1,
       marginHorizontal: 6,
-    },
-    queueArtist: {
-      color: '#888',
     },
   });
 

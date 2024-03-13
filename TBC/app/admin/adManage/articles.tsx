@@ -19,6 +19,7 @@ import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db, storage } from '@/config/firebaseConfig';
 import SearchBar from '@/components/searchBar';
 import { getDownloadURL, ref } from 'firebase/storage';
+import Header from '@/components/Header';
 
 const ArticleManagementScreen = () => {
   const navigation = useNavigation();
@@ -195,7 +196,7 @@ const ArticleManagementScreen = () => {
 
   return (
     <SafeAreaView>
-      <CustomHeader name="Article Management" />
+      <Header heading='Manage Articles'/>
       <View
         style={{ marginTop: Platform.OS === 'ios' ? 70 : 100, marginBottom: Platform.OS === 'ios' ? 240 : 260 }}
       >

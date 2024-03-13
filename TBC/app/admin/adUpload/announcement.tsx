@@ -38,7 +38,6 @@ const AnnouncementsUpload = () => {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 1,
-      aspect: [3, 4]
     });
 
     if (!result.canceled) {
@@ -90,7 +89,7 @@ const AnnouncementsUpload = () => {
             downloadUrl,
             title,
             description,
-            new Date().getTime()
+            new Date().getMinutes()
           );
           setImageFile("");
           console.log("Upload completed");

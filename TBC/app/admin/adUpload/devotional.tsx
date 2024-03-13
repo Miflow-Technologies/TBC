@@ -189,6 +189,9 @@ const DevotionalUpload = () => {
           <TextInput
             placeholder="Enter Devotional Content"
             onChangeText={(text) => setContent(text)}
+            multiline={true}
+            textAlignVertical="top"
+            returnKeyLabel="none"
             placeholderTextColor={isDarkMode ? "#fff" : Colors.textGrey}
             style={{
               width: "100%",

@@ -80,6 +80,7 @@ android {
     ndkVersion rootProject.ext.ndkVersion
 
     compileSdkVersion rootProject.ext.compileSdkVersion
+    
 
     namespace 'com.anonymous.TBC'
     defaultConfig {

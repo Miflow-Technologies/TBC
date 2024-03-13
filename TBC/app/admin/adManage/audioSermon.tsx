@@ -16,10 +16,16 @@ import PlayerWidget from '@/components/playerWidget';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import SearchBar from '@/components/searchBar';
 
+
+
+
 const audioSermon = () => {
   const { setSongs, isPlaying, isPaused } = useAudioContext();
 
     const [audioSermons, setAudioSermons] = useState([]);;
+    const [selectedItem, setSelectedItem] = useState(null); // State to store the selected item
+    const [visible, setVisible] = useState(false); // State to control BottomSheet visibility
+  
 
 
     const colorScheme = useColorScheme();
@@ -32,6 +38,32 @@ const audioSermon = () => {
       NotoSerif_400Regular,
       NotoSerif_700Bold,
     });
+
+    const handleOptions = (item) => {
+      setSelectedItem(item); // Set the selected item
+      setVisible(true); // Open the BottomSheet
+    };
+  
+    const handleEdit = () => {
+      // Handle Edit functionality for the selected item
+      setVisible(false); // Close the BottomSheet
+    };
+  
+    const handleDelete = () => {
+      // Handle Delete functionality for the selected item
+      setVisible(false); // Close the BottomSheet
+    };
+  
+    const renderBottomSheetContent = () => (
+      <View style={[styles.bottomSheetContainer, {backgroundColor: isDarkMode ? '#fff' : '#000',}]}>
+        <TouchableOpacity onPress={handleEdit} style={styles.bottomSheetOption}>
+          <Text style={styles.bottomSheetOptionText}>Edit</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleDelete} style={styles.bottomSheetOption}>
+          <Text style={styles.bottomSheetOptionText}>Delete</Text>
+        </TouchableOpacity>
+      </View>
+    );
 
     useEffect( ()=> {
         const fetchAudioSermons = async () => {
@@ -71,9 +103,12 @@ const audioSermon = () => {
                 <View style={styles.queueItem}>
                     <Image style={styles.queueThumbnail} source={{ uri: item.imageUrl }} />
                     <View style={styles.queueDetails}>
-                        <Text style={{color: '#fff', fontFamily: 'Poppins_500Medium'}}>{item.title}</Text>
-                        <Text style={styles.queueArtist}>{item.preacher}</Text>
+                        <Text style={{color: isDarkMode ? '#fff' : '#000', fontFamily: 'Poppins_500Medium'}}>{item.title}</Text>
+                        <Text style={{color: isDarkMode ? '#fff' : '#000'}}>{item.preacher}</Text>
                     </View>
+                    <Pressable onPress={() => handleOptions(item)} style={styles.optionsButton}>
+                      <MaterialCommunityIcons name='dots-vertical' size={24} color={isDarkMode ? '#fff' : '#000'}/>
+                    </Pressable>
                 </View>
             </Pressable>
         );
@@ -88,9 +123,7 @@ const audioSermon = () => {
                 keyExtractor={item => item.id}
                 renderItem={renderItem}
             />
-        
         </View>
-        
         {isPlaying ? <PlayerWidget style={90}/> : isPaused ? <PlayerWidget style={10}/> : null}
     </SafeAreaView>
   )
@@ -110,16 +143,22 @@ const styles = StyleSheet.create({
       marginBottom: 16,
     },
     queueThumbnail: {
-      width: 40,
-      height: 40,
+      width: 60,
+      height: 60,
       borderRadius: 0,
     },
     queueDetails: {
       flex: 1,
       marginHorizontal: 6,
     },
-    queueArtist: {
-      color: '#888',
+    bottomSheetContainer: {
+      padding: 16,
+    },
+    bottomSheetOption: {
+      paddingVertical: 12,
+    },
+    bottomSheetOptionText: {
+      fontSize: 16,
     },
   });
 

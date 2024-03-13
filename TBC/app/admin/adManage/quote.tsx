@@ -16,6 +16,7 @@ import { Poppins_700Bold } from '@expo-google-fonts/poppins';
 import { useFonts } from 'expo-font';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '@/config/firebaseConfig';
+import Header from '@/components/Header';
 
 const DailyQuote = () => {
   const colorScheme = useColorScheme();
@@ -160,7 +161,7 @@ const DailyQuote = () => {
 
   return (
     <SafeAreaView>
-      <CustomHeader name="Daily Quote Management" />
+      <Header heading='Manage Quotes'/>
       <View
         style={{ marginTop: Platform.OS === 'ios' ? 70 : 100, marginBottom: Platform.OS === 'ios' ? 240 : 260 }}
       >

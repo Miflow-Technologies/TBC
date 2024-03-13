@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Platform, ScrollView, TouchableOpacity, Image, FlatList } from 'react-native';
+import { View, Text, StyleSheet, Platform, ScrollView, TouchableOpacity, Image, FlatList, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
@@ -11,7 +11,8 @@ import { useTheme } from '@react-navigation/native';
 import { Link } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { collection, getDocs, query } from 'firebase/firestore';
-import { db } from '@/config/firebaseConfig';
+import { db, storage } from '@/config/firebaseConfig';
+import { getDownloadURL, ref } from 'firebase/storage';
 
 const announcements = () => {
   const navigation = useNavigation();
@@ -28,18 +29,32 @@ const announcements = () => {
 
   const [announcementPosts, setAnnouncementPosts] = useState([]);
 
-  const fetchAnnouncementPosts = async () => {
-    const announcementsQuery = query(collection(db, 'announcementPosts'));
-    const snapshot = await getDocs(announcementsQuery);
-    const posts = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    setAnnouncementPosts(posts);
-  };
 
   useEffect(() => {
-    fetchAnnouncementPosts();
+    const fetchAnnouncements = async () => {
+      try {
+        const announcementsQuery = query(collection(db, 'announcement'))
+        const announcementsSnapshot = await getDocs(announcementsQuery);
+
+        const fetchedAnnouncements = await Promise.all(
+          announcementsSnapshot.docs.map(async (doc) => {
+            const imageDownloadUrl = await getDownloadURL(ref(storage, doc.data().url));
+            return { 
+              id: doc.id,
+              title: doc.data().title,
+              description: doc.data().description,
+              url: imageDownloadUrl,
+              createdAt: doc.data().createdAt
+          }
+        })
+        )
+        setAnnouncementPosts(fetchedAnnouncements);
+        console.log('Fetched Announcements 432:', fetchedAnnouncements);
+      } catch (error) {
+        console.log('Error getting documents: ', error);
+      }
+    };
+    fetchAnnouncements()
   }, []);
 
   const Header = () => {
@@ -53,9 +68,6 @@ const announcements = () => {
     );
   };
 
-  const Thumbnail = (props) => (
-    <Image style={styles.thumbnail} source={{ uri: props.url }} />
-  );
 
   const Heading = (props) => (
     <Text style={styles.heading}>
@@ -63,11 +75,15 @@ const announcements = () => {
     </Text>
   );
 
-  const Title = (props) => (
+  {/*const Title = (props) => (
     <Text style={styles.title}>
       {props.children}
     </Text>
   );
+
+  const Thumbnail = (props) => (
+    <Image style={styles.thumbnail} source={{ uri: props.url }} />
+  );*/}
 
   const styles = StyleSheet.create({
     container: {
@@ -131,7 +147,7 @@ const announcements = () => {
     },
   });
   
-  const announceCardStyles = StyleSheet.create({
+  {/*const announceCardStyles = StyleSheet.create({
     card: {
       backgroundColor: theme.colors.background,
       borderColor: isDarkMode ? '#000' : '#E7E3EB',
@@ -151,7 +167,7 @@ const announcements = () => {
       textAlign: 'center',
       paddingTop: 8
     },
-  });
+  });*/}
   
   const announcePostStyles = StyleSheet.create({
     layout: {
@@ -182,18 +198,19 @@ const announcements = () => {
     }
   });
 
-  const AnnouncementPost = (props) => (
-    <>
+
+  const renderItem = ({ item }) => (
+    <Pressable>
       <View style={announcePostStyles.layout}>
         <View style={announcePostStyles.content}>
-          <Text style={announcePostStyles.description} numberOfLines={2}>{props.description}</Text>
-          <Text style={announcePostStyles.timpestamp}>{props.timestamp}</Text>
+          <Text style={announcePostStyles.description} numberOfLines={2}>{item.description}</Text>
+          <Text style={announcePostStyles.timpestamp}>{item.createdAt}</Text>
         </View>
-        <Image source={{ uri: props.image }} style={announcePostStyles.image} />
+        <Image style={announcePostStyles.image} source={{uri: item.url}} />
       </View>
       <View style={{ width: '80%', height: 1, backgroundColor: 'black', alignSelf: 'center', marginVertical: 10 }} />
-    </>
-  );
+    </Pressable>
+  )
 
   return (
     <SafeAreaView style={styles.container}>
@@ -202,14 +219,8 @@ const announcements = () => {
       <FlatList
         style={{}}
         data={announcementPosts}
-        renderItem={({ item }) => (
-          <AnnouncementPost
-            image={item.image}
-            description={item.description}
-            timestamp={item.timestamp}
-          />
-        )}
         keyExtractor={(item) => item.id}
+        renderItem={renderItem}
       />
     </SafeAreaView>
   );

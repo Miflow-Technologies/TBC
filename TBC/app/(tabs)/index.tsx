@@ -85,7 +85,6 @@ const Tbc = () => {
           />
         </View>
         </ScrollView>
-        {isPlaying ? <PlayerWidget style={90}/> : isPaused ? <PlayerWidget style={90}/> : null}
     </SafeAreaView>)
    
     } else {
