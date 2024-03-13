@@ -30,14 +30,14 @@ const Tbc = () => {
   useEffect(() => {
     const fetchDevotionalDetails = async () => {
       try {
-        const devotionalRef = collection(db, 'devotional');
+        const devotionalRef = collection(db, 'devotionals');
         const querySnapshot = await getDocs(devotionalRef);
 
         if (querySnapshot.docs.length > 0) {
           const firstDevotional = querySnapshot.docs[0].data();
           setDevotionalDetails({
             title: firstDevotional.title || '',
-            subtitle: firstDevotional.passage || '',
+            subtitle: firstDevotional.biblePassage || '',
             author: firstDevotional.author || '',
           });
         }
@@ -103,7 +103,8 @@ const styles = StyleSheet.create ({
     fontSize: 30
   },
   subtitle: {
-    fontSize: 15
+    fontSize: 15,
+    color: '#fff'
   },
   cardContainer: {
     flexDirection: "column",
