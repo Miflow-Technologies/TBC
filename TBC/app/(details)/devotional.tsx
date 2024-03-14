@@ -8,7 +8,7 @@ import { NotoSerif_400Regular, NotoSerif_700Bold } from "@expo-google-fonts/noto
 import { useFonts } from "expo-font";
 import { useColorScheme } from "react-native";
 import { useTheme } from "@react-navigation/native";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, where } from "firebase/firestore";
 import { db } from "@/config/firebaseConfig";
 
 const Devotional = () => {
@@ -32,16 +32,23 @@ const Devotional = () => {
   useEffect(() => {
     const fetchDevotionalContent = async () => {
       try {
-        const devotionalRef = collection(db, "devotional");
-        const querySnapshot = await getDocs(devotionalRef);
+        const devotionalRef = collection(db, "devotionals");
 
-        if (querySnapshot.docs.length > 0) {
-          const firstDevotional = querySnapshot.docs[0].data();
+        // Filter for documents where isSet is a string that evaluates to true (including '0')
+        const querySnapshot = await getDocs(devotionalRef);
+        const devotionalData = querySnapshot.docs.find(
+          (doc) => doc.data().isSet === "1" // Look for exact match with '0'
+        );
+
+        if (devotionalData) {
           setDevotionalContent({
-            title: firstDevotional.title || "",
-            content: firstDevotional.content || "",
-            passage: firstDevotional.passage || "", // Set passage from Firestore data
+            title: devotionalData.data().title || "",
+            content: devotionalData.data().content || "",
+            passage: devotionalData.data().biblePassage || "",
           });
+        } else {
+          // Handle no devotional found scenario (optional)
+          console.log("No devotional with isSet='0' found");
         }
       } catch (error) {
         console.error("Error fetching devotional content:", error);
@@ -50,6 +57,8 @@ const Devotional = () => {
 
     fetchDevotionalContent();
   }, []);
+
+
 
   const styles = StyleSheet.create({
     container: {

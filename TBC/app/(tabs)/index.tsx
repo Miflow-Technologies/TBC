@@ -32,8 +32,11 @@ const Tbc = () => {
       try {
         const devotionalRef = collection(db, 'devotionals');
         const querySnapshot = await getDocs(devotionalRef);
+        const devotionalData = querySnapshot.docs.find(
+          (doc) => doc.data().isSet === "1"
+        );
 
-        if (querySnapshot.docs.length > 0) {
+        if (devotionalData) {
           const firstDevotional = querySnapshot.docs[0].data();
           setDevotionalDetails({
             title: firstDevotional.title || '',
