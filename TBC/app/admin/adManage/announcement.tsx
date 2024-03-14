@@ -16,6 +16,7 @@ import { useFonts } from 'expo-font';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '@/config/firebaseConfig';
 import Header from '@/components/Header';
+import Colors from '@/constants/Colors';
 
 const AnnouncementManagementScreen = () => {
   const colorScheme = useColorScheme();
@@ -30,7 +31,7 @@ const AnnouncementManagementScreen = () => {
 
   useEffect(() => {
     const fetchAnnouncementPosts = async () => {
-      const announcementsQuery = collection(db, 'announcementPosts');
+      const announcementsQuery = collection(db, 'announcement');
       const snapshot = await getDocs(announcementsQuery);
       const posts = snapshot.docs.map((doc) => ({
         id: doc.id,
@@ -84,13 +85,13 @@ const AnnouncementManagementScreen = () => {
         ]}
         onPress={() => editAnnouncement(item.id)}
       >
-        <Text style={styles.title}>{item.description}</Text>
+        <Text style={styles.title}>{item.title}</Text>
       </Pressable>
       <View style={cardStyles.actions}>
         <Pressable
           style={({ pressed }) => [
             {
-              backgroundColor: pressed ? theme.colors.primary : theme.colors.background,
+              backgroundColor: Colors.blue
             },
             cardStyles.actionButton,
           ]}
@@ -101,7 +102,7 @@ const AnnouncementManagementScreen = () => {
         <Pressable
           style={({ pressed }) => [
             {
-              backgroundColor: pressed ? theme.colors.error : theme.colors.background,
+              backgroundColor: Colors.red,
             },
             cardStyles.actionButton,
           ]}
@@ -119,7 +120,8 @@ const AnnouncementManagementScreen = () => {
       borderColor: isDarkMode ? '#000' : '#E7E3EB',
       borderRadius: 12,
       borderWidth: 1,
-      margin: 20,
+      marginHorizontal: 20,
+      marginBottom: 20,
       padding: 12,
       shadowColor: isDarkMode ? '#fff' : '#000',
       shadowOffset: { width: 0, height: 2 },
@@ -162,7 +164,7 @@ const AnnouncementManagementScreen = () => {
     <SafeAreaView>
       <Header heading='Manage Announcements'/>
       <View
-        style={{ marginTop: Platform.OS === 'ios' ? 70 : 100, marginBottom: Platform.OS === 'ios' ? 240 : 260 }}
+        style={{ marginTop: Platform.OS === 'ios' ? 70 : 10, marginBottom: Platform.OS === 'ios' ? 240 : 260 }}
       >
         <FlatList
           data={announcementPosts}

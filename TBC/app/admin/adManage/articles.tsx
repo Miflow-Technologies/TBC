@@ -17,7 +17,7 @@ import { Poppins_700Bold } from '@expo-google-fonts/poppins';
 import { useFonts } from 'expo-font';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db, storage } from '@/config/firebaseConfig';
-import SearchBar from '@/components/searchBar';
+//import SearchBar from '@/components/searchBar';
 import { getDownloadURL, ref } from 'firebase/storage';
 import Header from '@/components/Header';
 
@@ -34,27 +34,27 @@ const ArticleManagementScreen = () => {
   const [articles, setArticles] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
 
-  const handleSearch = (searchTerm) => {
+ {/*} const handleSearch = (searchTerm) => {
     const articleResults = articles.filter((item) =>
       item.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    setSearchResults(articleResults);
-  };
+  setSearchResults(articleResults);
+  }; */}
 
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const articlesRef = collection(db, 'articles');
+        const articlesRef = collection(db, 'article');
         const querySnapshot = await getDocs(articlesRef);
 
         const fetchedArticles = await Promise.all(
           querySnapshot.docs.map(async (doc) => {
-            const pdfDownloadUrl = await getDownloadURL(ref(storage, doc.data().pdfUrl));
+            const downloadUrl = await getDownloadURL(ref(storage, doc.data().url));
             return {
               id: doc.id,
               title: doc.data().title,
               author: doc.data().author,
-              pdfUrl: pdfDownloadUrl,
+              pdfUrl: downloadUrl,
             };
           })
         );
@@ -98,7 +98,6 @@ const ArticleManagementScreen = () => {
             text: 'Delete',
             onPress: async () => {
               await deleteDoc(doc(db, 'articles', articleId));
-              // Refresh the articles list
               fetchArticles();
             },
           },
@@ -126,7 +125,7 @@ const ArticleManagementScreen = () => {
         <Pressable
           style={({ pressed }) => [
             {
-              backgroundColor: pressed ? Colors.primary : theme.colors.background,
+              backgroundColor: Colors.primary
             },
             cardStyles.actionButton,
           ]}
@@ -137,7 +136,7 @@ const ArticleManagementScreen = () => {
         <Pressable
           style={({ pressed }) => [
             {
-              backgroundColor: pressed ? Colors.error : theme.colors.background,
+              backgroundColor: Colors.red
             },
             cardStyles.actionButton,
           ]}
@@ -155,7 +154,8 @@ const ArticleManagementScreen = () => {
       borderColor: isDarkMode ? '#000' : '#E7E3EB',
       borderRadius: 25,
       borderWidth: 1,
-      margin: 20,
+      marginHorizontal: 20,
+      marginBottom: 20,
       padding: 12,
       shadowColor: isDarkMode ? '#fff' : '#000',
       shadowOffset: { width: 0, height: 2 },
@@ -198,9 +198,8 @@ const ArticleManagementScreen = () => {
     <SafeAreaView>
       <Header heading='Manage Articles'/>
       <View
-        style={{ marginTop: Platform.OS === 'ios' ? 70 : 100, marginBottom: Platform.OS === 'ios' ? 240 : 260 }}
+        style={{ marginTop: Platform.OS === 'ios' ? 70 : 10, marginBottom: Platform.OS === 'ios' ? 240 : 260 }}
       >
-        <SearchBar onSearch={handleSearch} />
         <View style={{ marginTop: Platform.OS === 'ios' ? 10 : 10 }}>
           <FlatList
             data={searchResults.length > 0 ? searchResults : articles}

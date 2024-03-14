@@ -39,6 +39,7 @@ const DevotionalUpload = () => {
         biblePassage,
         content,
         author,
+        isSet: '0',
       });
 
       setIsUploading(false);

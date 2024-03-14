@@ -14,9 +14,10 @@ import { useColorScheme } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { Poppins_700Bold } from '@expo-google-fonts/poppins';
 import { useFonts } from 'expo-font';
-import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/config/firebaseConfig';
 import Header from '@/components/Header';
+import Colors from '@/constants/Colors';
 
 const DevotionalManagementScreen = () => {
   const colorScheme = useColorScheme();
@@ -31,7 +32,7 @@ const DevotionalManagementScreen = () => {
 
   useEffect(() => {
     const fetchDevotionalPosts = async () => {
-      const devotionalsQuery = collection(db, 'devotional');
+      const devotionalsQuery = collection(db, 'devotionals');
       const snapshot = await getDocs(devotionalsQuery);
       const posts = snapshot.docs.map((doc) => ({
         id: doc.id,
@@ -63,7 +64,6 @@ const DevotionalManagementScreen = () => {
             text: 'Delete',
             onPress: async () => {
               await deleteDoc(doc(db, 'devotional', devotionalId));
-              // Refresh the devotionals list
               fetchDevotionalPosts();
             },
           },
@@ -72,6 +72,20 @@ const DevotionalManagementScreen = () => {
     } catch (error) {
       console.error('Error deleting devotional:', error);
     }
+  };
+
+  const toggleIsSet = async (devotionalId) => {
+    const devotionalDocRef = doc(db, 'devotionals', devotionalId);
+    const docSnap = await getDocs(devotionalDocRef);
+    const docData = docSnap.docs[0].data();
+
+    const isSet = docData.isSet === 1;
+    const newIsSetValue = isSet ? 0 : 1;
+
+    const updatedData = { ...docData, isSet: newIsSetValue };
+    await updateDoc(devotionalDocRef, updatedData);
+
+    fetchDevotionalPosts();
   };
 
   const renderItem = ({ item }) => (
@@ -88,10 +102,35 @@ const DevotionalManagementScreen = () => {
         <Text style={styles.title}>{item.title}</Text>
       </Pressable>
       <View style={cardStyles.actions}>
+      {item.isSet ? (
+        <Pressable
+        style={({ pressed }) => [
+          {
+            backgroundColor: Colors.yellow
+          },
+          cardStyles.actionButton,
+        ]}
+          onPress={() => toggleIsSet(item.id)}
+        >
+          <Text style={styles.actionButtonText}>Unset</Text>
+        </Pressable>
+      ) : (
+        <Pressable
+        style={({ pressed }) => [
+          {
+            backgroundColor: Colors.primary
+          },
+          cardStyles.actionButton,
+        ]}
+          onPress={() => toggleIsSet(item.id)}
+        >
+          <Text style={styles.actionButtonText}>Set</Text>
+        </Pressable>
+      )}
         <Pressable
           style={({ pressed }) => [
             {
-              backgroundColor: pressed ? theme.colors.primary : theme.colors.background,
+              backgroundColor: Colors.blue
             },
             cardStyles.actionButton,
           ]}
@@ -102,7 +141,7 @@ const DevotionalManagementScreen = () => {
         <Pressable
           style={({ pressed }) => [
             {
-              backgroundColor: pressed ? theme.colors.error : theme.colors.background,
+              backgroundColor: Colors.red,
             },
             cardStyles.actionButton,
           ]}
@@ -120,7 +159,8 @@ const DevotionalManagementScreen = () => {
       borderColor: isDarkMode ? '#000' : '#E7E3EB',
       borderRadius: 12,
       borderWidth: 1,
-      margin: 20,
+      marginHorizontal: 20,
+      marginBottom: 20,
       padding: 12,
       shadowColor: isDarkMode ? '#fff' : '#000',
       shadowOffset: { width: 0, height: 2 },
@@ -155,7 +195,7 @@ const DevotionalManagementScreen = () => {
       color: isDarkMode ? '#fff' : '#000',
     },
     actionButtonText: {
-      color: '#fff',
+      color: '#fff' 
     },
   });
 
@@ -163,7 +203,7 @@ const DevotionalManagementScreen = () => {
     <SafeAreaView>
       <Header heading='Manage Devotional'/>
       <View
-        style={{ marginTop: Platform.OS === 'ios' ? 70 : 100, marginBottom: Platform.OS === 'ios' ? 240 : 260 }}
+        style={{ marginTop: Platform.OS === 'ios' ? 50 : 10, marginBottom: Platform.OS === 'ios' ? 50 : 260 }}
       >
         <FlatList
           data={devotionalPosts}

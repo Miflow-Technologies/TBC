@@ -14,9 +14,10 @@ import { useColorScheme } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { Poppins_700Bold } from '@expo-google-fonts/poppins';
 import { useFonts } from 'expo-font';
-import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/config/firebaseConfig';
 import Header from '@/components/Header';
+import Colors from '@/constants/Colors';
 
 const DailyQuote = () => {
   const colorScheme = useColorScheme();
@@ -74,6 +75,21 @@ const DailyQuote = () => {
     }
   };
 
+  const toggleIsSet = async (dailyQuoteId) => {
+    const quoteDocRef = doc(db, 'dailyQuote', dailyQuoteId);
+    const docSnap = await getDocs(quoteDocRef);
+    const docData = docSnap.docs[0].data();
+
+    const isSet = docData.isSet === 1;
+    const newIsSetValue = isSet ? 0 : 1;
+
+    const updatedData = { ...docData, isSet: newIsSetValue };
+    await updateDoc(quoteDocRef, updatedData);
+
+    fetchDailyQuotePosts();
+  };
+
+
   const renderItem = ({ item }) => (
     <View style={cardStyles.card}>
       <Pressable
@@ -88,10 +104,35 @@ const DailyQuote = () => {
         <Text style={styles.title}>{item.author}</Text>
       </Pressable>
       <View style={cardStyles.actions}>
+      {item.isSet ? (
+        <Pressable
+        style={({ pressed }) => [
+          {
+            backgroundColor: Colors.yellow
+          },
+          cardStyles.actionButton,
+        ]}
+          onPress={() => toggleIsSet(item.id)}
+        >
+          <Text style={styles.actionButtonText}>Unset</Text>
+        </Pressable>
+      ) : (
+        <Pressable
+        style={({ pressed }) => [
+          {
+            backgroundColor: Colors.primary
+          },
+          cardStyles.actionButton,
+        ]}
+          onPress={() => toggleIsSet(item.id)}
+        >
+          <Text style={styles.actionButtonText}>Set</Text>
+        </Pressable>
+      )}
         <Pressable
           style={({ pressed }) => [
             {
-              backgroundColor: pressed ? theme.colors.primary : theme.colors.background,
+              backgroundColor: Colors.blue
             },
             cardStyles.actionButton,
           ]}
@@ -102,7 +143,7 @@ const DailyQuote = () => {
         <Pressable
           style={({ pressed }) => [
             {
-              backgroundColor: pressed ? theme.colors.error : theme.colors.background,
+              backgroundColor: Colors.red,
             },
             cardStyles.actionButton,
           ]}
