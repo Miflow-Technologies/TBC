@@ -81,18 +81,20 @@ const DailyQuote = () => {
   const captureViewRef = useRef(null);
 
   useEffect(() => {
-    // Fetch the latest daily quote from Firestore
     const fetchLatestDailyQuote = async () => {
-      const dailyQuoteQuery = query(collection(db, 'dailyQuote'), orderBy('createdAt', 'desc'), limit(1));
-      const querySnapshot = await getDocs(dailyQuoteQuery);
+      const dailyQuoteRef = collection(db, 'dailyQuote');
+      const querySnapshot = await getDocs(dailyQuoteRef);
+      const dailyQuoteData = querySnapshot.docs.find(
+        (doc) => doc.data().isSet === "1"
+      )
 
-      if (!querySnapshot.empty) {
-        const latestQuote = querySnapshot.docs[0].data();
-        setDailyQuote(latestQuote);
+      if (dailyQuoteData) {
+        setDailyQuote(dailyQuoteData.data());
       }
     };
 
     fetchLatestDailyQuote();
+    
   }, []);
 
   const handleShare = async () => {

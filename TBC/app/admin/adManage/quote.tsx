@@ -14,10 +14,11 @@ import { useColorScheme } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { Poppins_700Bold } from '@expo-google-fonts/poppins';
 import { useFonts } from 'expo-font';
-import { collection, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
-import { db } from '@/config/firebaseConfig';
+import { collection, getDocs, deleteDoc, doc, updateDoc, getDoc } from 'firebase/firestore';
+import { db, storage } from '@/config/firebaseConfig';
 import Header from '@/components/Header';
 import Colors from '@/constants/Colors';
+import { deleteObject, getStorage, ref } from 'firebase/storage';
 
 const DailyQuote = () => {
   const colorScheme = useColorScheme();
@@ -63,9 +64,19 @@ const DailyQuote = () => {
           {
             text: 'Delete',
             onPress: async () => {
+              const dailyQuoteDocRef = doc(db, 'dailyQuote', dailyQuoteId);
+              const quoteSnap = await getDoc(dailyQuoteDocRef);
+              const quoteData = quoteSnap.data();
+  
+              // Get the photo URL from the quote data
+              const photoUrl = quoteData.url;
+  
+              // Delete the photo from Storage if a URL exists
+              if (photoUrl) {
+                const storageRef = ref(storage, photoUrl);
+                await deleteObject(storageRef);
+              }
               await deleteDoc(doc(db, 'dailyQuote', dailyQuoteId));
-              // Refresh the daily quotes list
-              fetchDailyQuotePosts();
             },
           },
         ]
@@ -77,16 +88,14 @@ const DailyQuote = () => {
 
   const toggleIsSet = async (dailyQuoteId) => {
     const quoteDocRef = doc(db, 'dailyQuote', dailyQuoteId);
-    const docSnap = await getDocs(quoteDocRef);
-    const docData = docSnap.docs[0].data();
+    const docSnap = await getDoc(quoteDocRef);
+    const docData = docSnap.data();
 
-    const isSet = docData.isSet === 1;
-    const newIsSetValue = isSet ? 0 : 1;
+    const isSet = docData.isSet === "1";
+    const newIsSetValue = isSet ? "0" : "1";
 
     const updatedData = { ...docData, isSet: newIsSetValue };
     await updateDoc(quoteDocRef, updatedData);
-
-    fetchDailyQuotePosts();
   };
 
 

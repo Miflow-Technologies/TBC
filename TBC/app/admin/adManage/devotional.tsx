@@ -29,6 +29,7 @@ const DevotionalManagementScreen = () => {
   });
 
   const [devotionalPosts, setDevotionalPosts] = useState([]);
+  const [shouldRefresh, setShouldRefresh] = useState(false)
 
   useEffect(() => {
     const fetchDevotionalPosts = async () => {
@@ -42,11 +43,12 @@ const DevotionalManagementScreen = () => {
     };
 
     fetchDevotionalPosts();
-  }, []);
+  }, [shouldRefresh]);
 
   const editDevotional = (devotionalId) => {
     // Implement your logic for editing a devotional
     Alert.alert('Edit Devotional', `Editing devotional with ID: ${devotionalId}`);
+    setShouldRefresh(true)
   };
 
   const deleteDevotional = async (devotionalId) => {
@@ -64,6 +66,7 @@ const DevotionalManagementScreen = () => {
             text: 'Delete',
             onPress: async () => {
               await deleteDoc(doc(db, 'devotional', devotionalId));
+              setShouldRefresh(true)
             },
           },
         ]
@@ -83,6 +86,7 @@ const DevotionalManagementScreen = () => {
 
     const updatedData = { ...docData, isSet: newIsSetValue };
     await updateDoc(devotionalDocRef, updatedData);
+    setShouldRefresh(true)
   };
 
   const renderItem = ({ item }) => (

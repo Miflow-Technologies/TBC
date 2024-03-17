@@ -102,6 +102,7 @@ const DailyQuoteUpload = () => {
         url,
         content,
         author,
+        isSet: "0",
         createdAt,
       });
       console.log("File saved with document ID:", docRef.id);

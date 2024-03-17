@@ -1,6 +1,6 @@
 
 import Header from '@/components/Header'
-import { SafeAreaView, StyleSheet, Text, View, FlatList, Platform, TouchableOpacity, Image, Pressable} from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, FlatList, Platform, TouchableOpacity, Image, Pressable, Alert, Modal} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from 'react-native';
@@ -8,8 +8,8 @@ import { useTheme } from '@react-navigation/native';
 import { Poppins_500Medium, Poppins_700Bold, } from '@expo-google-fonts/poppins';
 import { NotoSerif_400Regular, NotoSerif_700Bold, } from '@expo-google-fonts/noto-serif';
 import { useFonts } from 'expo-font';
-import { query, collection, getDocs} from 'firebase/firestore'; 
-import { getDownloadURL, ref } from 'firebase/storage';
+import { query, collection, getDocs, doc, getDoc, deleteDoc} from 'firebase/firestore'; 
+import { deleteObject, getDownloadURL, ref } from 'firebase/storage';
 import { db, storage } from '@/config/firebaseConfig';
 import { useAudioContext } from '@/app/context/audio';
 import PlayerWidget from '@/components/playerWidget';
@@ -23,8 +23,9 @@ const audioSermon = () => {
   const { setSongs, isPlaying, isPaused } = useAudioContext();
 
     const [audioSermons, setAudioSermons] = useState([]);;
-    const [selectedItem, setSelectedItem] = useState(null); // State to store the selected item
-    const [visible, setVisible] = useState(false); // State to control BottomSheet visibility
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [modalVisible, setModalVisible] = useState(false);
+  
   
 
 
@@ -40,30 +41,49 @@ const audioSermon = () => {
     });
 
     const handleOptions = (item) => {
-      setSelectedItem(item); // Set the selected item
-      setVisible(true); // Open the BottomSheet
+      setSelectedItem(item);
+      setModalVisible(true);
     };
   
     const handleEdit = () => {
       // Handle Edit functionality for the selected item
-      setVisible(false); // Close the BottomSheet
+      setModalVisible(false);
     };
   
-    const handleDelete = () => {
-      // Handle Delete functionality for the selected item
-      setVisible(false); // Close the BottomSheet
+    const deleteAudioSermon = async (audioSermonId) => {
+      try {
+        const confirmation = Alert.alert(
+          'Confirm Deletion',
+          'Are you sure you want to delete this audio sermon?',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            {
+              text: 'Delete',
+              onPress: async () => {
+                const audioSermonDocRef = doc(db, 'audioSermon', audioSermonId);
+                const quoteSnap = await getDoc(audioSermonDocRef);
+                const quoteData = quoteSnap.data();
+
+                const photoUrl = quoteData.imageDownloadUrl;
+                const audioUrl = quoteData.audioDownloadUrl;
+
+                if (photoUrl && audioUrl) {
+                  const photoStorageRef = ref(storage, photoUrl);
+                  const audioStorageRef = ref(storage, audioUrl);
+                  await deleteObject(photoStorageRef);
+                  await deleteObject(audioStorageRef);
+                }
+                await deleteDoc(doc(db, 'audioSermon', audioSermonId));
+                setSelectedItem(null);
+                setModalVisible(false);
+              },
+            },
+          ]
+        );
+      } catch (error) {
+        console.error('Error deleting audio sermon:', error);
+      }
     };
-  
-    const renderBottomSheetContent = () => (
-      <View style={[styles.bottomSheetContainer, {backgroundColor: isDarkMode ? '#fff' : '#000',}]}>
-        <TouchableOpacity onPress={handleEdit} style={styles.bottomSheetOption}>
-          <Text style={styles.bottomSheetOptionText}>Edit</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleDelete} style={styles.bottomSheetOption}>
-          <Text style={styles.bottomSheetOptionText}>Delete</Text>
-        </TouchableOpacity>
-      </View>
-    );
 
     useEffect( ()=> {
         const fetchAudioSermons = async () => {
@@ -103,7 +123,7 @@ const audioSermon = () => {
                 <View style={styles.queueItem}>
                     <Image style={styles.queueThumbnail} source={{ uri: item.imageUrl }} />
                     <View style={styles.queueDetails}>
-                        <Text style={{color: isDarkMode ? '#fff' : '#000', fontFamily: 'Poppins_500Medium'}}>{item.title}</Text>
+                        <Text style={{color: isDarkMode ? '#fff' : '#000', fontFamily: 'Poppins_700Bold', fontSize: 17}}>{item.title}</Text>
                         <Text style={{color: isDarkMode ? '#fff' : '#000'}}>{item.preacher}</Text>
                     </View>
                     <Pressable onPress={() => handleOptions(item)} style={styles.optionsButton}>
@@ -114,17 +134,28 @@ const audioSermon = () => {
         );
 
   return (
-    <SafeAreaView style={{flex: 1}}>
-        <Header heading='Audio List'/>
-        <SearchBar dbName={'audioSermon'} renderItem={renderItem} />
-        <View style={{padding: 10}}>
-            <FlatList style={{ paddingHorizontal: 24 }}
-                data={audioSermons}
-                keyExtractor={item => item.id}
-                renderItem={renderItem}
-            />
+    <SafeAreaView style={{ flex: 1 }}>
+    <Header heading="Audio List" />
+    <SearchBar dbName="audioSermon" renderItem={renderItem} />
+    <View style={{ padding: 10 }}>
+      <FlatList
+        style={{ paddingHorizontal: 24 }}
+        data={audioSermons}
+        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+      />
+    </View>
+    
+      <Modal animationType="fade" transparent={true} visible={modalVisible}>
+        <View style={styles.modalContainer}>
+          <TouchableOpacity style={[styles.modalOption, {backgroundColor: isDarkMode ? '#fff' : '#000',}]} onPress={handleEdit}>
+            <Text style={[styles.modalOptionText, {color: isDarkMode ? '#000' : '#fff',}]}>Edit</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.modalOption, {backgroundColor: isDarkMode ? '#fff' : '#000',}]} onPress={() => deleteAudioSermon(selectedItem.id)}>
+            <Text style={[styles.modalOptionText, {color: isDarkMode ? '#000' : '#fff',}]}>Delete</Text>
+          </TouchableOpacity>
         </View>
-        {isPlaying ? <PlayerWidget style={90}/> : isPaused ? <PlayerWidget style={10}/> : null}
+      </Modal>
     </SafeAreaView>
   )
 }
@@ -149,17 +180,23 @@ const styles = StyleSheet.create({
     },
     queueDetails: {
       flex: 1,
-      marginHorizontal: 6,
+      marginHorizontal: 10,
     },
-    bottomSheetContainer: {
-      padding: 16,
+    modalContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
-    bottomSheetOption: {
-      paddingVertical: 12,
+    modalOption: {
+      padding: 10,
+      margin: 10,
+      borderRadius: 5,
     },
-    bottomSheetOptionText: {
+    modalOptionText: {
       fontSize: 16,
     },
+
   });
 
 export default audioSermon
